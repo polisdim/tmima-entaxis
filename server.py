@@ -24,16 +24,16 @@ import ai_analyzer
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(BASE_DIR)
 
-DATA_DIR = os.path.join(BASE_DIR, 'data')
+APP_DIR = os.path.join(BASE_DIR, 'app') if (os.path.exists(os.path.join(BASE_DIR, 'app')) and os.path.exists(os.path.join(BASE_DIR, 'app', 'index.html'))) else BASE_DIR
+
+DATA_DIR = os.path.join(BASE_DIR, 'data') if os.path.exists(os.path.join(BASE_DIR, 'data')) else BASE_DIR
 STUDENTS_DIR = os.path.join(BASE_DIR, 'Μαθητές')
-APP_DIR = os.path.join(BASE_DIR, 'app')
-
-os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(STUDENTS_DIR, exist_ok=True)
-os.makedirs(APP_DIR, exist_ok=True)
 
-STUDENTS_FILE = os.path.join(DATA_DIR, 'students.json')
-OBSERVATIONS_FILE = os.path.join(DATA_DIR, 'observations.json')
+STUDENTS_FILE = os.path.join(DATA_DIR, 'students.json') if os.path.exists(os.path.join(DATA_DIR, 'students.json')) else os.path.join(BASE_DIR, 'students.json')
+OBSERVATIONS_FILE = os.path.join(DATA_DIR, 'observations.json') if os.path.exists(os.path.join(DATA_DIR, 'observations.json')) else os.path.join(BASE_DIR, 'observations.json')
+AUTH_FILE = os.path.join(DATA_DIR, 'auth.json') if os.path.exists(os.path.join(DATA_DIR, 'auth.json')) else os.path.join(BASE_DIR, 'auth.json')
+
 CENTRAL_LOG_FILE = os.path.join(BASE_DIR, 'Ημερολόγιο_Συνεδριών_2026-2027.md')
 RESEARCH_JSON_FILE = os.path.join(BASE_DIR, 'Ερευνητικό_Dataset_ΤΕ.json')
 RESEARCH_CSV_FILE = os.path.join(BASE_DIR, 'Ερευνητικό_Dataset_ΤΕ.csv')
@@ -480,6 +480,37 @@ class InclusionAppHandler(SimpleHTTPRequestHandler):
         url = urllib.parse.urlparse(self.path)
         path = url.path
         query = urllib.parse.parse_qs(url.query)
+
+        if path == '/' or path == '/index.html':
+            index_path = os.path.join(APP_DIR, 'index.html')
+            if not os.path.exists(index_path):
+                index_path = os.path.join(BASE_DIR, 'index.html')
+            if os.path.exists(index_path):
+                with open(index_path, 'rb') as f:
+                    content = f.read()
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html; charset=utf-8')
+                self.send_header('Content-Length', str(len(content)))
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(content)
+                return
+
+        if path in ['/manifest.json', '/sw.js']:
+            f_path = os.path.join(APP_DIR, path.lstrip('/'))
+            if not os.path.exists(f_path):
+                f_path = os.path.join(BASE_DIR, path.lstrip('/'))
+            if os.path.exists(f_path):
+                with open(f_path, 'rb') as f:
+                    content = f.read()
+                self.send_response(200)
+                mtype = 'application/manifest+json' if path.endswith('.json') else 'application/javascript'
+                self.send_header('Content-Type', f'{mtype}; charset=utf-8')
+                self.send_header('Content-Length', str(len(content)))
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(content)
+                return
 
         if path == '/api/auth/check':
             is_auth = is_client_authenticated(self, query)

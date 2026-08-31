@@ -15,7 +15,12 @@ Architectural Layers:
 
 import re
 import unicodedata
-import numpy as np
+
+try:
+    import numpy as np
+    NUMPY_AVAILABLE = True
+except ImportError:
+    NUMPY_AVAILABLE = False
 
 # Use scikit-learn for high-dimensional semantic vector spaces
 try:
