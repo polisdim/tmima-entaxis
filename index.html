@@ -29,26 +29,34 @@
       }
     }
   </script>
-  <style>
+    <style>
+    html {
+      font-size: 22px !important;
+    }
+    @media (min-width: 600px) {
+      html {
+        font-size: 25px !important;
+      }
+    }
     body {
-      font-family: Verdana, Geneva, Tahoma, sans-serif;
-      font-size: 16px;
-      line-height: 1.6;
-      background-color: #0d1117;
-      color: #f0f6fc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.5;
+      background-color: #06090e;
+      color: #ffffff;
+      -webkit-text-size-adjust: 100%;
     }
     .touch-btn {
-      min-height: 44px;
-      padding: 8px 16px;
+      min-height: 56px;
+      padding: 12px 24px;
       touch-action: manipulation;
     }
     .custom-scroll::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 8px;
+      height: 8px;
     }
     .custom-scroll::-webkit-scrollbar-thumb {
-      background: #30363d;
-      border-radius: 3px;
+      background: #484f58;
+      border-radius: 4px;
     }
   </style>
 </head>
@@ -71,25 +79,25 @@
       <div class="space-y-2">
         <div class="flex items-center justify-center gap-3">
           <input type="password" id="pin-input" maxlength="8" readonly
-                 class="w-full bg-slate-900 border border-cyan-800/80 rounded-xl py-2.5 text-center text-xl font-bold tracking-widest text-cyan-300 outline-none focus:ring-2 focus:ring-cyan-500 shadow-inner"
+                 class="w-full bg-slate-900 border-2 border-cyan-700 rounded-2xl py-3.5 text-center text-3xl font-black tracking-widest text-cyan-300 outline-none focus:ring-2 focus:ring-cyan-500 shadow-inner"
                  placeholder="••••">
         </div>
         <div id="auth-error-msg" class="text-xs text-rose-400 font-semibold min-h-[18px]"></div>
       </div>
 
       <!-- Touch Keypad (Optimized for Xiaomi Pad 6) -->
-      <div class="grid grid-cols-3 gap-2.5 max-w-[240px] mx-auto">
-        <button type="button" onclick="keypadPress('1')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">1</button>
-        <button type="button" onclick="keypadPress('2')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">2</button>
-        <button type="button" onclick="keypadPress('3')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">3</button>
-        <button type="button" onclick="keypadPress('4')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">4</button>
-        <button type="button" onclick="keypadPress('5')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">5</button>
-        <button type="button" onclick="keypadPress('6')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">6</button>
-        <button type="button" onclick="keypadPress('7')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">7</button>
-        <button type="button" onclick="keypadPress('8')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">8</button>
-        <button type="button" onclick="keypadPress('9')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">9</button>
+      <div class="grid grid-cols-3 gap-3 max-w-[320px] mx-auto">
+        <button type="button" onclick="keypadPress('1')" class="h-16 rounded-2xl bg-slate-900 text-2xl font-black hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">1</button>
+        <button type="button" onclick="keypadPress('2')" class="h-16 rounded-2xl bg-slate-900 text-2xl font-black hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">2</button>
+        <button type="button" onclick="keypadPress('3')" class="h-16 rounded-2xl bg-slate-900 text-2xl font-black hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">3</button>
+        <button type="button" onclick="keypadPress('4')" class="h-16 rounded-2xl bg-slate-900 text-2xl font-black hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">4</button>
+        <button type="button" onclick="keypadPress('5')" class="h-16 rounded-2xl bg-slate-900 text-2xl font-black hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">5</button>
+        <button type="button" onclick="keypadPress('6')" class="h-16 rounded-2xl bg-slate-900 text-2xl font-black hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">6</button>
+        <button type="button" onclick="keypadPress('7')" class="h-16 rounded-2xl bg-slate-900 text-2xl font-black hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">7</button>
+        <button type="button" onclick="keypadPress('8')" class="h-16 rounded-2xl bg-slate-900 text-2xl font-black hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">8</button>
+        <button type="button" onclick="keypadPress('9')" class="h-16 rounded-2xl bg-slate-900 text-2xl font-black hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">9</button>
         <button type="button" onclick="keypadClear()" class="h-12 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800 text-sm font-bold text-rose-300 active:scale-95 transition-all">✕</button>
-        <button type="button" onclick="keypadPress('0')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">0</button>
+        <button type="button" onclick="keypadPress('0')" class="h-16 rounded-2xl bg-slate-900 text-2xl font-black hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">0</button>
         <button type="button" onclick="submitAuthLogin()" class="h-12 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-sm active:scale-95 transition-all shadow-md">✓</button>
       </div>
 
@@ -103,26 +111,26 @@
   </div>
 
   <!-- MINIMAL HEADER -->
-  <header class="sticky top-0 z-40 bg-brand-card border-b border-brand-border px-4 py-2.5 shadow-sm">
-    <div class="max-w-6xl mx-auto flex items-center justify-between gap-3">
+  <header class="sticky top-0 z-40 bg-slate-900 border-b-2 border-slate-700 px-4 py-3 shadow-md">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
       
       <div class="flex items-center gap-2">
-        <span class="font-black text-brand-cyan text-xl sm:text-2xl tracking-wide">Τμήμα Ένταξης</span>
-        <span class="font-black text-slate-100 text-xl sm:text-2xl">| ΔΗΜ.Ω.Σ. Ξάνθης</span>
+        <span class="font-black text-brand-cyan text-2xl sm:text-3xl tracking-wide">Τμήμα Ένταξης</span>
+        <span class="font-black text-slate-100 text-2xl sm:text-3xl">| ΔΗΜ.Ω.Σ.</span>
       </div>
 
-      <!-- Navigation Tabs -->
-      <nav class="flex items-center gap-2 overflow-x-auto py-1 custom-scroll">
-        <button onclick="switchTab('logger')" id="tab-logger" class="touch-btn text-sm sm:text-base font-bold rounded-xl px-4 py-2.5 bg-brand-cyan text-slate-950">
+      <!-- Navigation Tabs (Extra Large) -->
+      <nav class="flex items-center gap-2.5 overflow-x-auto py-1 custom-scroll">
+        <button onclick="switchTab('logger')" id="tab-logger" class="touch-btn text-lg sm:text-xl font-black rounded-2xl px-6 py-3.5 bg-brand-cyan text-slate-950 shadow-md">
           Καταγραφή
         </button>
-        <button onclick="switchTab('students')" id="tab-students" class="touch-btn text-sm sm:text-base font-bold rounded-xl px-4 py-2.5 text-slate-300 hover:bg-slate-800 border border-brand-border">
+        <button onclick="switchTab('students')" id="tab-students" class="touch-btn text-lg sm:text-xl font-black rounded-2xl px-6 py-3.5 text-slate-100 hover:bg-slate-800 border-2 border-slate-700">
           👤 Καρτέλες Μαθητών
         </button>
-        <button onclick="switchTab('matrix')" id="tab-matrix" class="touch-btn text-sm sm:text-base font-bold rounded-xl px-4 py-2.5 text-slate-300 hover:bg-slate-800 border border-brand-border">
+        <button onclick="switchTab('matrix')" id="tab-matrix" class="touch-btn text-lg sm:text-xl font-bold rounded-2xl px-5 py-3 text-slate-200 hover:bg-slate-800 border-2 border-slate-700">
           Πίνακας
         </button>
-        <button onclick="switchTab('timeline')" id="tab-timeline" class="touch-btn text-sm sm:text-base font-bold rounded-xl px-4 py-2.5 text-slate-300 hover:bg-slate-800 border border-brand-border">
+        <button onclick="switchTab('timeline')" id="tab-timeline" class="touch-btn text-lg sm:text-xl font-bold rounded-2xl px-5 py-3 text-slate-200 hover:bg-slate-800 border-2 border-slate-700">
           Ημερολόγιο
         </button>
       </nav>
@@ -195,19 +203,19 @@
     <!-- ========================================== -->
     <section id="view-students" class="space-y-4 hidden">
       
-      <!-- Top Control & Filter Bar -->
-      <div class="flex flex-wrap items-center justify-between gap-3 bg-brand-card border border-brand-border rounded-xl p-3 shadow-sm">
-        <div class="flex items-center gap-1.5 flex-wrap" id="grade-filter-buttons">
-          <button onclick="filterStudentsByGrade('ALL')" id="filter-grade-all" class="px-5 py-2.5 rounded-2xl text-base sm:text-lg font-black bg-brand-cyan text-slate-950 transition-all shadow-md">Όλοι οι Μαθητές</button>
-          <button onclick="filterStudentsByGrade('Α')" id="filter-grade-a" class="px-5 py-2.5 rounded-2xl text-base sm:text-lg font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border-2 border-slate-700 transition-all">Α' Γυμνασίου</button>
-          <button onclick="filterStudentsByGrade('Β')" id="filter-grade-b" class="px-5 py-2.5 rounded-2xl text-base sm:text-lg font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border-2 border-slate-700 transition-all">Β' Γυμνασίου</button>
-          <button onclick="filterStudentsByGrade('Γ')" id="filter-grade-c" class="px-5 py-2.5 rounded-2xl text-base sm:text-lg font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border-2 border-slate-700 transition-all">Γ' Γυμνασίου</button>
+            <!-- Top Control & Filter Bar (Extra Large) -->
+      <div class="flex flex-wrap items-center justify-between gap-4 bg-slate-900 border-2 border-slate-700 rounded-3xl p-4 sm:p-5 shadow-md">
+        <div class="flex items-center gap-2 flex-wrap" id="grade-filter-buttons">
+          <button onclick="filterStudentsByGrade('ALL')" id="filter-grade-all" class="px-6 py-3 rounded-2xl text-lg sm:text-xl font-black bg-brand-cyan text-slate-950 transition-all shadow-md">Όλοι οι Μαθητές</button>
+          <button onclick="filterStudentsByGrade('Α')" id="filter-grade-a" class="px-6 py-3 rounded-2xl text-lg sm:text-xl font-bold bg-slate-950 hover:bg-slate-800 text-slate-200 border-2 border-slate-700 transition-all">Α' Γυμνασίου</button>
+          <button onclick="filterStudentsByGrade('Β')" id="filter-grade-b" class="px-6 py-3 rounded-2xl text-lg sm:text-xl font-bold bg-slate-950 hover:bg-slate-800 text-slate-200 border-2 border-slate-700 transition-all">Β' Γυμνασίου</button>
+          <button onclick="filterStudentsByGrade('Γ')" id="filter-grade-c" class="px-6 py-3 rounded-2xl text-lg sm:text-xl font-bold bg-slate-950 hover:bg-slate-800 text-slate-200 border-2 border-slate-700 transition-all">Γ' Γυμνασίου</button>
         </div>
 
-        <div class="flex items-center gap-2 flex-1 sm:flex-none justify-end">
+        <div class="flex items-center gap-3 flex-1 sm:flex-none justify-end">
           <input type="text" id="student-search-input" oninput="renderStudentsGrid()" placeholder="🔍 Αναζήτηση μαθητή..."
-                 class="bg-slate-900 border border-brand-border rounded-xl px-4 py-2.5 text-sm sm:text-base text-white placeholder-slate-400 outline-none focus:ring-2 focus:ring-cyan-500 w-full sm:w-64 font-medium">
-          <button onclick="openStudentDossier('new')" class="touch-btn bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-300 hover:to-cyan-400 text-slate-950 font-black text-base sm:text-lg rounded-2xl px-6 py-3 shadow-md whitespace-nowrap">
+                 class="bg-slate-950 border-2 border-slate-700 rounded-2xl px-5 py-3 text-lg sm:text-xl text-white placeholder-slate-400 outline-none focus:ring-2 focus:ring-cyan-400 w-full sm:w-72 font-semibold">
+          <button onclick="openStudentDossier('new')" class="touch-btn bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-300 hover:to-cyan-400 text-slate-950 font-black text-lg sm:text-xl rounded-2xl px-7 py-3 shadow-lg whitespace-nowrap">
             + Νέα Καρτέλα
           </button>
         </div>
@@ -1675,84 +1683,84 @@
         const stObs = (appData.observations || []).filter(o => o.student_id === st.id);
         const covTotal = (st.coverage && st.coverage.total) || 0;
 
-                const anxietyBadgeUltra = anxiety === 'Χαμηλό'
-          ? '<span class="px-4 py-2 rounded-xl bg-emerald-950 text-emerald-300 border-2 border-emerald-700 text-base sm:text-lg font-black shadow-sm">🟢 Χαμηλό Μαθηματικό Άγχος</span>'
+                        const anxietyBadgeUltra = anxiety === 'Χαμηλό'
+          ? '<span class="px-5 py-2.5 rounded-2xl bg-emerald-950 text-emerald-300 border-2 border-emerald-600 text-lg sm:text-xl font-black shadow-md">🟢 Χαμηλό Μαθηματικό Άγχος</span>'
           : anxiety === 'Υψηλό'
-          ? '<span class="px-4 py-2 rounded-xl bg-rose-950 text-rose-300 border-2 border-rose-700 text-base sm:text-lg font-black shadow-sm">🔴 Υψηλό Μαθηματικό Άγχος</span>'
-          : '<span class="px-4 py-2 rounded-xl bg-amber-950 text-amber-300 border-2 border-amber-700 text-base sm:text-lg font-black shadow-sm">🟡 Μέτριο Μαθηματικό Άγχος</span>';
+          ? '<span class="px-5 py-2.5 rounded-2xl bg-rose-950 text-rose-300 border-2 border-rose-600 text-lg sm:text-xl font-black shadow-md">🔴 Υψηλό Μαθηματικό Άγχος</span>'
+          : '<span class="px-5 py-2.5 rounded-2xl bg-amber-950 text-amber-300 border-2 border-amber-600 text-lg sm:text-xl font-black shadow-md">🟡 Μέτριο Μαθηματικό Άγχος</span>';
 
         grid.innerHTML += `
-          <div class="bg-brand-card border-2 border-slate-700 hover:border-cyan-400 rounded-3xl p-6 sm:p-8 space-y-6 transition-all shadow-xl flex flex-col justify-between">
+          <div class="bg-slate-900 border-2 border-slate-700 hover:border-cyan-400 rounded-3xl p-6 sm:p-9 space-y-7 transition-all shadow-2xl flex flex-col justify-between">
             
             <!-- 1. Header: Avatar & Main Identity -->
             <div class="space-y-5">
-              <div class="flex items-start justify-between gap-4 pb-4 border-b-2 border-slate-800">
-                <div class="flex items-center gap-4">
-                  <div class="w-20 h-20 rounded-2xl ${isBoy ? 'bg-cyan-950 border-2 border-cyan-500 text-cyan-300' : 'bg-purple-950 border-2 border-purple-500 text-purple-300'} text-4xl flex items-center justify-center shadow-inner flex-shrink-0">
+              <div class="flex items-start justify-between gap-4 pb-5 border-b-2 border-slate-800">
+                <div class="flex items-center gap-5">
+                  <div class="w-24 h-24 rounded-3xl ${isBoy ? 'bg-cyan-950 border-2 border-cyan-400 text-cyan-300' : 'bg-purple-950 border-2 border-purple-400 text-purple-300'} text-5xl flex items-center justify-center shadow-inner flex-shrink-0">
                     ${isBoy ? '👦' : '👧'}
                   </div>
                   <div>
-                    <h3 class="text-3xl sm:text-4xl font-black text-white leading-tight flex items-center gap-3 flex-wrap">
+                    <h3 class="text-3xl sm:text-5xl font-black text-white leading-tight flex items-center gap-3 flex-wrap">
                       <span>${full_name}</span>
-                      <span class="text-base sm:text-lg px-4 py-1.5 rounded-xl bg-slate-900 text-cyan-300 border-2 border-cyan-700 font-bold">${st.grade || ''} ${st.class_section ? `(${st.class_section})` : ''}</span>
+                      <span class="text-lg sm:text-xl px-4 py-1.5 rounded-2xl bg-slate-950 text-cyan-300 border-2 border-cyan-600 font-black">${st.grade || ''} ${st.class_section ? `(${st.class_section})` : ''}</span>
                     </h3>
-                    <p class="text-base sm:text-lg text-slate-300 font-bold mt-1.5 flex items-center gap-2 flex-wrap">
+                    <p class="text-lg sm:text-xl text-slate-200 font-bold mt-2 flex items-center gap-3 flex-wrap">
                       <span>${st.gender || ''}</span>
-                      ${ageStr ? `<span>• ${ageStr}</span>` : ''}
-                      ${st.registration_no ? `<span class="text-slate-400 font-mono">• Α.Μ: ${st.registration_no}</span>` : ''}
+                      ${ageStr ? `<span class="text-cyan-300">• ${ageStr}</span>` : ''}
+                      ${st.registration_no ? `<span class="text-slate-300 font-mono">• Α.Μ: ${st.registration_no}</span>` : ''}
                     </p>
                   </div>
                 </div>
 
-                <div class="bg-slate-950 border-2 border-cyan-600 rounded-2xl px-5 py-3 text-center flex-shrink-0 shadow-md">
-                  <span class="text-xs sm:text-sm text-slate-300 block font-bold">Πληρότητα</span>
-                  <span class="text-2xl sm:text-3xl font-black text-brand-cyan">${covTotal}%</span>
+                <div class="bg-slate-950 border-2 border-cyan-500 rounded-2xl px-6 py-3.5 text-center flex-shrink-0 shadow-lg">
+                  <span class="text-sm sm:text-base text-slate-300 block font-black">Πληρότητα</span>
+                  <span class="text-3xl sm:text-4xl font-black text-brand-cyan">${covTotal}%</span>
                 </div>
               </div>
 
               <!-- 2. Diagnosis Box (Extra Large Font & High Contrast) -->
-              <div class="p-5 rounded-2xl bg-slate-950 border-2 border-slate-800 space-y-2 shadow-inner">
-                <div class="flex items-center justify-between text-sm sm:text-base text-cyan-300 font-black">
-                  <span class="flex items-center gap-2">🏥 <span>${diag.authority || 'ΚΕΔΑΣΥ Ξάνθης'}</span> ${diag.protocol_no ? `<span class="text-slate-400 font-mono">(${diag.protocol_no})</span>` : ''}</span>
+              <div class="p-6 rounded-2xl bg-slate-950 border-2 border-slate-800 space-y-2.5 shadow-inner">
+                <div class="flex items-center justify-between text-lg sm:text-xl text-cyan-300 font-black">
+                  <span class="flex items-center gap-2">🏥 <span>${diag.authority || 'ΚΕΔΑΣΥ Ξάνθης'}</span> ${diag.protocol_no ? `<span class="text-slate-300 font-mono">(${diag.protocol_no})</span>` : ''}</span>
                 </div>
-                <p class="text-white font-bold text-lg sm:text-xl leading-relaxed">${diag.diagnosis_type || st.diagnosis || 'Ειδική Μαθησιακή Δυσκολία'}</p>
-                ${st.notes ? `<p class="text-slate-300 text-sm sm:text-base pt-1 border-t border-slate-800/80 font-medium">💬 ${st.notes}</p>` : ''}
+                <p class="text-white font-black text-xl sm:text-2xl leading-relaxed">${diag.diagnosis_type || st.diagnosis || 'Ειδική Μαθησιακή Δυσκολία'}</p>
+                ${st.notes ? `<p class="text-slate-200 text-base sm:text-lg pt-2 border-t border-slate-800 font-medium leading-relaxed">💬 ${st.notes}</p>` : ''}
               </div>
 
               <!-- 3. Parents Contact (Large Single / Double Flow) -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border-2 border-slate-800 space-y-1.5">
-                  <span class="text-slate-400 block text-xs sm:text-sm font-bold">👨 Στοιχεία Πατέρα:</span>
-                  <span class="text-white font-black text-lg sm:text-xl block truncate">${father.name || '-'}</span>
-                  ${father.phone ? `<a href="tel:${father.phone}" class="inline-flex items-center gap-2 text-cyan-300 hover:text-cyan-200 font-mono text-base sm:text-lg font-black mt-1.5 bg-cyan-950/80 px-3.5 py-1.5 rounded-xl border border-cyan-700 shadow-sm">📞 ${father.phone}</a>` : '<span class="text-slate-500 text-sm">-</span>'}
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div class="p-5 sm:p-6 rounded-2xl bg-slate-950/90 border-2 border-slate-800 space-y-2 shadow-sm">
+                  <span class="text-slate-300 block text-sm sm:text-base font-black">👨 Στοιχεία Πατέρα:</span>
+                  <span class="text-white font-black text-xl sm:text-2xl block truncate">${father.name || '-'}</span>
+                  ${father.phone ? `<a href="tel:${father.phone}" class="inline-flex items-center gap-2 text-cyan-300 hover:text-cyan-200 font-mono text-lg sm:text-xl font-black mt-2 bg-cyan-950 px-4 py-2 rounded-2xl border-2 border-cyan-700 shadow-md">📞 ${father.phone}</a>` : '<span class="text-slate-500 text-base">-</span>'}
                 </div>
 
-                <div class="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border-2 border-slate-800 space-y-1.5">
-                  <span class="text-slate-400 block text-xs sm:text-sm font-bold">👩 Στοιχεία Μητέρας:</span>
-                  <span class="text-white font-black text-lg sm:text-xl block truncate">${mother.name || '-'}</span>
-                  ${mother.phone ? `<a href="tel:${mother.phone}" class="inline-flex items-center gap-2 text-cyan-300 hover:text-cyan-200 font-mono text-base sm:text-lg font-black mt-1.5 bg-cyan-950/80 px-3.5 py-1.5 rounded-xl border border-cyan-700 shadow-sm">📞 ${mother.phone}</a>` : '<span class="text-slate-500 text-sm">-</span>'}
+                <div class="p-5 sm:p-6 rounded-2xl bg-slate-950/90 border-2 border-slate-800 space-y-2 shadow-sm">
+                  <span class="text-slate-300 block text-sm sm:text-base font-black">👩 Στοιχεία Μητέρας:</span>
+                  <span class="text-white font-black text-xl sm:text-2xl block truncate">${mother.name || '-'}</span>
+                  ${mother.phone ? `<a href="tel:${mother.phone}" class="inline-flex items-center gap-2 text-cyan-300 hover:text-cyan-200 font-mono text-lg sm:text-xl font-black mt-2 bg-cyan-950 px-4 py-2 rounded-2xl border-2 border-cyan-700 shadow-md">📞 ${mother.phone}</a>` : '<span class="text-slate-500 text-base">-</span>'}
                 </div>
               </div>
 
               <!-- 4. Math Profile & Anxiety Badges (Big Badges) -->
-              <div class="flex items-center justify-between gap-3 flex-wrap pt-2">
-                <div class="flex items-center gap-2.5 flex-wrap">
+              <div class="flex items-center justify-between gap-4 flex-wrap pt-2">
+                <div class="flex items-center gap-3 flex-wrap">
                   ${anxietyBadgeUltra}
-                  <span class="px-4 py-2 rounded-xl bg-purple-950 text-purple-200 border-2 border-purple-700 text-base sm:text-lg font-bold shadow-sm">🧠 ${mprof.learning_style || 'Οπτικό Στυλ'}</span>
+                  <span class="px-5 py-2.5 rounded-2xl bg-purple-950 text-purple-200 border-2 border-purple-600 text-lg sm:text-xl font-black shadow-md">🧠 ${mprof.learning_style || 'Οπτικό Στυλ'}</span>
                 </div>
-                <span class="text-base font-mono font-bold text-slate-300 bg-slate-900 px-4 py-2 rounded-xl border-2 border-slate-800">${stObs.length} καταγραφές</span>
+                <span class="text-lg font-mono font-black text-slate-200 bg-slate-950 px-5 py-2.5 rounded-2xl border-2 border-slate-800">${stObs.length} καταγραφές</span>
               </div>
             </div>
 
             <!-- 5. Card Bottom Action Buttons (Huge Touch Targets) -->
-            <div class="pt-5 border-t-2 border-slate-800 flex flex-wrap items-center gap-3">
-              <button onclick="openStudentDossier('${st.id}')" class="flex-1 py-4 px-5 rounded-2xl bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-slate-950 font-black text-base sm:text-lg flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg">
+            <div class="pt-6 border-t-2 border-slate-800 flex flex-wrap items-center gap-4">
+              <button onclick="openStudentDossier('${st.id}')" class="flex-1 py-5 px-6 rounded-2xl bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-300 hover:to-cyan-400 text-slate-950 font-black text-lg sm:text-xl flex items-center justify-center gap-2.5 transition-all active:scale-95 shadow-xl">
                 ✏️ Πλήρης Καρτέλα Μαθητή
               </button>
-              <button onclick="openCognitiveDrawer('${st.id}')" class="py-4 px-5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-slate-200 font-black text-base sm:text-lg border-2 border-slate-700 flex items-center gap-2 transition-all active:scale-95 shadow-md">
+              <button onclick="openCognitiveDrawer('${st.id}')" class="py-5 px-6 rounded-2xl bg-slate-950 hover:bg-slate-800 text-slate-100 font-black text-lg sm:text-xl border-2 border-slate-700 flex items-center gap-2 transition-all active:scale-95 shadow-md">
                 📊 Bloom
               </button>
-              <button onclick="downloadDocxForStudent('${st.id}')" class="py-4 px-5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-cyan-300 font-black text-base sm:text-lg border-2 border-cyan-800 flex items-center gap-2 transition-all active:scale-95 shadow-md" title="Εξαγωγή Word">
+              <button onclick="downloadDocxForStudent('${st.id}')" class="py-5 px-6 rounded-2xl bg-slate-950 hover:bg-slate-800 text-cyan-300 font-black text-lg sm:text-xl border-2 border-cyan-800 flex items-center gap-2 transition-all active:scale-95 shadow-md" title="Εξαγωγή Word">
                 📄 Word
               </button>
             </div>
