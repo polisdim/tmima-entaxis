@@ -1,0 +1,16 @@
+{
+  "name": "Βοηθός Τμήματος Ένταξης",
+  "short_name": "Τ.Ε. Βοηθός",
+  "description": "Έξυπνος Βοηθός & Καρτέλα Μαθητή Τμήματος Ένταξης - ΔΗΜΩΣ Γυμνάσιο Ξάνθης",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231f2937'/><text y='.9em' font-size='70' x='15' fill='%2338bdf8'>📐</text></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

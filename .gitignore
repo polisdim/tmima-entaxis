@@ -1,0 +1,11 @@
+﻿__pycache__/
+*.pyc
+cloudflared.exe
+*.log
+Tablet_Link.txt
+Σύνδεσμος_Tablet.txt
+Start_Assistant.vbs
+Stop_Assistant.bat
+*.vbs
+*.bat
+.DS_Store

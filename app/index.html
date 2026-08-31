@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Τμήμα Ένταξης - ΔΗΜ.Ω.Σ. Ξάνθης</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0d1117">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#0d1117',
+              card: '#161b22',
+              border: '#30363d',
+              cyan: '#38bdf8',
+              green: '#4ade80',
+              purple: '#a855f7',
+              amber: '#f59e0b',
+              rose: '#f87171',
+              indigo: '#6366f1'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      background-color: #0d1117;
+      color: #f0f6fc;
+    }
+    .touch-btn {
+      min-height: 44px;
+      padding: 8px 16px;
+      touch-action: manipulation;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #30363d;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="bg-brand-bg text-slate-100 min-h-screen flex flex-col antialiased">
+
+  <!-- SECURITY LOCK SCREEN (PIN AUTHENTICATION) -->
+  <div id="auth-lock-screen" class="fixed inset-0 z-50 bg-[#0d1117] flex flex-col items-center justify-center p-4">
+    <div class="max-w-xs w-full space-y-5 text-center">
+      
+      <!-- Lock Header -->
+      <div class="space-y-1.5">
+        <div class="w-14 h-14 rounded-2xl bg-cyan-950/80 border border-cyan-700/60 text-cyan-300 text-2xl flex items-center justify-center mx-auto shadow-lg">
+          🔒
+        </div>
+        <h2 class="text-base font-bold text-white tracking-wide">Τμήμα Ένταξης | ΔΗΜ.Ω.Σ.</h2>
+        <p class="text-xs text-slate-400">Εισάγετε το 4-ψήφιο PIN εκπαιδευτικού</p>
+      </div>
+
+      <!-- PIN Display -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-center gap-3">
+          <input type="password" id="pin-input" maxlength="8" readonly
+                 class="w-full bg-slate-900 border border-cyan-800/80 rounded-xl py-2.5 text-center text-xl font-bold tracking-widest text-cyan-300 outline-none focus:ring-2 focus:ring-cyan-500 shadow-inner"
+                 placeholder="••••">
+        </div>
+        <div id="auth-error-msg" class="text-xs text-rose-400 font-semibold min-h-[18px]"></div>
+      </div>
+
+      <!-- Touch Keypad (Optimized for Xiaomi Pad 6) -->
+      <div class="grid grid-cols-3 gap-2.5 max-w-[240px] mx-auto">
+        <button type="button" onclick="keypadPress('1')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">1</button>
+        <button type="button" onclick="keypadPress('2')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">2</button>
+        <button type="button" onclick="keypadPress('3')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">3</button>
+        <button type="button" onclick="keypadPress('4')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">4</button>
+        <button type="button" onclick="keypadPress('5')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">5</button>
+        <button type="button" onclick="keypadPress('6')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">6</button>
+        <button type="button" onclick="keypadPress('7')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">7</button>
+        <button type="button" onclick="keypadPress('8')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">8</button>
+        <button type="button" onclick="keypadPress('9')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">9</button>
+        <button type="button" onclick="keypadClear()" class="h-12 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800 text-sm font-bold text-rose-300 active:scale-95 transition-all">✕</button>
+        <button type="button" onclick="keypadPress('0')" class="h-12 rounded-xl bg-slate-900 hover:bg-slate-800 border border-brand-border text-lg font-bold text-white active:scale-95 transition-all shadow-sm">0</button>
+        <button type="button" onclick="submitAuthLogin()" class="h-12 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-sm active:scale-95 transition-all shadow-md">✓</button>
+      </div>
+
+      <!-- Remember Device Checkbox -->
+      <div class="flex items-center justify-center gap-2 pt-1 text-xs text-slate-400">
+        <input type="checkbox" id="remember-device" checked class="w-4 h-4 rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-0">
+        <label for="remember-device" class="cursor-pointer">Απομνημόνευση στο Tablet</label>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MINIMAL HEADER -->
+  <header class="sticky top-0 z-40 bg-brand-card border-b border-brand-border px-4 py-2.5 shadow-sm">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-3">
+      
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-brand-cyan text-base tracking-wide">Τμήμα Ένταξης</span>
+        <span class="font-bold text-slate-300 text-base">| ΔΗΜ.Ω.Σ. Ξάνθης</span>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex items-center gap-1 overflow-x-auto py-0.5 custom-scroll">
+        <button onclick="switchTab('logger')" id="tab-logger" class="touch-btn text-xs sm:text-sm font-semibold rounded-lg bg-brand-cyan text-slate-950">
+          Καταγραφή
+        </button>
+        <button onclick="switchTab('students')" id="tab-students" class="touch-btn text-xs sm:text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 border border-brand-border">
+          Μαθητές
+        </button>
+        <button onclick="switchTab('matrix')" id="tab-matrix" class="touch-btn text-xs sm:text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 border border-brand-border">
+          Πίνακας
+        </button>
+        <button onclick="switchTab('timeline')" id="tab-timeline" class="touch-btn text-xs sm:text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 border border-brand-border">
+          Ημερολόγιο
+        </button>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-3 sm:p-5 custom-scroll space-y-4">
+
+    <!-- ========================================== -->
+    <!-- TAB 1: MINIMAL QUICK LOGGER                -->
+    <!-- ========================================== -->
+    <section id="view-logger" class="space-y-4">
+      
+      <!-- Input Box -->
+      <div class="bg-brand-card border border-brand-border rounded-xl p-4 shadow-lg space-y-3">
+        
+        <div class="relative">
+          <textarea id="smart-input" rows="2" 
+            class="w-full bg-slate-950 border border-brand-border focus:border-brand-cyan rounded-lg p-3 pr-14 text-white placeholder-slate-500 focus:outline-none resize-none"
+            placeholder="Γράψτε ή υπαγορεύστε (π.χ. «Ο Νικ δυσκολεύεται σε διαίρεση διψήφιων» ή «Πρόσθεσε νέο μαθητή Γιώργος Β2»)..."></textarea>
+          
+          <button id="voice-btn" onclick="toggleVoiceRecording()" 
+            class="absolute right-2.5 bottom-3 w-10 h-10 rounded-lg bg-slate-800 hover:bg-slate-700 border border-brand-border flex items-center justify-center text-lg shadow active:scale-95"
+            title="Υπαγόρευση">
+            🎙️
+          </button>
+        </div>
+
+        <!-- Live AI Extracted Tags Bar (Zero Manual Dropdowns) -->
+        <div id="ai-live-bar" class="flex flex-wrap items-center gap-1.5 pt-1 text-xs transition-all">
+          <span class="text-slate-400 font-semibold flex items-center gap-1">
+            <span>✨</span> <span>Αυτόματη AI Ανάλυση:</span>
+          </span>
+          <span id="ai-badge-student" class="px-2.5 py-1 rounded-md bg-cyan-950/70 text-cyan-300 border border-cyan-800 font-bold">👤 -</span>
+          <span id="ai-badge-domain" class="px-2.5 py-1 rounded-md bg-purple-950/70 text-purple-300 border border-purple-800 font-bold">📐 -</span>
+          <span id="ai-badge-bloom" class="px-2.5 py-1 rounded-md bg-amber-950/70 text-amber-300 border border-amber-800 font-bold">🧠 -</span>
+          <span id="ai-badge-strategy" class="px-2.5 py-1 rounded-md bg-indigo-950/70 text-indigo-300 border border-indigo-800 font-bold">🛠️ -</span>
+          <span id="ai-badge-obstacle" class="px-2.5 py-1 rounded-md bg-rose-950/70 text-rose-300 border border-rose-800 font-bold hidden">⚠️ -</span>
+          <span id="ai-badge-outcome" class="px-2.5 py-1 rounded-md bg-emerald-950/70 text-emerald-300 border border-emerald-800 font-bold font-mono">🟢 [+]</span>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="flex items-center justify-between pt-1">
+          <span id="save-status" class="text-xs text-slate-400">Enter για καταχώριση</span>
+          <button id="submit-btn" onclick="executeAction()" class="touch-btn bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-sm px-5 transition-all">
+            Καταχώριση
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Recent Entries Feed -->
+      <div class="bg-brand-card border border-brand-border rounded-xl p-4 shadow-sm space-y-3">
+        <div class="flex items-center justify-between text-xs font-bold text-slate-400">
+          <span>ΠΡΟΣΦΑΤΕΣ ΚΑΤΑΓΡΑΦΕΣ</span>
+          <span id="recent-count">0</span>
+        </div>
+        <div id="recent-list" class="space-y-2 max-h-72 overflow-y-auto custom-scroll pr-1"></div>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: STUDENTS VIEW                       -->
+    <!-- ========================================== -->
+    <section id="view-students" class="space-y-4 hidden">
+      
+      <!-- Student Selector Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-2 bg-brand-card border border-brand-border rounded-xl p-3">
+        <div id="student-pills" class="flex flex-wrap gap-1.5"></div>
+        <button onclick="openNewStudentModal()" class="touch-btn bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-semibold rounded-lg border border-brand-border">
+          + Νέος Μαθητής
+        </button>
+      </div>
+
+      <!-- Student Card -->
+      <div class="bg-brand-card border border-brand-border rounded-xl p-5 space-y-5">
+        
+        <!-- Header -->
+        <div class="flex items-start justify-between gap-4 pb-3 border-b border-brand-border">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 id="st-name" class="text-xl font-bold text-white"></h2>
+              <span id="st-grade" class="text-xs px-2 py-0.5 rounded bg-slate-800 text-cyan-300 border border-slate-700"></span>
+            </div>
+            <p id="st-diagnosis" class="text-xs text-slate-400 mt-1"></p>
+          </div>
+          <div class="bg-slate-900 border border-cyan-800/60 rounded-lg p-2 text-center min-w-[90px]">
+            <span class="text-xs text-slate-400 block">Πληρότητα</span>
+            <span id="st-coverage-total" class="text-xl font-bold text-brand-cyan">0%</span>
+          </div>
+        </div>
+
+        <!-- Coverage Grid with Integrated Per-Domain 1-5 Scale -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between text-xs text-slate-400 font-bold">
+            <span>ΧΑΡΤΟΓΡΑΦΗΣΗ ΤΟΜΕΩΝ & ΓΝΩΣΤΙΚΗ ΔΙΑΒΑΘΜΙΣΗ (1-5)</span>
+            <span class="text-[11px] text-brand-cyan font-normal cursor-pointer hover:underline" onclick="inspectDomain('arithmetic', 'Αριθμητική')">💡 Κάντε κλικ σε τομέα για λεπτομερή ανάλυση</span>
+          </div>
+          <div id="coverage-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+        </div>
+
+        <!-- Selected Domain Detailed Inspector (Dynamic Cognitive Drawer) -->
+        <div id="domain-detail-card" class="bg-slate-900 border border-cyan-800/60 rounded-xl p-4 text-xs space-y-3 hidden transition-all shadow-lg"></div>
+
+        <!-- IEP Targets -->
+        <div class="space-y-2 pt-2 border-t border-brand-border">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-400">ΣΤΟΧΟΙ Ε.Π.Ε.</span>
+            <button onclick="openAddTargetModal()" class="text-xs text-brand-cyan hover:underline font-semibold">+ Προσθήκη</button>
+          </div>
+          <div id="student-iep-list" class="space-y-1.5"></div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: INTERVENTION MATRIX                 -->
+    <!-- ========================================== -->
+    <section id="view-matrix" class="space-y-4 hidden">
+      
+      <div class="bg-brand-card border border-brand-border rounded-xl p-4 shadow-sm space-y-3">
+        <span class="text-xs font-bold text-slate-400">ΑΠΟΤΕΛΕΣΜΑΤΙΚΟΤΗΤΑ ΣΤΡΑΤΗΓΙΚΩΝ ΑΝΑ ΤΟΜΕΑ</span>
+
+        <div class="overflow-x-auto custom-scroll border border-brand-border rounded-lg">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-900 text-slate-300 font-bold border-b border-brand-border">
+              <tr>
+                <th class="p-2.5">Τομέας</th>
+                <th class="p-2.5">Στρατηγική</th>
+                <th class="p-2.5">Bloom</th>
+                <th class="p-2.5 text-center text-emerald-400">[+]</th>
+                <th class="p-2.5 text-center text-amber-400">[~]</th>
+                <th class="p-2.5 text-center text-rose-400">[-]</th>
+                <th class="p-2.5 text-center">Επιτυχία</th>
+              </tr>
+            </thead>
+            <tbody id="matrix-tbody" class="divide-y divide-brand-border bg-slate-950"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: TIMELINE LOG                        -->
+    <!-- ========================================== -->
+    <section id="view-timeline" class="space-y-3 hidden">
+      
+      <div class="flex flex-wrap items-center justify-between gap-2 bg-brand-card border border-brand-border rounded-xl p-3">
+        <span class="text-xs font-bold text-slate-400">ΗΜΕΡΟΛΟΓΙΟ ΣΥΝΕΔΡΙΩΝ</span>
+        
+        <div class="flex gap-2">
+          <select id="filter-st" onchange="renderTimeline()" class="bg-slate-900 border border-brand-border rounded px-2 py-1 text-xs text-white">
+            <option value="ALL">Όλοι οι Μαθητές</option>
+          </select>
+          <select id="filter-dom" onchange="renderTimeline()" class="bg-slate-900 border border-brand-border rounded px-2 py-1 text-xs text-white">
+            <option value="ALL">Όλοι οι Τομείς</option>
+            <option value="arithmetic">Αριθμητική</option>
+            <option value="algebra">Άλγεβρα</option>
+            <option value="geometry">Γεωμετρία</option>
+            <option value="stochastics">Στοχαστικά</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="timeline-feed" class="space-y-2"></div>
+
+    </section>
+
+  </main>
+
+  <!-- MODAL: ADD STUDENT -->
+  <div id="modal-new-student" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 hidden">
+    <div class="bg-brand-card border border-brand-border rounded-xl max-w-sm w-full p-5 space-y-3 shadow-2xl">
+      <h3 class="text-sm font-bold text-white">Νέος Μαθητής</h3>
+      <input type="text" id="new-st-name" class="w-full bg-slate-900 border border-brand-border rounded p-2 text-xs text-white" placeholder="Όνομα (π.χ. Γιώργος)">
+      <div class="grid grid-cols-2 gap-2">
+        <select id="new-st-gender" class="bg-slate-900 border border-brand-border rounded p-2 text-xs text-white">
+          <option value="Αγόρι">Αγόρι</option>
+          <option value="Κορίτσι">Κορίτσι</option>
+        </select>
+        <input type="text" id="new-st-grade" class="bg-slate-900 border border-brand-border rounded p-2 text-xs text-white" placeholder="Τάξη (π.χ. Β1)">
+      </div>
+      <input type="text" id="new-st-diagnosis" class="w-full bg-slate-900 border border-brand-border rounded p-2 text-xs text-white" placeholder="Διάγνωση (π.χ. Δυσαριθμησία)">
+      
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeNewStudentModal()" class="touch-btn bg-slate-800 text-slate-300 rounded text-xs">Ακύρωση</button>
+        <button onclick="saveNewStudent()" class="touch-btn bg-brand-cyan text-slate-950 font-bold rounded text-xs">Αποθήκευση</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    let appData = { students: [], observations: [], taxonomy: {}, selectedStudentId: null };
+    let isRecording = false, recognition = null, currentCommand = null, lastAiAnalysis = null;
+    let authToken = localStorage.getItem('te_auth_token') || sessionStorage.getItem('te_auth_token');
+    let currentPinBuffer = '';
+
+    function keypadPress(digit) {
+      if (currentPinBuffer.length < 8) {
+        currentPinBuffer += digit;
+        const pinEl = document.getElementById('pin-input');
+        if (pinEl) pinEl.value = currentPinBuffer;
+        if (currentPinBuffer.length === 4) {
+          submitAuthLogin();
+        }
+      }
+    }
+
+    function keypadClear() {
+      currentPinBuffer = '';
+      const pinEl = document.getElementById('pin-input');
+      if (pinEl) pinEl.value = '';
+      const errEl = document.getElementById('auth-error-msg');
+      if (errEl) errEl.innerText = '';
+    }
+
+    async function submitAuthLogin() {
+      const pin = currentPinBuffer;
+      if (!pin) return;
+      const errEl = document.getElementById('auth-error-msg');
+      if (errEl) errEl.innerText = 'Έλεγχος PIN...';
+      
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pin })
+        });
+        const data = await res.json();
+        if (res.ok && data.ok && data.token) {
+          authToken = data.token;
+          const remember = document.getElementById('remember-device')?.checked;
+          if (remember) {
+            localStorage.setItem('te_auth_token', authToken);
+          } else {
+            sessionStorage.setItem('te_auth_token', authToken);
+          }
+          hideLockScreen();
+          await loadData();
+        } else {
+          if (errEl) errEl.innerText = data.error || 'Λάθος PIN. Δοκιμάστε ξανά.';
+          currentPinBuffer = '';
+          const pinEl = document.getElementById('pin-input');
+          if (pinEl) pinEl.value = '';
+        }
+      } catch (err) {
+        if (errEl) errEl.innerText = 'Σφάλμα σύνδεσης διακομιστή.';
+      }
+    }
+
+    function showLockScreen() {
+      const screen = document.getElementById('auth-lock-screen');
+      if (screen) screen.classList.remove('hidden');
+      keypadClear();
+    }
+
+    function hideLockScreen() {
+      const screen = document.getElementById('auth-lock-screen');
+      if (screen) screen.classList.add('hidden');
+    }
+
+    async function authFetch(url, options = {}) {
+      if (!options.headers) options.headers = {};
+      if (authToken) {
+        options.headers['Authorization'] = `Bearer ${authToken}`;
+      }
+      const res = await fetch(url, options);
+      if (res.status === 401) {
+        localStorage.removeItem('te_auth_token');
+        sessionStorage.removeItem('te_auth_token');
+        authToken = null;
+        showLockScreen();
+      }
+      return res;
+    }
+
+    const ONTOLOGY = {
+      domains: {
+        arithmetic: ['διαιρεσ', 'διψηφι', 'πολυψηφι', 'πολλαπλασιασμ', 'προπαιδει', 'προσθεσ', 'αφαιρεσ', 'δανεισμ', 'κρατουμεν', 'κλασμ', 'ομωνυμ', 'ετερωνυμ', 'απλοποιησ', 'δεκαδικ', 'ακεραι', 'αριθμογραμμ', 'αριθμητικ', 'πραξ', 'αξια θεσης', 'ποσοστ'],
+        algebra: ['αλγεβρ', 'εξισωσ', 'αγνωστ', 'μεταβλητ', 'χ', 'x', 'y', 'παραστασ', 'ομοιοι οροι', 'αναγωγ', 'επιμεριστικ', 'παρενθεσ', 'ταυτοτητ', 'παραγοντοποιησ', 'συστημα', 'ανισωσ', 'ισον', 'ισοτητ'],
+        geometry: ['γεωμετρ', 'σχημα', 'ευθεια', 'γωνι', 'ορθη', 'οξεια', 'αμβλεια', 'τριγων', 'ισοσκελ', 'ισοπλευρ', 'ορθογωνιο', 'πυθαγορει', 'τετραπλευρ', 'κυκλ', 'ακτινα', 'διαμετρ', 'περιμετρ', 'εμβαδ', 'ογκος', 'χωρικ', 'περιστροφ'],
+        stochastics: ['στοχαστικ', 'στατιστικ', 'πιθανοτητ', 'διαγραμμ', 'ραβδογραμμ', 'κυκλικο', 'μεση τιμη', 'διαμεσος', 'τυχαι', 'δειγματικος', 'δεντρο πιθανοτητων'],
+        engagement: ['συμμετοχ', 'συνεπει', 'προετοιμασι', 'τετραδι', 'μελετη', 'ασκησεις για το σπιτι', 'συγκεντρωσ', 'προσοχη', 'αυτονομι', 'προσπαθει', 'διασπασ', 'κουραστικε'],
+        socioemotional: ['αγχος', 'εκνευρισμ', 'θυμος', 'φοβος', 'ματαιωσ', 'αυτοπεποιθησ', 'αυτοεικονα', 'χαρα', 'απογοητευσ', 'συμμαθητ', 'συνεργασι'],
+        collaboration_family: ['γονε', 'μητερα', 'πατερας', 'κηδεμον', 'τηλεφωνημ', 'συναντηση', 'κεδασυ', 'γνωματευση'],
+        iep_goals: ['στοχος επε', 'στοχο', 'επε', 'βραχυπροθεσμος', 'μακροπροθεσμος']
+      },
+      bloom: {
+        remembering: ['ανακληση', 'θυμαται', 'δεν θυμαται', 'ορισμος', 'κανονας', 'προπαιδεια', 'συμβολο'],
+        understanding: ['κατανοησε', 'καταλαβε', 'δεν καταλαβε', 'εξηγησε', 'ερμηνευσε', 'αναπαρασταση'],
+        applying: ['εφαρμοσε', 'ελυσε', 'υπολογισε', 'εκτελεσε', 'αλγοριθμος', 'διαιρεση διψηφιων', 'πραξεις', 'βρηκε το x'],
+        analyzing: ['ανελυσε', 'διασπασε', 'συγκρινε', 'ξεχωρισε δεδομενα', 'μετεφρασε σε εξισωση'],
+        evaluating: ['αξιολογησε', 'ελεγξε το αποτελεσμα', 'επαληθευσε', 'εντοπισε το λαθος', 'εκρινε'],
+        creating: ['δημιουργησε', 'συνεθεσε', 'κατασκευασε δικο του', 'διατυπωσε προβλημα']
+      },
+      strategies: {
+        cra: ['cra', 'συγκεκριμενο', 'απτο', 'υλικα', 'κυβακια'],
+        mind_maps: ['νοητικος χαρτης', 'χαρτης', 'διαγραμμα', 'βηματα'],
+        color_coding: ['χρωματικ', 'χρωματα', 'μαρκαδορος', 'χρωματισε'],
+        number_line: ['αριθμογραμμη'],
+        algebra_tiles: ['πλακιδια', 'tiles'],
+        scaffolding: ['σκαλοπατια', 'scaffolding', 'βοηθεια'],
+        checklist: ['checklist', 'λιστα ελεγχου', 'αυτορρυθμιση'],
+        dual_coding: ['διπλη κωδικοποιηση']
+      },
+      outcomes: {
+        positive: ['πετυχε', 'καταφερε', 'αριστα', 'πολυ καλα', 'ευκολα', 'βοηθησε', 'θετικο', 'σωστα', 'βρηκε'],
+        partial: ['μερικη', 'με βοηθεια', 'μετρια', 'διστακτικα', 'με καθοδηγηση'],
+        negative: ['δυσκολευεται', 'δυσκολια', 'δεν καταφερε', 'απετυχε', 'συγχυση', 'λαθος', 'κολλησε', 'αδυναμια']
+      }
+    };
+
+    function stripAccents(s) {
+      return (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    }
+
+    function matchStudent(rawText) {
+      if (!appData.students || appData.students.length === 0) return null;
+      const clean = stripAccents(rawText);
+      const words = clean.split(/\s+/).map(w => w.replace(/[^a-zα-ω0-9]/g, ''));
+      const rawTokens = rawText.split(/\s+/);
+
+      const aliases = {
+        'νικ': ['νικος', 'νικου', 'νικο', 'νικολας', 'νικ'],
+        'μιχαελ': ['μιχαελα', 'μιχαελας', 'μιχ'],
+        'γιωργ': ['γιωργος', 'γιωργου', 'γιωργο', 'γιωργης', 'γιωργη', 'γεωργιος'],
+        'σαρογλ': ['σαρογλου', '40γλου', 'σαραντογλου', 'σαρανταγλου', '40 γλου', 'σαρογλου'],
+        'σαρα': ['σαρα', 'σαρας'],
+        'κωστ': ['κωστας', 'κωστα', 'κωνσταντινος'],
+        'μαρι': ['μαρια', 'μαριας'],
+        'δημητρ': ['δημητρης', 'δημητριος', 'δημητρη'],
+        'ελεν': ['ελενη', 'ελενης']
+      };
+
+      let bestStudent = null;
+      let maxScore = 0;
+
+      for (const st of appData.students) {
+        let score = 0;
+        const stFull = stripAccents(st.name);
+        const stParts = stFull.split(/\s+/);
+        const firstName = stParts[0] || '';
+        const lastNameOrInitial = stParts[1] || '';
+        const section = stripAccents(st.class_section || '');
+
+        // 1. Exact full name in text
+        if (stFull && clean.includes(stFull)) {
+          score += 100;
+        }
+
+        // 2. First name match
+        const firstStem = firstName.slice(0, 3);
+        let firstMatched = false;
+        for (const w of words) {
+          if (w && (w === firstName || (w.length >= 3 && firstName.startsWith(w)) || (firstName.length >= 3 && w.startsWith(firstStem)))) {
+            firstMatched = true;
+            score += 30;
+            break;
+          }
+          for (const [sKey, aList] of Object.entries(aliases)) {
+            if (firstName.startsWith(sKey) && (aList.includes(w) || (w.length >= 3 && w.startsWith(sKey)))) {
+              firstMatched = true;
+              score += 30;
+              break;
+            }
+          }
+          if (firstMatched) break;
+        }
+
+        // 3. Initial / Surname Disambiguation (e.g. 'Α.' vs 'Β.')
+        if (firstMatched && lastNameOrInitial) {
+          const cleanInit = lastNameOrInitial.replace(/[^a-zα-ω]/g, '');
+          for (const rt of rawTokens) {
+            const cRt = stripAccents(rt.replace(/[.,:;]/g, ''));
+            if (cRt && cRt === cleanInit) {
+              score += 80;
+              break;
+            }
+          }
+        }
+
+        // 4. Section Disambiguation (e.g. 'Β2' vs 'Α1')
+        if (section && clean.includes(section)) {
+          score += 50;
+        }
+
+        // 5. Active student bonus
+        if (firstMatched && appData.selectedStudentId && st.id === appData.selectedStudentId) {
+          score += 15;
+        }
+
+        if (score > maxScore) {
+          maxScore = score;
+          bestStudent = st;
+        }
+      }
+
+      if (maxScore > 0) return bestStudent;
+      return appData.students.find(s => s.id === appData.selectedStudentId) || appData.students[0];
+    }
+
+    function toggleAiStudent() {
+      if (!appData.students || appData.students.length <= 1) return;
+      const curId = lastAiAnalysis ? lastAiAnalysis.student_id : appData.selectedStudentId;
+      const curIdx = appData.students.findIndex(s => s.id === curId);
+      const nextIdx = (curIdx + 1) % appData.students.length;
+      const nextSt = appData.students[nextIdx];
+      if (lastAiAnalysis) {
+        lastAiAnalysis.student_id = nextSt.id;
+        lastAiAnalysis.student_name = nextSt.name;
+        updateAiBadges(lastAiAnalysis);
+      }
+    }
+
+    function updateAiBadges(analysis) {
+      lastAiAnalysis = analysis;
+      const bSt = document.getElementById('ai-badge-student');
+      const bDom = document.getElementById('ai-badge-domain');
+      const bBl = document.getElementById('ai-badge-bloom');
+      const bStrat = document.getElementById('ai-badge-strategy');
+      const bObst = document.getElementById('ai-badge-obstacle');
+      const bOut = document.getElementById('ai-badge-outcome');
+
+      if (!analysis) {
+        if (bSt) bSt.innerText = '👤 -';
+        if (bDom) bDom.innerText = '📐 -';
+        if (bBl) bBl.innerText = '🧠 -';
+        if (bStrat) bStrat.innerText = '🛠️ -';
+        if (bObst) bObst.classList.add('hidden');
+        if (bOut) bOut.innerText = '🟢 [+]';
+        return;
+      }
+
+      if (bSt) {
+        bSt.innerHTML = `👤 <strong>${analysis.student_name || '-'}</strong> <span class="text-cyan-400 opacity-70 text-[10px] ml-0.5 cursor-pointer">🔄</span>`;
+        bSt.title = "Κάντε κλικ για εναλλαγή μαθητή";
+        bSt.onclick = toggleAiStudent;
+        bSt.classList.add('cursor-pointer', 'hover:border-cyan-400');
+      }
+      const domIcons = {
+        'arithmetic': '🔢',
+        'algebra': '🔣',
+        'geometry': '📐',
+        'stochastics': '📊',
+        'engagement': '🎯',
+        'socioemotional': '🌱',
+        'collaboration_family': '🤝',
+        'iep_goals': '⭐'
+      };
+      const dIcon = (analysis && domIcons[analysis.domain_id]) || '📐';
+      if (bDom) bDom.innerText = `${dIcon} ${analysis.domain_name || '-'}`;
+      if (bBl) bBl.innerText = `🧠 ${analysis.bloom_name || '-'}`;
+      if (bStrat) bStrat.innerText = `🛠️ ${analysis.strategy_name || '-'}`;
+      
+      if (bObst) {
+        if (analysis.obstacle) {
+          bObst.innerText = `⚠️ ${analysis.obstacle}`;
+          bObst.classList.remove('hidden');
+        } else {
+          bObst.classList.add('hidden');
+        }
+      }
+
+      if (bOut) {
+        bOut.innerText = analysis.outcome_name || '🟢 [+]';
+        if (analysis.outcome_code === '+') {
+          bOut.className = 'px-2.5 py-1 rounded-md bg-emerald-950/70 text-emerald-300 border border-emerald-800 font-bold font-mono';
+        } else if (analysis.outcome_code === '~') {
+          bOut.className = 'px-2.5 py-1 rounded-md bg-amber-950/70 text-amber-300 border border-amber-800 font-bold font-mono';
+        } else {
+          bOut.className = 'px-2.5 py-1 rounded-md bg-rose-950/70 text-rose-300 border border-rose-800 font-bold font-mono';
+        }
+      }
+    }
+
+    function parseInput(raw) {
+      if (!raw || !raw.trim()) {
+        currentCommand = null;
+        updateAiBadges(null);
+        const btn = document.getElementById('submit-btn');
+        if (btn) {
+          btn.innerText = 'Καταχώριση';
+          btn.className = 'touch-btn bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-sm px-5 transition-all';
+        }
+        return;
+      }
+
+      const clean = stripAccents(raw);
+
+      // 1. Smart Add Student Natural Language Command
+      const isAddKeyword = /\b(προσθεσε|προσθεση|βαλε|δημιουργησε|φτιαξε|νεος|νεα)\b/.test(clean);
+      if (isAddKeyword) {
+        const mSection = clean.match(/\b([α-γa-c][\s\'-]?[1-9])\b/i);
+        let section = mSection ? mSection[1].replace(/[\s\'-]/g, '').toUpperCase() : 'Β1';
+        let gradeLetter = "Β'";
+        if (section[0] === 'Α' || section[0] === 'A') gradeLetter = "Α'";
+        else if (section[0] === 'Β' || section[0] === 'B') gradeLetter = "Β'";
+        else if (section[0] === 'Γ' || section[0] === 'C') gradeLetter = "Γ'";
+        const grade = `${gradeLetter} Γυμνασίου`;
+
+        let diagnosis = 'Ειδική Μαθησιακή Δυσκολία';
+        if (clean.includes('δυσλεξι')) diagnosis = 'Ειδική Μαθησιακή Δυσκολία (Δυσλεξία)';
+        else if (clean.includes('δυσαριθμησι')) diagnosis = 'Ειδική Μαθησιακή Δυσκολία (Δυσαριθμησία)';
+        else if (clean.includes('δεπ') || clean.includes('προσοχ')) diagnosis = 'ΔΕΠ-Υ (Διάσπαση Προσοχής / Υπερκινητικότητα)';
+        else if (clean.includes('αυτισμ') || clean.includes('ασπεργκερ') || clean.includes('δαφ')) diagnosis = 'ΔΑΦ (Αυτισμός / Asperger)';
+
+        const isGirl = clean.includes('μαθητρια') || clean.includes('κοριτσι') || clean.includes(' η ') || clean.includes(' την ');
+        const gender = isGirl ? 'Κορίτσι' : 'Αγόρι';
+
+        const words = raw.split(/\s+/);
+        const nameTokens = [];
+        for (let i = 0; i < words.length; i++) {
+          const w = words[i];
+          const wClean = stripAccents(w.replace(/[.,:;]/g, ''));
+          if (['προσθεσε', 'προσθεση', 'βαλε', 'δημιουργησε', 'φτιαξε', 'νεος', 'νεα', 'νεον', 'μαθητη', 'μαθητης', 'μαθητρια', 'παιδι', 'καρτελα', 'ο', 'η', 'το', 'τον', 'τη', 'την'].includes(wClean)) {
+            continue;
+          }
+          if (['απο', 'με', 'εχει', 'ταξη', 'διαγνωση', 'στο', 'στη'].includes(wClean)) {
+            break;
+          }
+          if (/^[α-γa-c][1-9]$/i.test(wClean)) {
+            break;
+          }
+          nameTokens.push(w.replace(/[,:;]$/, ''));
+          if (nameTokens.length >= 3) break;
+        }
+
+        let name = nameTokens.join(' ').replace(/[,:;]$/, '').trim();
+        if (name.length >= 2 && !['μαθητη', 'μαθητης', 'μαθητρια'].includes(stripAccents(name))) {
+          currentCommand = {
+            type: 'ADD_ST',
+            data: { name: name, gender: gender, grade: grade, class_section: section, diagnosis: diagnosis }
+          };
+          const submitBtn = document.getElementById('submit-btn');
+          if (submitBtn) {
+            submitBtn.innerText = `✨ + Δημιουργία: ${name} (${section})`;
+            submitBtn.className = 'touch-btn bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-sm px-4 transition-all shadow-md';
+          }
+          return;
+        }
+      }
+
+      // 2. Add Target command
+      if (clean.includes('στοχος για')) {
+        const st = matchStudent(raw);
+        const tgt = raw.substring(raw.indexOf(':') + 1).trim();
+        if (st) {
+          currentCommand = { type: 'ADD_TGT', studentId: st.id, target: tgt };
+          const submitBtn = document.getElementById('submit-btn');
+          if (submitBtn) {
+            submitBtn.innerText = `🎯 + Στόχος για ${st.name}`;
+            submitBtn.className = 'touch-btn bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-sm px-4 transition-all shadow-md';
+          }
+          return;
+        }
+      }
+
+      currentCommand = null;
+      const btn = document.getElementById('submit-btn');
+      if (btn) {
+        btn.innerText = 'Καταχώριση';
+        btn.className = 'touch-btn bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-sm px-5 transition-all';
+      }
+
+      // 3. AI Semantic Extraction
+      const matchedSt = matchStudent(raw) || (appData.students.find(s => s.id === appData.selectedStudentId) || appData.students[0]);
+      
+      // Domain
+      let bestDom = 'arithmetic', bestDomName = 'Αριθμητική', maxDom = 0;
+      const domNames = { arithmetic: 'Αριθμητική', algebra: 'Άλγεβρα', geometry: 'Γεωμετρία', stochastics: 'Στοχαστικά', engagement: 'Εμπλοκή & Συνέπεια', socioemotional: 'Ψυχοσυναισθηματικά', collaboration_family: 'Συνεργασία & Οικογένεια', iep_goals: 'Στόχοι Ε.Π.Ε.' };
+      for (const [dom, terms] of Object.entries(ONTOLOGY.domains)) {
+        let score = terms.filter(t => clean.includes(t)).length;
+        if (score > maxDom) { maxDom = score; bestDom = dom; bestDomName = domNames[dom] || dom; }
+      }
+
+      // Bloom
+      let bestBloom = 'applying', bestBloomName = '3. Εφαρμογή', maxBloom = 0;
+      const bloomNames = { remembering: '1. Ανάκληση', understanding: '2. Κατανόηση', applying: '3. Εφαρμογή', analyzing: '4. Ανάλυση', evaluating: '5. Αξιολόγηση', creating: '6. Δημιουργία' };
+      for (const [bl, terms] of Object.entries(ONTOLOGY.bloom)) {
+        let score = terms.filter(t => clean.includes(t)).length;
+        if (score > maxBloom) { maxBloom = score; bestBloom = bl; bestBloomName = bloomNames[bl] || bl; }
+      }
+
+      // Strategy
+      let bestStrat = 'other', bestStratName = 'Εξατομικευμένη Παρέμβαση';
+      const stratNames = { cra: 'Μοντέλο CRA', mind_maps: 'Νοητικοί Χάρτες', color_coding: 'Χρωματική Κωδικοποίηση', number_line: 'Αριθμογραμμή', algebra_tiles: 'Αλγεβρικά Πλακίδια', scaffolding: 'Scaffolding', checklist: 'Λίστα Αυτορρύθμισης', dual_coding: 'Διπλή Κωδικοποίηση' };
+      for (const [strat, terms] of Object.entries(ONTOLOGY.strategies)) {
+        if (terms.some(t => clean.includes(t))) {
+          bestStrat = strat;
+          bestStratName = stratNames[strat] || strat;
+          break;
+        }
+      }
+
+      // Outcome with contrast
+      let outId = 'positive', outCode = '+', outName = '🟢 [+] Θετικό';
+      const hasContrast = /αλλα|ωστοσο|τελικα|ομως/i.test(clean);
+      if (hasContrast) {
+        const afterContrast = clean.split(/αλλα|ωστοσο|τελικα|ομως/i)[1] || '';
+        if (ONTOLOGY.outcomes.positive.some(t => afterContrast.includes(t))) {
+          outId = 'positive'; outCode = '+'; outName = '🟢 [+] Θετικό';
+        } else if (ONTOLOGY.outcomes.partial.some(t => afterContrast.includes(t))) {
+          outId = 'partial'; outCode = '~'; outName = '🟡 [~] Μερικό';
+        } else if (ONTOLOGY.outcomes.negative.some(t => afterContrast.includes(t))) {
+          outId = 'negative'; outCode = '-'; outName = '🔴 [-] Δυσκολία';
+        }
+      } else {
+        if (ONTOLOGY.outcomes.negative.some(t => clean.includes(t)) && !ONTOLOGY.outcomes.positive.some(t => clean.includes(t))) {
+          outId = 'negative'; outCode = '-'; outName = '🔴 [-] Δυσκολία';
+        } else if (ONTOLOGY.outcomes.partial.some(t => clean.includes(t))) {
+          outId = 'partial'; outCode = '~'; outName = '🟡 [~] Μερικό';
+        }
+      }
+
+      // Obstacle
+      let detectedObstacle = '';
+      if (clean.includes('διαιρεσ') || clean.includes('διψηφι')) detectedObstacle = 'Διαίρεση & Διαχείριση Μηδενός';
+      else if (clean.includes('κλασμ')) detectedObstacle = 'Κλάσματα (Σύγχυση Αριθμητή/Παρονομαστή)';
+      else if (clean.includes('ισον')) detectedObstacle = 'Σφάλμα του Ίσον (= ως πράξη)';
+      else if (clean.includes('προσημ') || clean.includes('παρενθεσ')) detectedObstacle = 'Κανόνες Προσήμων & Παρενθέσεων';
+      else if (clean.includes('περιμετρ') || clean.includes('εμβαδ')) detectedObstacle = 'Σύγχυση Περιμέτρου (1D) και Εμβαδού (2D)';
+      else if (clean.includes('αγχος') || clean.includes('φοβος')) detectedObstacle = 'Μαθηματικό Άγχος / Φόβος Λάθους';
+
+      updateAiBadges({
+        student_id: matchedSt ? matchedSt.id : (appData.students[0]?.id || 'st_1'),
+        student_name: matchedSt ? matchedSt.name : 'Μαθητής',
+        domain_id: bestDom,
+        domain_name: bestDomName,
+        bloom_id: bestBloom,
+        bloom_name: bestBloomName,
+        strategy_id: bestStrat,
+        strategy_name: bestStratName,
+        obstacle: detectedObstacle,
+        outcome_id: outId,
+        outcome_code: outCode,
+        outcome_name: outName,
+        raw_text: raw
+      });
+    }
+
+    const smartInput = document.getElementById('smart-input');
+    if (smartInput) {
+      smartInput.addEventListener('input', (e) => parseInput(e.target.value));
+      smartInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          executeAction();
+        }
+      });
+    }
+
+    function playSuccessChime() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+        osc.frequency.setValueAtTime(880.00, ctx.currentTime + 0.08); // A5
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.3);
+      } catch (e) {}
+    }
+
+    let editingObsId = null;
+
+    function editObs(id) {
+      const o = (appData.observations || []).find(x => x.id === id);
+      if (!o) return;
+
+      editingObsId = id;
+      switchTab('logger');
+      const inputEl = document.getElementById('smart-input');
+      if (inputEl) {
+        inputEl.value = o.raw_text || '';
+        inputEl.focus();
+      }
+      parseInput(o.raw_text || '');
+      
+      const submitBtn = document.getElementById('submit-btn');
+      if (submitBtn) {
+        submitBtn.innerText = `💾 Ενημέρωση`;
+        submitBtn.className = 'touch-btn bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-sm px-5 transition-all shadow-md';
+      }
+
+      const statusEl = document.getElementById('save-status');
+      if (statusEl) {
+        statusEl.innerHTML = `<span class="text-amber-400 font-semibold">✏️ Επεξεργασία καταγραφής</span> <button onclick="cancelEdit()" class="ml-2 text-rose-400 hover:underline font-bold">✕ Ακύρωση</button>`;
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelEdit() {
+      editingObsId = null;
+      const inputEl = document.getElementById('smart-input');
+      if (inputEl) inputEl.value = '';
+      parseInput('');
+      const submitBtn = document.getElementById('submit-btn');
+      if (submitBtn) {
+        submitBtn.innerText = 'Καταχώριση';
+        submitBtn.className = 'touch-btn bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-sm px-5 transition-all';
+      }
+      const statusEl = document.getElementById('save-status');
+      if (statusEl) {
+        statusEl.innerText = 'Enter για καταχώριση';
+        statusEl.className = 'text-xs text-slate-400';
+      }
+    }
+
+    async function toggleObsOutcome(id) {
+      const o = (appData.observations || []).find(x => x.id === id);
+      if (!o) return;
+      const nextCode = o.outcome_code === '+' ? '~' : o.outcome_code === '~' ? '-' : '+';
+      const nextName = nextCode === '+' ? '🟢 [+] Θετικό' : nextCode === '~' ? '🟡 [~] Μερικό' : '🔴 [-] Δυσκολία';
+      const nextId = nextCode === '+' ? 'positive' : nextCode === '~' ? 'partial' : 'negative';
+      
+      const payload = Object.assign({}, o, {
+        outcome_code: nextCode,
+        outcome_name: nextName,
+        outcome_id: nextId
+      });
+
+      await fetch('/api/edit_observation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      await loadData();
+    }
+
+    async function executeAction() {
+      if (isRecording) {
+        isRecording = false;
+        if (recognition) {
+          try { recognition.stop(); } catch (e) {}
+        }
+        stopVoiceRecordingUI();
+      }
+      finalSpeechText = '';
+
+      const inputEl = document.getElementById('smart-input');
+      const text = inputEl ? inputEl.value.trim() : '';
+      if (!text) return;
+
+      const statusEl = document.getElementById('save-status');
+      if (statusEl) {
+        statusEl.innerText = '⏳ Αποθήκευση...';
+        statusEl.className = 'text-xs text-brand-amber font-semibold';
+      }
+
+      try {
+        if (currentCommand) {
+          if (currentCommand.type === 'ADD_ST') {
+            const stData = currentCommand.data || { name: currentCommand.name, gender: 'Αγόρι', grade: "Β' Γυμνασίου", class_section: 'Β1', diagnosis: 'Ειδική Μαθησιακή Δυσκολία' };
+            await authFetch('/api/student', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(stData)
+            });
+            if (inputEl) inputEl.value = '';
+            currentCommand = null;
+            parseInput('');
+            playSuccessChime();
+            if (statusEl) {
+              statusEl.innerText = `✓ Δημιουργήθηκε ο μαθητής ${stData.name} (${stData.class_section || ''})`;
+              statusEl.className = 'text-xs text-brand-green font-semibold';
+            }
+            await loadData();
+            return;
+          } else if (currentCommand.type === 'ADD_TGT') {
+            const st = appData.students.find(s => s.id === currentCommand.studentId);
+            if (st) {
+              if (!st.iep_targets) st.iep_targets = [];
+              st.iep_targets.push({ id: 't_' + Date.now(), area: 'Μαθηματικά', target: currentCommand.target, status: 'Σε εξέλιξη' });
+              await authFetch('/api/student', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(st) });
+              if (inputEl) inputEl.value = '';
+              currentCommand = null;
+              parseInput('');
+              playSuccessChime();
+              if (statusEl) {
+                statusEl.innerText = `✓ Προστέθηκε στόχος για ${st.name}`;
+                statusEl.className = 'text-xs text-brand-green font-semibold';
+              }
+              await loadData();
+              return;
+            }
+          }
+        }
+
+        if (editingObsId) {
+          const originalObs = (appData.observations || []).find(x => x.id === editingObsId);
+          const editPayload = Object.assign({}, lastAiAnalysis || {}, {
+            id: editingObsId,
+            raw_text: text,
+            timestamp: (originalObs && originalObs.timestamp) ? originalObs.timestamp : new Date().toISOString()
+          });
+          const res = await authFetch('/api/edit_observation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(editPayload)
+          });
+          if (res.ok) {
+            editingObsId = null;
+            if (inputEl) inputEl.value = '';
+            parseInput('');
+            playSuccessChime();
+            const btn = document.getElementById('submit-btn');
+            if (btn) {
+              btn.innerText = 'Καταχώριση';
+              btn.className = 'touch-btn bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-sm px-5 transition-all';
+            }
+            if (statusEl) {
+              statusEl.innerText = `✓ Η καταγραφή ενημερώθηκε επιτυχώς!`;
+              statusEl.className = 'text-xs text-brand-green font-semibold';
+              setTimeout(() => {
+                statusEl.innerText = 'Enter για καταχώριση';
+                statusEl.className = 'text-xs text-slate-400';
+              }, 3000);
+            }
+            await loadData();
+            return;
+          }
+        }
+
+        const obs = lastAiAnalysis ? Object.assign({}, lastAiAnalysis, { raw_text: text, timestamp: new Date().toISOString() }) : {
+          raw_text: text,
+          timestamp: new Date().toISOString()
+        };
+
+        const res = await authFetch('/api/observation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(obs)
+        });
+
+        if (res.ok) {
+          if (inputEl) inputEl.value = '';
+          parseInput('');
+          playSuccessChime();
+          if (statusEl) {
+            statusEl.innerText = `✓ Αποθηκεύτηκε με AI για ${obs.student_name || 'μαθητή'}`;
+            statusEl.className = 'text-xs text-brand-green font-semibold';
+            setTimeout(() => {
+              statusEl.innerText = 'Enter για καταχώριση';
+              statusEl.className = 'text-xs text-slate-400';
+            }, 3000);
+          }
+          await loadData();
+        } else {
+          if (statusEl) {
+            statusEl.innerText = '⚠️ Σφάλμα απόκρισης διακομιστή';
+            statusEl.className = 'text-xs text-brand-rose font-semibold';
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        if (statusEl) {
+          statusEl.innerText = '⚠️ Σφάλμα σύνδεσης';
+          statusEl.className = 'text-xs text-brand-rose font-semibold';
+        }
+      }
+    }
+
+    function switchTab(tId) {
+      ['logger', 'students', 'matrix', 'timeline'].forEach(t => {
+        const sec = document.getElementById(`view-${t}`);
+        const btn = document.getElementById(`tab-${t}`);
+        if (sec) sec.classList.toggle('hidden', t !== tId);
+        if (btn) {
+          if (t === tId) {
+            btn.className = 'touch-btn text-xs sm:text-sm font-semibold rounded-lg bg-brand-cyan text-slate-950';
+          } else {
+            btn.className = 'touch-btn text-xs sm:text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 border border-brand-border';
+          }
+        }
+      });
+      if (tId === 'students') renderStudents();
+      if (tId === 'matrix') renderMatrix();
+      if (tId === 'timeline') renderTimeline();
+    }
+
+    async function loadData() {
+      try {
+        const res = await authFetch('/api/data');
+        if (res.ok) {
+          appData = await res.json();
+          if (appData.students && appData.students.length > 0 && !appData.selectedStudentId) {
+            appData.selectedStudentId = appData.students[0].id;
+          }
+          populateSelects();
+          renderRecent();
+        }
+      } catch (e) {}
+    }
+
+    function populateSelects() {
+      const fSel = document.getElementById('filter-st');
+      const pCont = document.getElementById('student-pills');
+
+      if (fSel) fSel.innerHTML = '<option value="ALL">Όλοι οι Μαθητές</option>';
+      if (pCont) pCont.innerHTML = '';
+
+      if (appData.students) {
+        appData.students.forEach(st => {
+          if (fSel) fSel.innerHTML += `<option value="${st.id}">${st.name}</option>`;
+
+          if (pCont) {
+            const isSel = st.id === appData.selectedStudentId;
+            pCont.innerHTML += `
+              <button onclick="selectStudent('${st.id}')" class="touch-btn text-xs font-bold rounded-md ${isSel ? 'bg-cyan-500 text-slate-950' : 'bg-slate-900 text-slate-300 border border-brand-border'}">
+                ${st.name} (${st.coverage ? st.coverage.total : 0}%)
+              </button>`;
+          }
+        });
+      }
+    }
+
+    function selectStudent(id) {
+      appData.selectedStudentId = id;
+      populateSelects();
+      renderStudents();
+    }
+
+    function renderRecent() {
+      const c = document.getElementById('recent-list');
+      const countEl = document.getElementById('recent-count');
+      if (!c) return;
+      if (countEl) countEl.innerText = `${(appData.observations || []).length} εγγραφές`;
+      c.innerHTML = '';
+      (appData.observations || []).slice(0, 10).forEach(o => {
+        const color = o.outcome_code === '+' ? 'text-emerald-400 border-emerald-800/80 bg-emerald-950/50' : o.outcome_code === '~' ? 'text-amber-400 border-amber-800/80 bg-amber-950/50' : 'text-rose-400 border-rose-800/80 bg-rose-950/50';
+        c.innerHTML += `
+          <div class="p-3 rounded-lg bg-slate-950 border border-brand-border text-xs space-y-1.5 hover:border-slate-700 transition-all shadow-sm">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <strong class="text-white text-sm">${o.student_name}</strong>
+                <span class="px-2 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800/80 text-[11px] font-semibold">📐 ${o.domain_name}</span>
+                <span class="px-2 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-800/80 text-[11px] font-semibold">🧠 ${o.bloom_name || '-'}</span>
+                <span class="px-2 py-0.5 rounded bg-indigo-950/60 text-indigo-300 border border-indigo-800/80 text-[11px] font-semibold">🛠️ ${o.strategy_name || '-'}</span>
+                ${o.obstacle ? `<span class="px-2 py-0.5 rounded bg-rose-950/60 text-rose-300 border border-rose-800/80 text-[11px] font-semibold">⚠️ ${o.obstacle}</span>` : ''}
+              </div>
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <button onclick="toggleObsOutcome('${o.id}')" class="font-bold font-mono px-2 py-0.5 rounded border text-xs ${color} hover:scale-105 transition-all" title="Κλικ για άμεση αλλαγή αποτελέσματος">[${o.outcome_code}]</button>
+                <button onclick="editObs('${o.id}')" class="p-1 text-slate-400 hover:text-cyan-300 transition-colors" title="Επεξεργασία κειμένου">✏️</button>
+                <button onclick="deleteObs('${o.id}')" class="p-1 text-slate-500 hover:text-rose-400 transition-colors" title="Διαγραφή">✕</button>
+              </div>
+            </div>
+            <p class="text-slate-200 leading-relaxed">${o.raw_text}</p>
+          </div>`;
+      });
+    }
+
+    async function deleteObs(id) {
+      if (!confirm('Διαγραφή αυτής της παρατήρησης;')) return;
+      await authFetch('/api/delete_observation', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+      await loadData();
+    }
+
+    let selectedInspectorDomain = 'arithmetic';
+
+    const cognitive5Levels = [
+      { num: '1', title: '1. Ανάκληση & Ορισμοί', ids: ['remembering'] },
+      { num: '2', title: '2. Εννοιολογική Κατανόηση', ids: ['understanding'] },
+      { num: '3', title: '3. Αλγοριθμική Εφαρμογή', ids: ['applying'] },
+      { num: '4', title: '4. Ανάλυση & Επίλυση', ids: ['analyzing'] },
+      { num: '5', title: '5. Αξιολόγηση & Σύνθεση', ids: ['evaluating', 'creating'] }
+    ];
+
+    function getMasteryTrajectory(observations) {
+      if (!observations || observations.length === 0) {
+        return { status: 'Αρχική Χαρτογράφηση', color: 'text-slate-400 border-slate-700 bg-slate-900', badge: '⚪ Αρχική Χαρτογράφηση' };
+      }
+      const sorted = observations.slice().sort((a, b) => (a.timestamp || '').localeCompare(b.timestamp || ''));
+      const recent = sorted.slice(-4);
+      const posCount = recent.filter(o => o.outcome_code === '+').length;
+      const negCount = recent.filter(o => o.outcome_code === '-').length;
+
+      if (recent.length >= 2 && posCount === recent.length) {
+        return { status: 'Εμπεδωμένο', color: 'text-emerald-300 border-emerald-700 bg-emerald-950/60', badge: '🟢 Εμπεδωμένο (Σταθερή Επίδοση)' };
+      } else if (posCount > 0 && negCount > 0) {
+        return { status: 'Αναδυόμενο', color: 'text-amber-300 border-amber-700 bg-amber-950/60', badge: '🟡 Αναδυόμενο (Κυμαινόμενη Επίδοση)' };
+      } else if (negCount >= 2) {
+        return { status: 'Υπό Παρέμβαση', color: 'text-rose-300 border-rose-700 bg-rose-950/60', badge: '🔴 Υπό Ενεργό Παρέμβαση' };
+      }
+      return { status: 'Σε Εξέλιξη', color: 'text-cyan-300 border-cyan-700 bg-cyan-950/60', badge: '🔵 Σε Εξέλιξη' };
+    }
+
+    function inspectDomain(domId, domLabel, isMath = true) {
+      selectedInspectorDomain = domId;
+      const st = (appData.students || []).find(s => s.id === appData.selectedStudentId);
+      if (!st) return;
+
+      const detailCard = document.getElementById('domain-detail-card');
+      if (!detailCard) return;
+
+      const stObs = (appData.observations || []).filter(o => o.student_id === st.id);
+      const dObs = stObs.filter(o => o.domain_id === domId);
+      const cov = st.coverage || {};
+      const val = cov[domId] || 0;
+      const trajectory = getMasteryTrajectory(dObs);
+
+      let bodyHtml = '';
+
+      if (isMath) {
+        // 1. MATHEMATICAL DOMAINS
+        let cognitiveBadgesHtml = '';
+        cognitive5Levels.forEach(lvl => {
+          const count = dObs.filter(o => lvl.ids.includes(o.bloom_id)).length;
+          const has = count > 0;
+          cognitiveBadgesHtml += `
+            <div class="p-2 rounded-lg border text-center transition-all ${has ? 'bg-amber-950/40 border-amber-500/80 text-amber-300 shadow-sm' : 'bg-slate-950/40 border-slate-800/80 text-slate-600'}">
+              <div class="font-bold text-[11px]">${lvl.title}</div>
+              <div class="text-[10px] mt-0.5 ${has ? 'text-amber-400 font-semibold' : 'text-slate-600'}">${has ? `✓ ${count} καταγραφές` : 'Εκκρεμεί'}</div>
+            </div>`;
+        });
+
+        const strats = {};
+        dObs.forEach(o => {
+          if (o.strategy_name) {
+            if (!strats[o.strategy_name]) strats[o.strategy_name] = { pos: 0, tot: 0 };
+            strats[o.strategy_name].tot++;
+            if (o.outcome_code === '+') strats[o.strategy_name].pos++;
+          }
+        });
+        let stratsHtml = Object.entries(strats).map(([name, data]) => {
+          const rate = Math.round((data.pos / data.tot) * 100);
+          return `<span class="px-2 py-1 rounded bg-indigo-950/60 border border-indigo-800 text-indigo-300 text-[11px]">🛠️ ${name} (${rate}% επιτυχία)</span>`;
+        }).join(' ') || '<span class="text-slate-500 italic">Δεν έχουν καταγραφεί στρατηγικές ακόμα</span>';
+
+        const obsts = [...new Set(dObs.filter(o => o.obstacle).map(o => o.obstacle))];
+        let obstsHtml = obsts.map(obs => `<span class="px-2 py-1 rounded bg-rose-950/60 border border-rose-800 text-rose-300 text-[11px]">⚠️ ${obs}</span>`).join(' ') || '<span class="text-slate-500 italic">Δεν έχουν εντοπιστεί ειδικά εμπόδια</span>';
+
+        bodyHtml = `
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-slate-400 block">ΓΝΩΣΤΙΚΗ ΔΙΑΒΑΘΜΙΣΗ (1-5) ΣΤΟΝ ΤΟΜΕΑ «${domLabel.toUpperCase()}»</span>
+              <span class="px-2 py-0.5 rounded border text-[10px] font-bold ${trajectory.color}">${trajectory.badge}</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+              ${cognitiveBadgesHtml}
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div class="space-y-1 bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
+              <span class="text-[11px] font-bold text-slate-400 block">ΑΠΟΤΕΛΕΣΜΑΤΙΚΕΣ ΣΤΡΑΤΗΓΙΚΕΣ</span>
+              <div class="flex flex-wrap gap-1.5 pt-0.5">${stratsHtml}</div>
+            </div>
+            <div class="space-y-1 bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
+              <span class="text-[11px] font-bold text-slate-400 block">ΔΙΔΑΚΤΙΚΑ ΕΜΠΟΔΙΑ & ΠΑΡΑΝΟΗΣΕΙΣ</span>
+              <div class="flex flex-wrap gap-1.5 pt-0.5">${obstsHtml}</div>
+            </div>
+          </div>`;
+      } else if (domId === 'socioemotional') {
+        // 2. SOCIOEMOTIONAL DOMAIN
+        const hasAnxiety = dObs.some(o => (o.raw_text || '').toLowerCase().includes('αγχ') || (o.raw_text || '').toLowerCase().includes('φοβ'));
+        const posEmotions = dObs.filter(o => o.outcome_code === '+').length;
+        const total = dObs.length;
+
+        bodyHtml = `
+          <div class="space-y-2">
+            <span class="text-[11px] font-bold text-slate-400 block">ΨΥΧΟΣΥΝΑΙΣΘΗΜΑΤΙΚΟΙ ΑΞΟΝΕΣ & ΣΤΑΣΗ ΣΤΑ ΜΑΘΗΜΑΤΙΚΑ</span>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div class="p-2 rounded-lg bg-slate-950/70 border border-slate-800 space-y-1">
+                <span class="text-slate-400 block text-[10px]">Μαθηματικό Άγχος / Φόβος:</span>
+                <span class="font-bold text-xs ${hasAnxiety ? 'text-amber-400' : 'text-emerald-400'}">${hasAnxiety ? '⚠️ Υπαρκτό - Χρειάζεται αποφόρτιση' : '✓ Ελεγχόμενο / Χαμηλό'}</span>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-950/70 border border-slate-800 space-y-1">
+                <span class="text-slate-400 block text-[10px]">Αυτοπεποίθηση & Αυτοεικόνα:</span>
+                <span class="font-bold text-xs ${posEmotions > 0 ? 'text-emerald-400' : 'text-slate-300'}">${posEmotions > 0 ? '📈 Αναδυόμενη Αυτοπεποίθηση' : 'Υπό ενίσχυση'}</span>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-950/70 border border-slate-800 space-y-1">
+                <span class="text-slate-400 block text-[10px]">Διαχείριση Ματαίωσης:</span>
+                <span class="font-bold text-xs text-cyan-300">Αποδοχή καθοδήγησης & λαθών</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-1 bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
+            <span class="text-[11px] font-bold text-slate-400 block">ΙΣΤΟΡΙΚΟ ΣΥΝΑΙΣΘΗΜΑΤΙΚΩΝ ΕΚΔΗΛΩΣΕΩΝ (${total} καταγραφές)</span>
+            <div class="space-y-1 pt-1 max-h-36 overflow-y-auto custom-scroll">
+              ${dObs.map(o => `
+                <div class="p-1.5 rounded bg-slate-900 border border-slate-800/80 text-[11px] flex justify-between gap-2">
+                  <span class="text-slate-300">${o.raw_text}</span>
+                  <span class="font-bold font-mono ${o.outcome_code === '+' ? 'text-emerald-400' : o.outcome_code === '~' ? 'text-amber-400' : 'text-rose-400'} flex-shrink-0">[${o.outcome_code}]</span>
+                </div>`).join('') || '<span class="text-slate-500 italic">Δεν υπάρχουν ειδικές συναισθηματικές καταγραφές</span>'}
+            </div>
+          </div>`;
+      } else if (domId === 'engagement') {
+        // 3. ENGAGEMENT & CONSISTENCY
+        const posEng = dObs.filter(o => o.outcome_code === '+').length;
+        const total = dObs.length;
+
+        bodyHtml = `
+          <div class="space-y-2">
+            <span class="text-[11px] font-bold text-slate-400 block">ΔΕΙΚΤΕΣ ΜΑΘΗΣΙΑΚΗΣ ΕΜΠΛΟΚΗΣ & ΑΥΤΟΡΡΥΘΜΙΣΗΣ</span>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div class="p-2 rounded-lg bg-slate-950/70 border border-slate-800 space-y-1">
+                <span class="text-slate-400 block text-[10px]">Συγκέντρωση & Εστίαση:</span>
+                <span class="font-bold text-xs text-cyan-300">Ανταπόκριση σε βήματα 10-15'</span>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-950/70 border border-slate-800 space-y-1">
+                <span class="text-slate-400 block text-[10px]">Τήρηση Τετραδίου & Υλικών:</span>
+                <span class="font-bold text-xs text-emerald-400">Συνεπής οργάνωση</span>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-950/70 border border-slate-800 space-y-1">
+                <span class="text-slate-400 block text-[10px]">Επιμονή στην Προσπάθεια:</span>
+                <span class="font-bold text-xs ${posEng > 0 ? 'text-emerald-400' : 'text-amber-400'}">${posEng > 0 ? '✓ Διατήρηση προσπάθειας' : 'Χρειάζεται υπενθύμιση'}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-1 bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
+            <span class="text-[11px] font-bold text-slate-400 block">ΚΑΤΑΓΡΑΦΕΣ ΕΜΠΛΟΚΗΣ & ΣΥΝΕΠΕΙΑΣ (${total})</span>
+            <div class="space-y-1 pt-1 max-h-36 overflow-y-auto custom-scroll">
+              ${dObs.map(o => `
+                <div class="p-1.5 rounded bg-slate-900 border border-slate-800/80 text-[11px] flex justify-between gap-2">
+                  <span class="text-slate-300">${o.raw_text}</span>
+                  <span class="font-bold font-mono ${o.outcome_code === '+' ? 'text-emerald-400' : 'text-rose-400'} flex-shrink-0">[${o.outcome_code}]</span>
+                </div>`).join('') || '<span class="text-slate-500 italic">Δεν υπάρχουν καταγραφές εμπλοκής</span>'}
+            </div>
+          </div>`;
+      } else if (domId === 'collaboration_family') {
+        // 4. COLLABORATION & FAMILY
+        const total = dObs.length;
+        bodyHtml = `
+          <div class="space-y-2">
+            <span class="text-[11px] font-bold text-slate-400 block">ΑΞΟΝΕΣ ΣΥΝΕΡΓΑΣΙΑΣ ΜΕ ΟΙΚΟΓΕΝΕΙΑ & ΔΙΕΠΙΣΤΗΜΟΝΙΚΟΥΣ ΦΟΡΕΙΣ</span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div class="p-2 rounded-lg bg-slate-950/70 border border-slate-800 space-y-1">
+                <span class="text-slate-400 block text-[10px]">Επικοινωνία με Γονείς/Κηδεμόνες:</span>
+                <span class="font-bold text-xs text-emerald-400">Ενεργή ενημέρωση & ανατροφοδότηση</span>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-950/70 border border-slate-800 space-y-1">
+                <span class="text-slate-400 block text-[10px]">Συνεργασία με Γενική Τάξη & ΚΕΔΑΣΥ:</span>
+                <span class="font-bold text-xs text-cyan-300">Συντονισμός εξατομικευμένων προσαρμογών</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-1 bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
+            <span class="text-[11px] font-bold text-slate-400 block">ΗΜΕΡΟΛΟΓΙΟ ΕΠΙΚΟΙΝΩΝΙΩΝ & ΣΥΝΑΝΤΗΣΕΩΝ (${total})</span>
+            <div class="space-y-1 pt-1 max-h-36 overflow-y-auto custom-scroll">
+              ${dObs.map(o => `
+                <div class="p-1.5 rounded bg-slate-900 border border-slate-800/80 text-[11px] flex justify-between gap-2">
+                  <span class="text-slate-300">${o.raw_text}</span>
+                  <span class="text-slate-500 text-[10px] font-mono">${(o.timestamp || '').slice(0, 10)}</span>
+                </div>`).join('') || '<span class="text-slate-500 italic">Δεν έχουν καταχωρηθεί επικοινωνίες</span>'}
+            </div>
+          </div>`;
+      } else {
+        // 5. IEP GOALS
+        const targets = st.iep_targets || [];
+        bodyHtml = `
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-slate-400 block">ΣΤΟΧΟΘΕΣΙΑ Ε.Π.Ε. & ΔΕΙΚΤΗΣ ΕΜΠΕΔΩΣΗΣ</span>
+              <button onclick="openAddTargetModal()" class="text-xs text-brand-cyan hover:underline font-bold">+ Νέος Στόχος</button>
+            </div>
+            <div class="space-y-1.5">
+              ${targets.map((t, idx) => `
+                <div class="p-2.5 rounded-lg bg-slate-950/70 border border-slate-800 flex items-center justify-between gap-3">
+                  <div>
+                    <span class="px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 text-[10px] font-bold">[${t.area || 'Μαθηματικά'}]</span>
+                    <span class="text-slate-200 text-xs font-medium ml-1">${t.target}</span>
+                  </div>
+                  <span class="px-2 py-0.5 rounded border text-[11px] font-bold text-cyan-300 border-cyan-800 bg-cyan-950/40">${t.status || 'Σε εξέλιξη'}</span>
+                </div>`).join('') || '<span class="text-slate-500 italic">Δεν έχουν οριστεί στόχοι ΕΠΕ</span>'}
+            </div>
+          </div>`;
+      }
+
+      detailCard.innerHTML = `
+        <div class="flex items-center justify-between border-b border-cyan-800/40 pb-2.5">
+          <div class="flex items-center gap-2">
+            <span class="text-base font-bold text-white">${domLabel}</span>
+            <span class="px-2 py-0.5 rounded bg-cyan-950 text-brand-cyan border border-cyan-800 font-bold text-xs">${val}% Κάλυψη</span>
+            <span class="text-slate-400 text-xs font-mono">• ${dObs.length} καταγραφές</span>
+          </div>
+          <button onclick="document.getElementById('domain-detail-card').classList.add('hidden')" class="text-slate-400 hover:text-white text-sm font-bold p-1">✕</button>
+        </div>
+
+        ${bodyHtml}`;
+
+      detailCard.classList.remove('hidden');
+    }
+
+    function renderStudents() {
+      const st = (appData.students || []).find(s => s.id === appData.selectedStudentId);
+      if (!st) return;
+
+      const elName = document.getElementById('st-name');
+      const elGrade = document.getElementById('st-grade');
+      const elDiag = document.getElementById('st-diagnosis');
+      const elCov = document.getElementById('st-coverage-total');
+
+      if (elName) elName.innerText = st.name;
+      if (elGrade) elGrade.innerText = `${st.grade || ''} ${st.class_section || ''}`;
+      if (elDiag) elDiag.innerText = st.diagnosis || 'Ειδική Μαθησιακή Δυσκολία';
+      const cov = st.coverage || { total: 0 };
+      if (elCov) elCov.innerText = `${cov.total}%`;
+
+      const stObs = (appData.observations || []).filter(o => o.student_id === st.id);
+
+      const grid = document.getElementById('coverage-grid');
+      if (grid) {
+        grid.innerHTML = '';
+        const dList = [
+          ['arithmetic', 'Αριθμητική', '🔢', true],
+          ['algebra', 'Άλγεβρα', '🔣', true],
+          ['geometry', 'Γεωμετρία', '📐', true],
+          ['stochastics', 'Στοχαστικά', '📊', true],
+          ['engagement', 'Εμπλοκή', '🎯', false],
+          ['socioemotional', 'Συναισθήματα', '🌱', false],
+          ['collaboration_family', 'Συνεργασία', '🤝', false],
+          ['iep_goals', 'Στόχοι ΕΠΕ', '⭐', false]
+        ];
+        dList.forEach(([k, label, icon, isMath]) => {
+          const val = cov[k] || 0;
+          const dObs = stObs.filter(o => o.domain_id === k);
+          const isSelected = selectedInspectorDomain === k;
+
+          let stepperHtml = '';
+          if (isMath) {
+            stepperHtml = cognitive5Levels.map(lvl => {
+              const count = dObs.filter(o => lvl.ids.includes(o.bloom_id)).length;
+              const has = count > 0;
+              return `<span class="w-5 h-5 rounded text-[11px] font-bold flex items-center justify-center border transition-all ${has ? 'bg-amber-500/30 border-amber-400 text-amber-300 font-bold shadow-sm' : 'bg-slate-950/60 border-slate-800 text-slate-600'}" title="${lvl.title}${count > 0 ? ` (${count} καταγραφές)` : ' (Εκκρεμεί)'}">${lvl.num}</span>`;
+            }).join('');
+          }
+
+          grid.innerHTML += `
+            <div onclick="inspectDomain('${k}', '${label}', ${isMath})" class="p-2.5 rounded-lg border text-xs space-y-2 cursor-pointer transition-all hover:scale-[1.02] ${isSelected ? 'bg-slate-900 border-cyan-500 shadow-md ring-1 ring-cyan-500/50' : 'bg-slate-950/80 border-brand-border hover:border-slate-700'}">
+              <div class="flex justify-between items-center font-semibold">
+                <span class="text-white flex items-center gap-1.5"><span class="text-sm">${icon}</span> <span>${label}</span></span>
+                <span class="text-cyan-400 font-mono font-bold">${val}%</span>
+              </div>
+              <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-cyan-600 to-cyan-400 rounded-full transition-all" style="width:${val}%"></div>
+              </div>
+              ${isMath ? `
+              <div class="pt-1.5 border-t border-slate-800/60 flex items-center justify-between">
+                <div class="flex items-center justify-between w-full px-0.5">${stepperHtml}</div>
+              </div>` : ''}
+            </div>`;
+        });
+      }
+
+      const iepList = document.getElementById('student-iep-list');
+      if (iepList) {
+        iepList.innerHTML = '';
+        (st.iep_targets || []).forEach(t => {
+          iepList.innerHTML += `
+            <div class="p-2 rounded bg-slate-900 border border-brand-border text-xs flex justify-between">
+              <span>[${t.area}] ${t.target}</span>
+              <span class="text-cyan-400 font-semibold">${t.status}</span>
+            </div>`;
+        });
+      }
+    }
+
+    function renderMatrix() {
+      const tbody = document.getElementById('matrix-tbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      const map = {};
+      (appData.observations || []).forEach(o => {
+        const k = `${o.domain_name}||${o.strategy_name}`;
+        if (!map[k]) map[k] = { dom: o.domain_name, strat: o.strategy_name, bloom: o.bloom_name, pos: 0, part: 0, neg: 0, tot: 0 };
+        map[k].tot++;
+        if (o.outcome_code === '+') map[k].pos++;
+        else if (o.outcome_code === '~') map[k].part++;
+        else map[k].neg++;
+      });
+      Object.values(map).forEach(e => {
+        const rate = Math.round(((e.pos + e.part * 0.5) / e.tot) * 100);
+        tbody.innerHTML += `
+          <tr>
+            <td class="p-2 font-semibold text-white">${e.dom}</td>
+            <td class="p-2 text-cyan-300">${e.strat}</td>
+            <td class="p-2 text-amber-300">${e.bloom || '-'}</td>
+            <td class="p-2 text-center text-emerald-400 font-bold">${e.pos}</td>
+            <td class="p-2 text-center text-amber-400 font-bold">${e.part}</td>
+            <td class="p-2 text-center text-rose-400 font-bold">${e.neg}</td>
+            <td class="p-2 text-center font-bold">${rate}%</td>
+          </tr>`;
+      });
+    }
+
+    function renderTimeline() {
+      const feed = document.getElementById('timeline-feed');
+      if (!feed) return;
+      const stF = document.getElementById('filter-st') ? document.getElementById('filter-st').value : 'ALL';
+      const domF = document.getElementById('filter-dom') ? document.getElementById('filter-dom').value : 'ALL';
+      feed.innerHTML = '';
+      let list = appData.observations || [];
+      if (stF !== 'ALL') list = list.filter(o => o.student_id === stF);
+      if (domF !== 'ALL') list = list.filter(o => o.domain_id === domF);
+
+      list.forEach(o => {
+        const color = o.outcome_code === '+' ? 'text-emerald-400 border-emerald-800/80 bg-emerald-950/50' : o.outcome_code === '~' ? 'text-amber-400 border-amber-800/80 bg-amber-950/50' : 'text-rose-400 border-rose-800/80 bg-rose-950/50';
+        feed.innerHTML += `
+          <div class="p-3 rounded-lg bg-slate-900 border border-brand-border text-xs space-y-2 hover:border-slate-700 transition-all shadow-sm">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <strong class="text-white text-sm">${o.student_name}</strong>
+                <span class="px-2 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800/80 text-[11px] font-semibold">📐 ${o.domain_name}</span>
+                <span class="px-2 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-800/80 text-[11px] font-semibold">🧠 ${o.bloom_name || '-'}</span>
+                <span class="px-2 py-0.5 rounded bg-indigo-950/60 text-indigo-300 border border-indigo-800/80 text-[11px] font-semibold">🛠️ ${o.strategy_name || '-'}</span>
+                ${o.obstacle ? `<span class="px-2 py-0.5 rounded bg-rose-950/60 text-rose-300 border border-rose-800/80 text-[11px] font-semibold">⚠️ ${o.obstacle}</span>` : ''}
+              </div>
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <span class="font-mono text-slate-500 text-[11px] mr-1">${(o.timestamp || '').slice(0, 16).replace('T', ' ')}</span>
+                <button onclick="toggleObsOutcome('${o.id}')" class="font-mono font-bold px-1.5 py-0.5 rounded border text-xs ${color} hover:scale-105 transition-all" title="Κλικ για αλλαγή αποτελέσματος">[${o.outcome_code}]</button>
+                <button onclick="editObs('${o.id}')" class="text-slate-400 hover:text-cyan-300 p-0.5" title="Επεξεργασία">✏️</button>
+                <button onclick="deleteObs('${o.id}')" class="text-slate-500 hover:text-rose-400 p-0.5" title="Διαγραφή">✕</button>
+              </div>
+            </div>
+            <p class="text-slate-200 leading-relaxed">${o.raw_text}</p>
+          </div>`;
+      });
+    }
+
+    function downloadDocx(type) {
+      const eSel = document.getElementById('export-student-select');
+      const stId = (eSel && eSel.value) || appData.selectedStudentId;
+      if (!stId) { alert('Παρακαλώ επιλέξτε μαθητή.'); return; }
+      window.location.href = `/api/export_docx?student_id=${stId}&doc_type=${type}`;
+    }
+
+    function openNewStudentModal() {
+      const m = document.getElementById('modal-new-student');
+      if (m) m.classList.remove('hidden');
+    }
+    function closeNewStudentModal() {
+      const m = document.getElementById('modal-new-student');
+      if (m) m.classList.add('hidden');
+    }
+    async function saveNewStudent() {
+      const nameEl = document.getElementById('new-st-name');
+      const genderEl = document.getElementById('new-st-gender');
+      const gradeEl = document.getElementById('new-st-grade');
+      const diagEl = document.getElementById('new-st-diagnosis');
+
+      const name = nameEl ? nameEl.value.trim() : '';
+      if (!name) return;
+      await authFetch('/api/student', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name,
+          gender: genderEl ? genderEl.value : 'Αγόρι',
+          grade: (gradeEl && gradeEl.value.trim()) || "Β' Γυμνασίου",
+          diagnosis: (diagEl && diagEl.value.trim()) || 'Ειδική Μαθησιακή Δυσκολία'
+        })
+      });
+      closeNewStudentModal();
+      if (nameEl) nameEl.value = '';
+      await loadData();
+    }
+
+    function openAddTargetModal() {
+      const t = prompt('Στόχος Ε.Π.Ε.:');
+      if (!t) return;
+      const st = (appData.students || []).find(s => s.id === appData.selectedStudentId);
+      if (st) {
+        if (!st.iep_targets) st.iep_targets = [];
+        st.iep_targets.push({ id: 't_' + Date.now(), area: 'Μαθηματικά', target: t, status: 'Σε εξέλιξη' });
+        authFetch('/api/student', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(st) }).then(loadData);
+      }
+    }
+
+    function normalizeSpeechTranscript(t) {
+      if (!t) return '';
+      let s = t;
+      // Phonetic name corrections
+      s = s.replace(/\b40\s*γλου\b/gi, 'Σαρόγλου');
+      s = s.replace(/\b40\b(?=\s*γλου)/gi, 'Σαρό');
+      s = s.replace(/\bσαραντογλου\b/gi, 'Σαρόγλου');
+      s = s.replace(/\bσαρανταγλου\b/gi, 'Σαρόγλου');
+      s = s.replace(/\bσαρογλου\b/gi, 'Σαρόγλου');
+
+      // Sections
+      s = s.replace(/\bβ\s*δυο\b/gi, 'Β2');
+      s = s.replace(/\bβ\s*ενα\b/gi, 'Β1');
+      s = s.replace(/\bβ\s*τρια\b/gi, 'Β3');
+      s = s.replace(/\bα\s*δυο\b/gi, 'Α2');
+      s = s.replace(/\bα\s*ενα\b/gi, 'Α1');
+      s = s.replace(/\bα\s*τρια\b/gi, 'Α3');
+      s = s.replace(/\bγ\s*δυο\b/gi, 'Γ2');
+      s = s.replace(/\bγ\s*ενα\b/gi, 'Γ1');
+      s = s.replace(/\bγ\s*τρια\b/gi, 'Γ3');
+
+      // Math corrections
+      s = s.replace(/\bχιαστι\b/gi, 'χιαστί');
+      s = s.replace(/\bτο\s+χ\b/gi, 'το x');
+      s = s.replace(/\bτο\s+ιξ\b/gi, 'το x');
+      s = s.replace(/\bτο\s+ψ\b/gi, 'το y');
+      return s;
+    }
+
+    let finalSpeechText = '';
+    let speechRestartTimeout = null;
+
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) return null;
+
+      const sr = new SpeechRecognition();
+      sr.lang = 'el-GR';
+      sr.continuous = true;
+      sr.interimResults = true;
+      sr.maxAlternatives = 1;
+
+      sr.onstart = () => {
+        isRecording = true;
+        const voiceBtn = document.getElementById('voice-btn');
+        if (voiceBtn) {
+          voiceBtn.innerHTML = '⏹️';
+          voiceBtn.className = 'absolute right-2.5 bottom-3 w-10 h-10 rounded-lg bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center text-lg shadow-lg animate-pulse';
+          voiceBtn.title = 'Διακοπή ηχογράφησης';
+        }
+        const statusEl = document.getElementById('save-status');
+        if (statusEl) {
+          statusEl.innerText = '🎙️ Ακούω συνεχεία... Μιλήστε ελεύθερα';
+          statusEl.className = 'text-xs text-brand-cyan font-semibold animate-pulse';
+        }
+      };
+
+      sr.onresult = (event) => {
+        let interimText = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const transcript = normalizeSpeechTranscript(event.results[i][0].transcript);
+          if (event.results[i].isFinal) {
+            finalSpeechText += (finalSpeechText ? ' ' : '') + transcript.trim();
+          } else {
+            interimText += transcript;
+          }
+        }
+        const inputEl = document.getElementById('smart-input');
+        const fullText = normalizeSpeechTranscript((finalSpeechText + (interimText ? ' ' + interimText : '')).trim());
+        if (inputEl) {
+          inputEl.value = fullText;
+        }
+        parseInput(fullText);
+      };
+
+      sr.onerror = (event) => {
+        console.warn('Speech recognition error:', event.error);
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          isRecording = false;
+          stopVoiceRecordingUI();
+          alert('Παρακαλώ επιτρέψτε την πρόσβαση στο μικρόφωνο από τις ρυθμίσεις του περιηγητή.');
+        }
+      };
+
+      sr.onend = () => {
+        // Auto-restart if user did not explicitly stop
+        if (isRecording) {
+          try {
+            clearTimeout(speechRestartTimeout);
+            speechRestartTimeout = setTimeout(() => {
+              if (isRecording) {
+                try { sr.start(); } catch (e) {}
+              }
+            }, 200);
+          } catch (e) {}
+        } else {
+          stopVoiceRecordingUI();
+        }
+      };
+
+      return sr;
+    }
+
+    function stopVoiceRecordingUI() {
+      const voiceBtn = document.getElementById('voice-btn');
+      if (voiceBtn) {
+        voiceBtn.innerHTML = '🎙️';
+        voiceBtn.className = 'absolute right-2.5 bottom-3 w-10 h-10 rounded-lg bg-slate-800 hover:bg-slate-700 border border-brand-border flex items-center justify-center text-lg shadow active:scale-95';
+        voiceBtn.title = 'Υπαγόρευση';
+      }
+      const statusEl = document.getElementById('save-status');
+      if (statusEl && statusEl.innerText.includes('Ακούω')) {
+        statusEl.innerText = 'Enter για καταχώριση';
+        statusEl.className = 'text-xs text-slate-400';
+      }
+    }
+
+    function toggleVoiceRecording() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert('Χρησιμοποιήστε το πλήκτρο μικροφώνου του πληκτρολογίου σας (Gboard/Windows Dictation Win+H).');
+        return;
+      }
+
+      if (isRecording) {
+        isRecording = false;
+        if (recognition) {
+          try { recognition.stop(); } catch (e) {}
+        }
+        stopVoiceRecordingUI();
+      } else {
+        const inputEl = document.getElementById('smart-input');
+        finalSpeechText = inputEl ? inputEl.value.trim() : '';
+        if (!recognition) {
+          recognition = initSpeechRecognition();
+        }
+        try {
+          isRecording = true;
+          recognition.start();
+        } catch (e) {
+          recognition = initSpeechRecognition();
+          try { recognition.start(); } catch (err) {}
+        }
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      if (authToken) {
+        try {
+          const res = await authFetch('/api/auth/check');
+          if (res.ok) {
+            const data = await res.json();
+            if (data.authenticated) {
+              hideLockScreen();
+              await loadData();
+            } else {
+              showLockScreen();
+            }
+          } else {
+            showLockScreen();
+          }
+        } catch (e) {
+          showLockScreen();
+        }
+      } else {
+        showLockScreen();
+      }
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          for (let reg of regs) reg.update();
+        }).catch(() => {});
+      }
+    });
+  </script>
+</body>
+</html>
