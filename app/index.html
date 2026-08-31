@@ -1538,17 +1538,48 @@
     let initialInputPrefix = '';
     let speechRestartTimeout = null;
 
-    function deduplicateConsecutiveSpeech(text) {
-      if (!text) return '';
-      const words = text.split(/\s+/);
-      const cleaned = [];
-      for (let i = 0; i < words.length; i++) {
-        if (i > 0 && words[i].toLowerCase() === words[i-1].toLowerCase() && words[i].length > 1) {
+    function mergeSpeechChunks(chunks) {
+      if (!chunks || chunks.length === 0) return '';
+      let combined = chunks[0].trim();
+      for (let i = 1; i < chunks.length; i++) {
+        const next = (chunks[i] || '').trim();
+        if (!next) continue;
+
+        const combLower = combined.toLowerCase();
+        const nextLower = next.toLowerCase();
+
+        // If next already starts with combined, next supersedes
+        if (nextLower.startsWith(combLower)) {
+          combined = next;
           continue;
         }
-        cleaned.push(words[i]);
+        // If combined already ends with or contains next
+        if (combLower.endsWith(nextLower) || combLower.includes(nextLower)) {
+          continue;
+        }
+
+        // Find word-level overlap
+        const combWords = combined.split(/\s+/);
+        const nextWords = next.split(/\s+/);
+        let maxOverlap = 0;
+        const maxK = Math.min(combWords.length, nextWords.length);
+
+        for (let k = maxK; k >= 1; k--) {
+          const suffix = combWords.slice(combWords.length - k).join(' ').toLowerCase();
+          const prefix = nextWords.slice(0, k).join(' ').toLowerCase();
+          if (suffix === prefix) {
+            maxOverlap = k;
+            break;
+          }
+        }
+
+        if (maxOverlap > 0) {
+          combined = combWords.concat(nextWords.slice(maxOverlap)).join(' ');
+        } else {
+          combined += ' ' + next;
+        }
       }
-      return cleaned.join(' ');
+      return combined;
     }
 
     function initSpeechRecognition() {
@@ -1577,25 +1608,25 @@
       };
 
       sr.onresult = (event) => {
-        let interimText = '';
-        let finalSessionText = '';
+        const chunks = [];
         for (let i = 0; i < event.results.length; ++i) {
-          const res = event.results[i];
-          if (res.isFinal) {
-            finalSessionText += (finalSessionText ? ' ' : '') + res[0].transcript.trim();
-          } else {
-            interimText += res[0].transcript;
-          }
+          const t = event.results[i][0].transcript.trim();
+          if (t) chunks.push(t);
         }
-        let currentFull = (finalSessionText + (interimText ? ' ' + interimText : '')).trim();
-        currentFull = normalizeSpeechTranscript(currentFull);
-        let combined = (initialInputPrefix ? (initialInputPrefix + ' ') : '') + currentFull;
-        combined = deduplicateConsecutiveSpeech(combined);
+
+        let merged = mergeSpeechChunks(chunks);
+        merged = normalizeSpeechTranscript(merged);
+
+        let finalOutput = merged;
+        if (initialInputPrefix) {
+          finalOutput = mergeSpeechChunks([initialInputPrefix, merged]);
+        }
+
         const inputEl = document.getElementById('smart-input');
         if (inputEl) {
-          inputEl.value = combined;
+          inputEl.value = finalOutput;
         }
-        parseInput(combined);
+        parseInput(finalOutput);
       };
 
       sr.onerror = (event) => {
