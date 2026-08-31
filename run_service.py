@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import os
 import sys
 import time
@@ -45,7 +45,10 @@ def run_tunnel_forever():
             )
 
             url_saved = False
-            for line in iter(process.stdout.readline, ''):
+            while True:
+                line = process.stdout.readline()
+                if not line:
+                    break
                 m = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
                 if m and not url_saved:
                     tunnel_url = m.group(0)
