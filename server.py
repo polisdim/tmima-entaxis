@@ -12,12 +12,16 @@ import json
 import socket
 import threading
 import time
+import zipfile
+import io
+import shutil
 import webbrowser
 import urllib.parse
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from datetime import datetime
 
 import docx_generator
+import excel_generator
 import ai_analyzer
 
 # Set working directory to script location
@@ -27,16 +31,62 @@ os.chdir(BASE_DIR)
 APP_DIR = os.path.join(BASE_DIR, 'app') if (os.path.exists(os.path.join(BASE_DIR, 'app')) and os.path.exists(os.path.join(BASE_DIR, 'app', 'index.html'))) else BASE_DIR
 
 DATA_DIR = os.path.join(BASE_DIR, 'data') if os.path.exists(os.path.join(BASE_DIR, 'data')) else BASE_DIR
+os.makedirs(DATA_DIR, exist_ok=True)
+BACKUPS_DIR = os.path.join(DATA_DIR, 'backups')
+os.makedirs(BACKUPS_DIR, exist_ok=True)
+
 STUDENTS_DIR = os.path.join(BASE_DIR, 'Μαθητές')
 os.makedirs(STUDENTS_DIR, exist_ok=True)
 
+CLASSES_DIR = os.path.join(BASE_DIR, 'Τμήματα')
+os.makedirs(CLASSES_DIR, exist_ok=True)
+
 STUDENTS_FILE = os.path.join(DATA_DIR, 'students.json') if os.path.exists(os.path.join(DATA_DIR, 'students.json')) else os.path.join(BASE_DIR, 'students.json')
 OBSERVATIONS_FILE = os.path.join(DATA_DIR, 'observations.json') if os.path.exists(os.path.join(DATA_DIR, 'observations.json')) else os.path.join(BASE_DIR, 'observations.json')
+CLASS_OBSERVATIONS_FILE = os.path.join(DATA_DIR, 'class_observations.json')
 AUTH_FILE = os.path.join(DATA_DIR, 'auth.json') if os.path.exists(os.path.join(DATA_DIR, 'auth.json')) else os.path.join(BASE_DIR, 'auth.json')
 
 CENTRAL_LOG_FILE = os.path.join(BASE_DIR, 'Ημερολόγιο_Συνεδριών_2026-2027.md')
+CENTRAL_EXCEL_FILE = os.path.join(BASE_DIR, 'Ημερολόγιο_Συνεδριών_2026-2027.xlsx')
 RESEARCH_JSON_FILE = os.path.join(BASE_DIR, 'Ερευνητικό_Dataset_ΤΕ.json')
 RESEARCH_CSV_FILE = os.path.join(BASE_DIR, 'Ερευνητικό_Dataset_ΤΕ.csv')
+
+# Safe Atomic File Writes
+def safe_write_json(filepath, data):
+    """Writes data to a temp file and atomically replaces destination to prevent corruption."""
+    os.makedirs(os.path.dirname(os.path.abspath(filepath)), exist_ok=True)
+    temp_path = f"{filepath}.tmp"
+    with open(temp_path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    os.replace(temp_path, filepath)
+
+def safe_write_text(filepath, text):
+    os.makedirs(os.path.dirname(os.path.abspath(filepath)), exist_ok=True)
+    temp_path = f"{filepath}.tmp"
+    with open(temp_path, 'w', encoding='utf-8') as f:
+        f.write(text)
+    os.replace(temp_path, filepath)
+
+# Rolling Daily Backup
+def create_daily_backup():
+    try:
+        today_str = datetime.now().strftime('%Y-%m-%d')
+        backup_zip_path = os.path.join(BACKUPS_DIR, f"backup_{today_str}.zip")
+        if not os.path.exists(backup_zip_path):
+            with zipfile.ZipFile(backup_zip_path, 'w', zipfile.ZIP_DEFLATED) as z:
+                for root, dirs, files in os.walk(DATA_DIR):
+                    if 'backups' in root:
+                        continue
+                    for file in files:
+                        full_p = os.path.join(root, file)
+                        rel_p = os.path.relpath(full_p, BASE_DIR)
+                        z.write(full_p, rel_p)
+            # Retain only last 7 backups
+            backups = sorted([os.path.join(BACKUPS_DIR, f) for f in os.listdir(BACKUPS_DIR) if f.endswith('.zip')])
+            while len(backups) > 7:
+                os.remove(backups.pop(0))
+    except Exception as e:
+        print(f"[!] Backup warning: {e}")
 
 # Initial taxonomy & domains
 TAXONOMY = {
@@ -48,7 +98,7 @@ TAXONOMY = {
         {"id": "engagement", "name": "Εμπλοκή & Συνέπεια", "color": "#ec4899", "icon": "⏱️", "desc": "Συνέπεια, προετοιμασία, συγκέντρωση, αυτενέργεια, μελέτη"},
         {"id": "socioemotional", "name": "Ψυχοσυναισθηματικά", "color": "#6366f1", "icon": "🧠", "desc": "Αυτοεικόνα, άγχος, ματαίωση, κίνητρα, κοινωνικές σχέσεις"},
         {"id": "collaboration_family", "name": "Συνεργασία & Οικογένεια", "color": "#14b8a6", "icon": "🤝", "desc": "Δυαδική σχέση εκπαιδευτικού-μαθητή, γονείς, ΚΕΔΑΣΥ"},
-        {"id": "iep_goals", "name": "Στόχοι Ε.Π.Ε.", "color": "#f97316", "icon": "🎯", "desc": "Βραχυπρόθεσμοι & μακροπρόθεσμοι στόχοι, ρουμπρίκες"}
+        {"id": "iep_goals", "name": "Στόχοι Ε.Π.Ε.", "color": "#f97316", "icon": "🎯", "desc": "Βραχυπρόθεσμοι & μακροπρόθεσμοι στόχοι, ρουμπρίκες 4 επιπέδων"}
     ],
     "bloom_levels": [
         {"id": "remembering", "level": 1, "name": "1. Ανάκληση", "desc": "Ανάκληση ορισμών, κανόνων, προπαίδειας, συμβόλων, γεγονότων"},
@@ -57,6 +107,12 @@ TAXONOMY = {
         {"id": "analyzing", "level": 4, "name": "4. Ανάλυση", "desc": "Διάσπαση προβλήματος, διάκριση δεδομένων/ζητουμένων, σχέσεις"},
         {"id": "evaluating", "level": 5, "name": "5. Αξιολόγηση", "desc": "Έλεγχος λογικότητας αποτελέσματος, εντοπισμός σφάλματος, επιλογή στρατηγικής"},
         {"id": "creating", "level": 6, "name": "6. Δημιουργία", "desc": "Κατασκευή δικού του προβλήματος, γενίκευση, πρωτότυπη σύνθεση"}
+    ],
+    "duval_registers": [
+        {"id": "verbal", "name": "Λεκτική / Φυσική Γλώσσα", "icon": "🗣️"},
+        {"id": "symbolic", "name": "Συμβολική / Αλγεβρική", "icon": "🔢"},
+        {"id": "visual", "name": "Γραφική / Οπτική", "icon": "📐"},
+        {"id": "manipulative", "name": "Απτική / Εποπτική (CRA)", "icon": "🧩"}
     ],
     "strategies": [
         {"id": "cra", "name": "Μοντέλο CRA", "desc": "Συγκεκριμένο -> Εικονικό -> Αφηρημένο"},
@@ -74,25 +130,31 @@ TAXONOMY = {
         {"id": "partial", "code": "~", "name": "Μερική Επιτυχία / Με Βοήθεια", "color": "#facc15", "weight": 0.5},
         {"id": "negative", "code": "-", "name": "Δυσκολία / Ανεπαρκές", "color": "#f87171", "weight": 0.0}
     ],
+    "rubric_levels": [
+        {"level": 1, "name": "1. Αρχικό (Novice)", "desc": "Εκτέλεση μόνο με πλήρη και συνεχή καθοδήγηση."},
+        {"level": 2, "name": "2. Αναδυόμενο (Emerging)", "desc": "Εκτέλεση με μερική υποστήριξη / hints."},
+        {"level": 3, "name": "3. Ικανό (Proficient)", "desc": "Αυτόνομη επίλυση σε οικείο πλαίσιο."},
+        {"level": 4, "name": "4. Γενικευμένο (Mastered)", "desc": "Πλήρης αυτονομία και εφαρμογή σε νέα προβλήματα."}
+    ],
     "obstacles": [
-        {"domain": "arithmetic", "name": "Διαίρεση & Διαχείριση Μηδενός"},
-        {"domain": "arithmetic", "name": "Κλάσματα (Σύγχυση Αριθμητή/Παρονομαστή)"},
-        {"domain": "arithmetic", "name": "Δανεισμός / Κρατούμενο στην Αφαίρεση"},
-        {"domain": "arithmetic", "name": "Αριθμητική Αίσθηση (Subitizing / Μέγεθος)"},
-        {"domain": "algebra", "name": "Σφάλμα του Ίσον (= ως πράξη)"},
-        {"domain": "algebra", "name": "Μεταβλητή (x ως ετικέτα αντί ποσότητας)"},
-        {"domain": "algebra", "name": "Κανόνες Προσήμων & Παρενθέσεων"},
-        {"domain": "algebra", "name": "Μετάφραση Λεκτικού σε Εξίσωση"},
-        {"domain": "geometry", "name": "Σύγχυση Περιμέτρου (1D) και Εμβαδού (2D)"},
-        {"domain": "geometry", "name": "Χωρική Περιστροφή & Μη-τυπικός Προσανατολισμός"},
-        {"domain": "geometry", "name": "Αποκωδικοποίηση Γεωμετρικών Συμβόλων"},
-        {"domain": "stochastics", "name": "Παραδρομή του Τζογαδόρου (Τυχαιότητα)"},
-        {"domain": "stochastics", "name": "Παρερμηνεία Αξόνων & Κλίμακας Διαγραμμάτων"},
-        {"domain": "stochastics", "name": "Σύγχυση Μέσης Τιμής και Διαμέσου"},
-        {"domain": "engagement", "name": "Διάσπαση Προσοχής / Κόπωση"},
-        {"domain": "engagement", "name": "Ελλιπής Προετοιμασία / Απώλεια Τετραδίου"},
-        {"domain": "socioemotional", "name": "Μαθηματικό Άγχος / Φόβος Λάθους"},
-        {"domain": "socioemotional", "name": "Χαμηλή Ανοχή στη Ματαίωση"}
+        {"domain": "arithmetic", "name": "Διαίρεση & Διαχείριση Μηδενός", "type": "Επιστημολογικό"},
+        {"domain": "arithmetic", "name": "Κλάσματα (Σύγχυση Αριθμητή/Παρονομαστή)", "type": "Επιστημολογικό"},
+        {"domain": "arithmetic", "name": "Δανεισμός / Κρατούμενο στην Αφαίρεση", "type": "Διδακτικό"},
+        {"domain": "arithmetic", "name": "Αριθμητική Αίσθηση (Subitizing / Μέγεθος)", "type": "Οντογενετικό"},
+        {"domain": "algebra", "name": "Σφάλμα του Ίσον (= ως πράξη)", "type": "Διδακτικό"},
+        {"domain": "algebra", "name": "Μεταβλητή (x ως ετικέτα αντί ποσότητας)", "type": "Επιστημολογικό"},
+        {"domain": "algebra", "name": "Κανόνες Προσήμων & Παρενθέσεων", "type": "Διδακτικό"},
+        {"domain": "algebra", "name": "Μετάφραση Λεκτικού σε Εξίσωση", "type": "Επιστημολογικό"},
+        {"domain": "geometry", "name": "Σύγχυση Περιμέτρου (1D) και Εμβαδού (2D)", "type": "Οντογενετικό"},
+        {"domain": "geometry", "name": "Χωρική Περιστροφή & Μη-τυπικός Προσανατολισμός", "type": "Οντογενετικό"},
+        {"domain": "geometry", "name": "Αποκωδικοποίηση Γεωμετρικών Συμβόλων", "type": "Διδακτικό"},
+        {"domain": "stochastics", "name": "Παραδρομή του Τζογαδόρου (Τυχαιότητα)", "type": "Επιστημολογικό"},
+        {"domain": "stochastics", "name": "Παρερμηνεία Αξόνων & Κλίμακας Διαγραμμάτων", "type": "Διδακτικό"},
+        {"domain": "stochastics", "name": "Σύγχυση Μέσης Τιμής και Διαμέσου", "type": "Επιστημολογικό"},
+        {"domain": "engagement", "name": "Διάσπαση Προσοχής / Κόπωση", "type": "Οντογενετικό"},
+        {"domain": "engagement", "name": "Ελλιπής Προετοιμασία / Απώλεια Τετραδίου", "type": "Συνήθεια"},
+        {"domain": "socioemotional", "name": "Μαθηματικό Άγχος / Φόβος Λάθους", "type": "Ψυχοσυναισθηματικό"},
+        {"domain": "socioemotional", "name": "Ρήξη Διδακτικού Συμβολαίου (Αναμονή Επιβεβαίωσης)", "type": "Διδακτικό Συμβόλαιο"}
     ]
 }
 
@@ -102,175 +164,97 @@ def init_default_data():
             {
                 "id": "st_1",
                 "name": "Μιχαέλα",
+                "surname": "Παπαδοπούλου",
                 "code": "S01",
                 "gender": "Κορίτσι",
+                "birth_date": "2012-05-14",
                 "grade": "Β' Γυμνασίου",
                 "class_section": "Β1",
-                "diagnosis": "Ειδική Μαθησιακή Δυσκολία (Δυσαριθμησία & Δυσλεξία) - Γνωμάτευση ΚΕΔΑΣΥ Ξάνθης",
-                "hours_per_week": 4,
-                "notes": "Ιδιαίτερα συνεργάσιμη. Βοηθάται σημαντικά από οπτικά βοηθήματα και αναπαραστάσεις.",
-                "created_at": "2026-08-31T10:00:00",
+                "registration_no": "4521",
+                "parent_father": {"name": "Ιωάννης Παπαδόπουλος", "phone": "6971234567"},
+                "parent_mother": {"name": "Ελένη Παπαδοπούλου", "phone": "6987654321"},
+                "contact": {"address": "Ξάνθη", "email": "papadopoulou_fam@example.com", "family_notes": "Τακτική επικοινωνία με τους γονείς."},
+                "diagnosis_info": {"authority": "ΚΕΔΑΣΥ Ξάνθης", "protocol_no": "284/12-04-2024", "diagnosis_type": "Ειδική Μαθησιακή Δυσκολία (Δυσαριθμησία & Δυσλεξία)", "support_history": "2ο έτος φοίτησης στο Τμήμα Ένταξης"},
+                "math_profile": {
+                    "strengths": "Εξαιρετική οπτική αντίληψη, αγάπη για τα γεωμετρικά σχήματα, δεξιότητα στη χρήση του tablet.",
+                    "weaknesses": "Δυσκολία στις πράξεις με κλάσματα (ετερώνυμα) και στην αλγεβρική μετατροπή εκφωνήσεων.",
+                    "math_anxiety": "Μέτριο",
+                    "learning_style": "Οπτικό / Πολυαισθητηριακό",
+                    "effective_strategies": "Χρήση αριθμογραμμής, οπτικοποιημένα βήματα (scaffolding), χρωματική κωδικοποίηση προσήμων."
+                },
+                "psychosocial_profile": {
+                    "self_concept": "Ευγενική και πρόθυμη, αποκτά αυτοπεποίθηση με την επιβεβαίωση.",
+                    "attention_focus": "Διατηρεί σταθερή εστίαση προσοχής για 25-30 λεπτά.",
+                    "social_interaction": "Εξαιρετική κοινωνική αλληλεπίδραση στο Τμήμα Ένταξης."
+                },
                 "iep_targets": [
-                    {"id": "t1", "area": "Αριθμητική", "target": "Αυτοματοποίηση πράξεων κλασμάτων (ετερώνυμα)", "status": "Σε εξέλιξη"},
-                    {"id": "t2", "area": "Άλγεβρα", "target": "Επίλυση πρωτοβάθμιων εξισώσεων ax+b=c με χρωματική κωδικοποίηση", "status": "Σε εξέλιξη"},
-                    {"id": "t3", "area": "Γεωμετρία", "target": "Διάκριση περιμέτρου και εμβαδού σε ορθογώνια και τρίγωνα", "status": "Σε εξέλιξη"},
-                    {"id": "t4", "area": "Συμπεριφορά", "target": "Ενίσχυση αυτοπεποίθησης και μείωση μαθηματικού άγχους", "status": "Επιτεύχθηκε"}
+                    {"id": "t1", "area": "Αριθμητική", "target": "Αυτοματοποίηση πράξεων κλασμάτων (ετερώνυμα) με εποπτικό υλικό", "rubric_level": 2, "status": "Σε εξέλιξη"},
+                    {"id": "t2", "area": "Άλγεβρα", "target": "Επίλυση πρωτοβάθμιων εξισώσεων ax+b=c με χρωματική κωδικοποίηση", "rubric_level": 2, "status": "Σε εξέλιξη"},
+                    {"id": "t3", "area": "Γεωμετρία", "target": "Διάκριση περιμέτρου και εμβαδού σε ορθογώνια και τρίγωνα", "rubric_level": 3, "status": "Σε εξέλιξη"},
+                    {"id": "t4", "area": "Συμπεριφορά", "target": "Ενίσχυση αυτοπεποίθησης και μείωση μαθηματικού άγχους", "rubric_level": 4, "status": "Επιτεύχθηκε"}
                 ],
-                "coverage": {
-                    "arithmetic": 65,
-                    "algebra": 80,
-                    "geometry": 45,
-                    "stochastics": 30,
-                    "engagement": 90,
-                    "socioemotional": 85,
-                    "collaboration_family": 70,
-                    "iep_goals": 75,
-                    "total": 67
-                }
-            },
-            {
-                "id": "st_2",
-                "name": "Νίκος",
-                "code": "S02",
-                "gender": "Αγόρι",
-                "grade": "Α' Γυμνασίου",
-                "class_section": "Α2",
-                "diagnosis": "ΔΕΠ-Υ (Διάσπαση Προσοχής) & Δυσκολίες στην Υπολογιστική Ευχέρεια",
-                "hours_per_week": 3,
-                "notes": "Υψηλή ενέργεια. Χρειάζεται μικρά διαλείμματα, λίστες ελέγχου (checklists) και άμεση επιβράβευση.",
-                "created_at": "2026-08-31T10:30:00",
-                "iep_targets": [
-                    {"id": "t1", "area": "Αριθμητική", "target": "Κατάκτηση προπαίδειας και πράξεων ακεραίων με αριθμογραμμή", "status": "Σε εξέλιξη"},
-                    {"id": "t2", "area": "Εμπλοκή", "target": "Διατήρηση προσοχής για 20 συνεχόμενα λεπτά με αυτορρύθμιση", "status": "Σε εξέλιξη"}
-                ],
-                "coverage": {
-                    "arithmetic": 70,
-                    "algebra": 40,
-                    "geometry": 50,
-                    "stochastics": 20,
-                    "engagement": 85,
-                    "socioemotional": 75,
-                    "collaboration_family": 80,
-                    "iep_goals": 60,
-                    "total": 60
-                }
+                "coverage": {"arithmetic": 65, "algebra": 50, "geometry": 80, "stochastics": 40, "total": 62}
             }
         ]
-        with open(STUDENTS_FILE, 'w', encoding='utf-8') as f:
-            json.dump(default_students, f, ensure_ascii=False, indent=2)
+        safe_write_json(STUDENTS_FILE, default_students)
 
     if not os.path.exists(OBSERVATIONS_FILE):
-        default_observations = [
-            {
-                "id": "obs_1",
-                "student_id": "st_1",
-                "student_name": "Μιχαέλα",
-                "timestamp": "2026-08-31T11:15:00",
-                "domain_id": "arithmetic",
-                "domain_name": "Αριθμητική",
-                "bloom_id": "applying",
-                "bloom_name": "3. Εφαρμογή",
-                "strategy_id": "color_coding",
-                "strategy_name": "Χρωματική Κωδικοποίηση",
-                "technique": "Χρωματική διάκριση αριθμητή (μπλε) και παρονομαστή (κόκκινο)",
-                "outcome_id": "positive",
-                "outcome_code": "+",
-                "outcome_name": "Υψηλή Επιτυχία / Θετικό",
-                "obstacle": "Κλάσματα (Σύγχυση Αριθμητή/Παρονομαστή)",
-                "raw_text": "Η Μιχαέλα κατανόησε άμεσα την πρόσθεση ομωνύμων κλασμάτων όταν χρησιμοποιήσαμε χρωματική κωδικοποίηση για τον αριθμητή και τον παρονομαστή.",
-                "notes": "Η τεχνική λειτούργησε άριστα. Επόμενο βήμα τα ετερώνυμα."
-            },
-            {
-                "id": "obs_2",
-                "student_id": "st_1",
-                "student_name": "Μιχαέλα",
-                "timestamp": "2026-08-31T11:45:00",
-                "domain_id": "algebra",
-                "domain_name": "Άλγεβρα",
-                "bloom_id": "understanding",
-                "bloom_name": "2. Κατανόηση",
-                "strategy_id": "mind_maps",
-                "strategy_name": "Νοητικοί Χάρτες",
-                "technique": "Διάγραμμα ροής βημάτων επίλυσης πρωτοβάθμιας εξίσωσης",
-                "outcome_id": "positive",
-                "outcome_code": "+",
-                "outcome_name": "Υψηλή Επιτυχία / Θετικό",
-                "obstacle": "Σφάλμα του Ίσον (= ως πράξη)",
-                "raw_text": "Ο νοητικός χάρτης βημάτων βοήθησε τη Μιχαέλα να ξεπεράσει τη σύγχυση του συμβόλου ίσον στην εξίσωση.",
-                "notes": "Ανέκτησε αυτοπεποίθηση στη μετάβαση όρων."
-            }
-        ]
-        with open(OBSERVATIONS_FILE, 'w', encoding='utf-8') as f:
-            json.dump(default_observations, f, ensure_ascii=False, indent=2)
+        default_obs = []
+        safe_write_json(OBSERVATIONS_FILE, default_obs)
+
+    if not os.path.exists(CLASS_OBSERVATIONS_FILE):
+        safe_write_json(CLASS_OBSERVATIONS_FILE, [])
+
+    if not os.path.exists(AUTH_FILE):
+        safe_write_json(AUTH_FILE, {'pin': '2026', 'updated_at': datetime.now().isoformat()})
+
+    create_daily_backup()
 
 def calculate_student_coverage(student_id):
+    if not os.path.exists(OBSERVATIONS_FILE):
+        return {"arithmetic": 0, "algebra": 0, "geometry": 0, "stochastics": 0, "total": 0}
     with open(OBSERVATIONS_FILE, 'r', encoding='utf-8') as f:
-        observations = json.load(f)
+        obs = json.load(f)
+    st_obs = [o for o in obs if o.get('student_id') == student_id]
     
-    student_obs = [o for o in observations if o.get('student_id') == student_id]
-    domains = ["arithmetic", "algebra", "geometry", "stochastics", "engagement", "socioemotional", "collaboration_family", "iep_goals"]
-    coverage = {}
-    
-    for d in domains:
-        obs_d = [o for o in student_obs if o.get('domain_id') == d]
-        if not obs_d:
-            coverage[d] = 10
-        else:
-            bloom_count = len(set(o.get('bloom_id') for o in obs_d if o.get('bloom_id')))
-            count = len(obs_d)
-            pct = min(100, 25 + (count * 15) + (bloom_count * 10))
-            coverage[d] = pct
+    domains = ["arithmetic", "algebra", "geometry", "stochastics"]
+    counts = {d: 0 for d in domains}
+    for o in st_obs:
+        d = o.get('domain_id')
+        if d in counts:
+            counts[d] += 1
             
-    total_pct = int(sum(coverage.values()) / len(domains))
-    coverage["total"] = total_pct
-    return coverage
+    cov = {}
+    total_score = 0
+    for d in domains:
+        score = min(100, counts[d] * 20)
+        cov[d] = score
+        total_score += score
+    cov['total'] = round(total_score / len(domains)) if domains else 0
+    return cov
 
 def get_student_dir(student):
-    """
-    Returns the hierarchical directory path for a student based on their class/grade.
-    E.g. 'Μαθητές/Α_Γυμνασίου/Νίκος' or 'Μαθητές/Β_Γυμνασίου/Μιχαέλα'
-    """
-    st_name = student.get('name', 'Μαθητής')
-    grade_str = str(student.get('grade', '')).strip()
-    section_str = str(student.get('class_section', '')).strip().upper()
-    
-    if section_str.startswith(('Α', 'A')) or grade_str.startswith(('Α', 'A', "Α'", "A'")):
-        grade_folder = "Α_Γυμνασίου"
-    elif section_str.startswith(('Β', 'B')) or grade_str.startswith(('Β', 'B', "Β'", "B'")):
-        grade_folder = "Β_Γυμνασίου"
-    elif section_str.startswith(('Γ', 'C')) or grade_str.startswith(('Γ', 'C', "Γ'", "C'")):
-        grade_folder = "Γ_Γυμνασίου"
-    else:
-        grade_folder = "Γενικό_Αρχείο_Μαθητών"
-        
-    st_dir = os.path.join(STUDENTS_DIR, grade_folder, st_name)
+    st_name = student.get('name', 'Μαθητής').strip()
+    st_surname = student.get('surname', '').strip()
+    folder_name = f"{st_name}_{st_surname}".strip('_')
+    st_dir = os.path.join(STUDENTS_DIR, folder_name)
     os.makedirs(st_dir, exist_ok=True)
     return st_dir
 
 def sync_markdown_and_docx_files():
-    """Generates and syncs student Markdown and Word (.docx) files grouped by grade."""
+    """Generates all student Markdown portfolios, DOCX files, class logs, and the central Excel spreadsheet."""
+    if not os.path.exists(STUDENTS_FILE) or not os.path.exists(OBSERVATIONS_FILE):
+        return
+
     with open(STUDENTS_FILE, 'r', encoding='utf-8') as f:
         students = json.load(f)
     with open(OBSERVATIONS_FILE, 'r', encoding='utf-8') as f:
         observations = json.load(f)
 
-    # 1. Update Student Folders (Markdown & Docx) grouped by grade
+    # 1. Update Each Student's Folder
     for st in students:
-        st_name = st['name']
         st_dir = get_student_dir(st)
-        
-        st_obs = [o for o in observations if o.get('student_id') == st['id'] or o.get('student_name') == st_name]
-        
-        # Calculate age if birth_date is present
-        age_str = ""
-        if st.get('birth_date'):
-            try:
-                b_date = datetime.strptime(st['birth_date'][:10], '%Y-%m-%d')
-                today = datetime.now()
-                age_years = today.year - b_date.year - ((today.month, today.day) < (b_date.month, b_date.day))
-                age_str = f" ({age_years} ετών)"
-            except Exception:
-                pass
+        st_obs = [o for o in observations if o.get('student_id') == st['id'] or o.get('student_name') == st.get('name')]
 
         father = st.get('parent_father', {})
         mother = st.get('parent_mother', {})
@@ -279,27 +263,22 @@ def sync_markdown_and_docx_files():
         mprof = st.get('math_profile', {})
         psprof = st.get('psychosocial_profile', {})
 
-        full_name = f"{st.get('name', '')} {st.get('surname', '')}".strip()
-        
         # 1.1 Profile Markdown
-        profile_md = f"""# Πλήρης Ατομική Καρτέλα Μαθητή: {full_name} ({st.get('code', 'S00')})
-**Σχολείο:** ΔΗΜ.Ω.Σ. Γυμνάσιο Ξάνθης  
-**Σχολικό Έτος:** 2026-2027  
-**Εκπαιδευτικός:** Δημήτριος Πολυχρόνης (ΠΕ03.ΕΑΕ)  
+        profile_md = f"""# Καρτέλα Μαθητή/τριας: {st.get('name', '')} {st.get('surname', '')}
+**Σχολική Μονάδα:** ΔΗΜ.Ω.Σ. Γυμνάσιο Ξάνθης  
+**Τμήμα Ένταξης (Τ.Ε.)** | Σχολικό Έτος 2026-2027  
+**Εκπαιδευτικός Ε.Α.Ε.:** Δημήτριος Πολυχρόνης (ΠΕ03.ΕΑΕ)  
 
 ---
 
-## 1. Δημογραφικά Στοιχεία & Στοιχεία Επικοινωνίας
-* **Ονοματεπώνυμο:** {full_name}
-* **Φύλο:** {st.get('gender', 'Μαθητής')}
-* **Ημερομηνία Γέννησης:** {st.get('birth_date', 'Εκκρεμεί')}{age_str}
-* **Τάξη & Τμήμα:** {st.get('grade', '')} {st.get('class_section', '')}
-* **Αριθμός Μητρώου (Α.Μ.):** {st.get('registration_no', '-')}
-* **Πατέρας:** {father.get('name', '-')} (Τηλ: {father.get('phone', '-')})
-* **Μητέρα:** {mother.get('name', '-')} (Τηλ: {mother.get('phone', '-')})
-* **Διεύθυνση Κατοικίας:** {contact.get('address', '-')}
-* **Email Επικοινωνίας:** {contact.get('email', '-')}
-* **Σημειώσεις Οικογένειας:** {contact.get('family_notes', '-')}
+## 1. Δημογραφικά Στοιχεία & Επικοινωνία
+* **Ονοματεπώνυμο:** {st.get('name', '')} {st.get('surname', '')}
+* **Κωδικός Ερευνητικού Dataset:** `{st.get('code', 'S00')}`
+* **Τάξη / Τμήμα:** {st.get('grade', '')} {st.get('class_section', '')} (Α.Μ: {st.get('registration_no', '-')})
+* **Ημερομηνία Γέννησης / Φύλο:** {st.get('birth_date', '-')} | {st.get('gender', '-')}
+* **Στοιχεία Πατέρα:** {father.get('name', '-')} (Τηλ: {father.get('phone', '-')})
+* **Στοιχεία Μητέρας:** {mother.get('name', '-')} (Τηλ: {mother.get('phone', '-')})
+* **Διεύθυνση / Email:** {contact.get('address', '-')} | {contact.get('email', '-')}
 
 ---
 
@@ -307,14 +286,14 @@ def sync_markdown_and_docx_files():
 * **Φορέας Διάγνωσης:** {diag.get('authority', 'ΚΕΔΑΣΥ Ξάνθης')}
 * **Αρ. & Ημ/νία Πρωτοκόλλου:** {diag.get('protocol_no', '-')}
 * **Είδος Ειδικών Εκπαιδευτικών Αναγκών:** {diag.get('diagnosis_type', st.get('diagnosis', 'Ειδική Μαθησιακή Δυσκολία'))}
-* **Ιστορικό Υποστήριξης:** {diag.get('support_history', '-')}
+* **Ιστορικό Υποστήριξης στο Τ.Ε.:** {diag.get('support_history', 'Φοίτηση στο Τμήμα Ένταξης')}
 
 ---
 
 ## 3. Μαθησιακό & Γνωστικό Προφίλ στα Μαθηματικά
 * **Μαθηματικό Άγχος:** {mprof.get('math_anxiety', 'Μέτριο')}
 * **Δυνατά Σημεία:** {mprof.get('strengths', '-')}
-* **Κύρια Εμπόδια / Τομείς Δυσκολίας:** {mprof.get('weaknesses', '-')}
+* **Κύρια Εμπόδια:** {mprof.get('weaknesses', '-')}
 * **Προτιμώμενο Μαθησιακό Στυλ:** {mprof.get('learning_style', 'Οπτικό / Πολυαισθητηριακό')}
 * **Αποτελεσματικές Διδακτικές Στρατηγικές:** {mprof.get('effective_strategies', '-')}
 
@@ -323,158 +302,142 @@ def sync_markdown_and_docx_files():
 ## 4. Ψυχοκοινωνικό Προφίλ & Συμπεριφορά
 * **Αυτοαντίληψη & Αυτοπεποίθηση:** {psprof.get('self_concept', '-')}
 * **Εστίαση & Διάρκεια Προσοχής:** {psprof.get('attention_focus', '-')}
-* **Κοινωνική Αλληλεπίδραση & Συνεργασία:** {psprof.get('social_interaction', '-')}
-
----
-
-## 5. Πληρότητα Χαρτογράφησης Μαθησιακού Προφίλ
-* **Συνολική Πληρότητα:** {st.get('coverage', {}).get('total', 0)}%
-* **Αριθμητική:** {st.get('coverage', {}).get('arithmetic', 0)}%
-* **Άλγεβρα:** {st.get('coverage', {}).get('algebra', 0)}%
-* **Γεωμετρία:** {st.get('coverage', {}).get('geometry', 0)}%
-* **Στοχαστικά:** {st.get('coverage', {}).get('stochastics', 0)}%
+* **Κοινωνική Αλληλεπίδραση στο Τ.Ε.:** {psprof.get('social_interaction', '-')}
 
 ---
 *Τελευταία ενημέρωση αρχείου: {datetime.now().strftime('%d/%m/%Y %H:%M')}*
 """
-        with open(os.path.join(st_dir, '1_Στοιχεία_και_Προφίλ.md'), 'w', encoding='utf-8') as f:
-            f.write(profile_md)
+        safe_write_text(os.path.join(st_dir, '1_Στοιχεία_και_Προφίλ.md'), profile_md)
 
-        # 1.2 Math Profile & Bloom Markdown
+        # 1.2 Math Profile & Bloom
         math_domains = ["arithmetic", "algebra", "geometry", "stochastics"]
         math_obs = [o for o in st_obs if o.get('domain_id') in math_domains]
         
-        math_md = f"""# Μαθηματικό Προφίλ & Ταξινομία Bloom: {st['name']}
-**Σχολικό Έτος:** 2026-2027  
-**Εκπαιδευτικός:** Δημήτριος Πολυχρόνης (ΠΕ03.ΕΑΕ)  
+        math_md = f"""# Μαθηματικό Προφίλ, Duval & Bloom: {st['name']}
+**Σχολικό Έτος:** 2026-2027 | Τμήμα Ένταξης - ΔΗΜ.Ω.Σ. Ξάνθης  
 
----
-
-## Ιστορικό Μαθηματικών Παρεμβάσεων ανά Τομέα
-
-| Ημερομηνία | Τομέας | Επίπεδο Bloom | Στρατηγική / Τεχνική | Αποτέλεσμα | Ειδικό Εμπόδιο | Σημείωση |
-| :--- | :--- | :--- | :--- | :---: | :--- | :--- |
+| Ημερομηνία | Τομέας | Bloom | Αναπαράσταση (Duval) | Στρατηγική / Τεχνική | Αποτέλεσμα | Εμπόδιο | Σημείωση |
+| :--- | :--- | :--- | :--- | :--- | :---: | :--- | :--- |
 """
         for o in sorted(math_obs, key=lambda x: x.get('timestamp', ''), reverse=True):
             dt = o.get('timestamp', '')[:16].replace('T', ' ')
-            math_md += f"| {dt} | {o.get('domain_name','')} | {o.get('bloom_name','')} | {o.get('strategy_name','')}: {o.get('technique','')} | [{o.get('outcome_code','+')}] | {o.get('obstacle','-')} | {o.get('raw_text','')} |\n"
+            duval = o.get('duval_name', o.get('duval_register', '-'))
+            math_md += f"| {dt} | {o.get('domain_name','')} | {o.get('bloom_name','')} | {duval} | {o.get('strategy_name','')}: {o.get('technique','')} | [{o.get('outcome_code','+')}] | {o.get('obstacle','-')} | {o.get('raw_text','')} |\n"
             
         math_md += f"\n---\n*Σύνολο καταγεγραμμένων μαθηματικών συμβάντων: {len(math_obs)}*\n"
-        with open(os.path.join(st_dir, '2_Μαθηματικό_Προφίλ_Bloom.md'), 'w', encoding='utf-8') as f:
-            f.write(math_md)
+        safe_write_text(os.path.join(st_dir, '2_Μαθηματικό_Προφίλ_Bloom.md'), math_md)
 
-        # 1.3 Behavioral & Engagement Markdown
-        eng_obs = [o for o in st_obs if o.get('domain_id') == 'engagement']
-        eng_md = f"""# Μαθησιακή Εμπλοκή, Συνέπεια & Προετοιμασία: {st['name']}
-**Τομείς Εστίασης:** Συνέπεια, Προετοιμασία τετραδίων/υλικών, Συγκέντρωση, Αυτορρύθμιση.
-
----
-
-## Καταγραφές Εμπλοκής
-
-| Ημερομηνία | Περιγραφή Παρατήρησης | Αποτέλεσμα | Σημείωση Εκπαιδευτικού |
-| :--- | :--- | :---: | :--- |
-"""
-        for o in sorted(eng_obs, key=lambda x: x.get('timestamp', ''), reverse=True):
-            dt = o.get('timestamp', '')[:16].replace('T', ' ')
-            eng_md += f"| {dt} | {o.get('raw_text','')} | [{o.get('outcome_code','+')}] | {o.get('notes','')} |\n"
-        with open(os.path.join(st_dir, '3_Συμπεριφορά_και_Εμπλοκή.md'), 'w', encoding='utf-8') as f:
-            f.write(eng_md)
-
-        # 1.4 Socioemotional Markdown
-        soc_obs = [o for o in st_obs if o.get('domain_id') in ['socioemotional', 'collaboration_family']]
-        soc_md = f"""# Κοινωνικοσυναισθηματικό Προφίλ & Συνεργασία: {st['name']}
-**Τομείς Εστίασης:** Αυτοεικόνα, Μαθηματικό Άγχος, Σχέσεις με συνομηλίκους, Συνεργασία με γονείς & φορείς.
-
----
-
-## Καταγραφές & Κρίσιμα Συμβάντα
-
-| Ημερομηνία | Θεματική | Περιγραφή Συμβάντος | Αποτέλεσμα |
-| :--- | :--- | :--- | :---: |
-"""
-        for o in sorted(soc_obs, key=lambda x: x.get('timestamp', ''), reverse=True):
-            dt = o.get('timestamp', '')[:16].replace('T', ' ')
-            soc_md += f"| {dt} | {o.get('domain_name','')} | {o.get('raw_text','')} | [{o.get('outcome_code','+')}] |\n"
-        with open(os.path.join(st_dir, '4_Κοινωνικοσυναισθηματικά.md'), 'w', encoding='utf-8') as f:
-            f.write(soc_md)
-
-        # 1.5 IEP Goals & Rubrics Markdown
+        # 1.3 IEP Goals & 4-Level Rubric Markdown
         targets = st.get('iep_targets', [])
-        iep_md = f"""# Εξατομικευμένο Πρόγραμμα Εκπαίδευσης (Ε.Π.Ε.) & Ρουμπρίκες: {st['name']}
-**Σχολικό Έτος:** 2026-2027  
-**Επιτροπή Διεπιστημονικής Υποστήριξης (ΕΔΥ) / Τμήμα Ένταξης**  
+        rubric_map = {1: "1. Αρχικό (Πλήρης καθοδήγηση)", 2: "2. Αναδυόμενο (Μερική βοήθεια)", 3: "3. Ικανό (Αυτόνομη επίλυση)", 4: "4. Γενικευμένο (Πλήρης κατάκτηση)"}
+        iep_md = f"""# Ε.Π.Ε. & Ρουμπρίκα 4 Επιπέδων: {st['name']}
+**Σχολικό Έτος:** 2026-2027 | Τμήμα Ένταξης
 
----
-
-## Στοχοθεσία Ε.Π.Ε. (Βραχυπρόθεσμοι & Μακροπρόθεσμοι Στόχοι)
-
-| Α/Α | Τομέας | Διατύπωση Στόχου | Κατάσταση |
-| :---: | :--- | :--- | :---: |
+| Α/Α | Τομέας | Διατύπωση Στόχου Ε.Π.Ε. | Στάθμη Ρουμπρίκας (1-4) | Κατάσταση |
+| :---: | :--- | :--- | :--- | :---: |
 """
         for idx, t in enumerate(targets, 1):
-            iep_md += f"| {idx} | {t.get('area','')} | {t.get('target','')} | **{t.get('status','Σε εξέλιξη')}** |\n"
-        with open(os.path.join(st_dir, '5_Στόχοι_ΕΠΕ_και_Ρουμπρίκες.md'), 'w', encoding='utf-8') as f:
-            f.write(iep_md)
+            r_lvl = t.get('rubric_level', 2)
+            r_label = rubric_map.get(r_lvl, f"Επίπεδο {r_lvl}")
+            iep_md += f"| {idx} | {t.get('area','')} | {t.get('target','')} | **{r_label}** | {t.get('status','Σε εξέλιξη')} |\n"
+        safe_write_text(os.path.join(st_dir, '5_Στόχοι_ΕΠΕ_και_Ρουμπρίκες.md'), iep_md)
 
-        # 1.6 Full Student Observation Log
-        st_log_md = f"""# Ημερολόγιο Παρατηρήσεων & Διδακτικών Συμβάντων: {st['name']}
+        # 1.4 Observation Log Markdown
+        st_log_md = f"""# Ημερολόγιο Παρατηρήσεων Τ.Ε.: {st['name']}
 
-| Ημερομηνία & Ώρα | Τομέας | Bloom | Στρατηγική | Αποτέλεσμα | Περιγραφή |
-| :--- | :--- | :--- | :--- | :---: | :--- |
+| Ημερομηνία & Ώρα | Τύπος | Τομέας | Bloom | Στρατηγική | Αποτέλεσμα | Περιγραφή |
+| :--- | :--- | :--- | :--- | :--- | :---: | :--- |
 """
         for o in sorted(st_obs, key=lambda x: x.get('timestamp', ''), reverse=True):
             dt = o.get('timestamp', '')[:16].replace('T', ' ')
-            st_log_md += f"| {dt} | {o.get('domain_name','')} | {o.get('bloom_name','')} | {o.get('strategy_name','')} | [{o.get('outcome_code','+')}] | {o.get('raw_text','')} |\n"
-        with open(os.path.join(st_dir, 'Ημερολόγιο_Παρατηρήσεων.md'), 'w', encoding='utf-8') as f:
-            f.write(st_log_md)
+            ttype = o.get('target_type', 'individual')
+            ttype_label = 'Ατομική' if ttype == 'individual' else ('Ομάδα' if ttype == 'group' else 'Τμήμα')
+            st_log_md += f"| {dt} | {ttype_label} | {o.get('domain_name','')} | {o.get('bloom_name','')} | {o.get('strategy_name','')} | [{o.get('outcome_code','+')}] | {o.get('raw_text','')} |\n"
+        safe_write_text(os.path.join(st_dir, 'Ημερολόγιο_Παρατηρήσεων.md'), st_log_md)
 
-        # 1.7 AUTO-GENERATE OFFICIAL WORD (.DOCX) DOCUMENTS
+        # 1.5 Word (.docx) generation
         try:
             docx_generator.generate_iep_docx(st, observations, st_dir)
             docx_generator.generate_initial_assessment_docx(st, observations, st_dir)
             docx_generator.generate_rubrics_docx(st, observations, st_dir)
             docx_generator.generate_final_evaluation_docx(st, observations, st_dir)
         except Exception as e:
-            print(f"[!] Warning generating docx for {st_name}: {e}")
+            print(f"[!] Warning generating docx for {st.get('name')}: {e}")
 
-    # 2. Update Central Session Log
+    # 2. Central Markdown Session Log
     central_md = f"""# Ημερολόγιο Συνεδριών Τμήματος Ένταξης (2026-2027)
 **Σχολική Μονάδα:** ΔΗΜ.Ω.Σ. Γυμνάσιο Ξάνθης  
-**Εκπαιδευτικός:** Δημήτριος Πολυχρόνης (ΠΕ03.ΕΑΕ)  
-**Πλαίσιο:** Ειδική Διδακτική Μαθηματικών & Ολόπλευρη Παρέμβαση  
+**Εκπαιδευτικός Ε.Α.Ε.:** Δημήτριος Πολυχρόνης (ΠΕ03.ΕΑΕ)  
 
 ---
 
-## Συγκεντρωτική Ροή Παρατηρήσεων ({len(observations)} εγγραφές)
+## Συγκεντρωτική Ροή Παρεμβάσεων ({len(observations)} εγγραφές)
 
-| Ημ/νία & Ώρα | Μαθητής | Θεματικός Τομέας | Επίπεδο Bloom | Στρατηγική / Τεχνική | Αποτέλεσμα | Σημείωση / Περιγραφή Παρατήρησης |
-| :--- | :--- | :--- | :--- | :--- | :---: | :--- |
+| Ημ/νία & Ώρα | Τύπος | Μαθητής / Τμήμα | Τομέας | Bloom | Duval | Στρατηγική | Αποτέλεσμα | Περιγραφή |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :---: | :--- |
 """
     for o in sorted(observations, key=lambda x: x.get('timestamp', ''), reverse=True):
         dt = o.get('timestamp', '')[:16].replace('T', ' ')
+        ttype = o.get('target_type', 'individual')
+        tt_lbl = 'Ατομική' if ttype == 'individual' else ('Ομάδα Τ.Ε.' if ttype == 'group' else 'Τμήμα')
+        duval = o.get('duval_name', o.get('duval_register', '-'))
         strat = o.get('strategy_name', '')
         if o.get('technique'):
             strat += f" ({o.get('technique')})"
-        central_md += f"| {dt} | **{o.get('student_name','')}** | {o.get('domain_name','')} | {o.get('bloom_name','-')} | {strat} | **[{o.get('outcome_code','+')}]** | {o.get('raw_text','')} |\n"
+        central_md += f"| {dt} | {tt_lbl} | **{o.get('student_name','')}** | {o.get('domain_name','')} | {o.get('bloom_name','-')} | {duval} | {strat} | **[{o.get('outcome_code','+')}]** | {o.get('raw_text','')} |\n"
 
     central_md += f"\n---\n*Τελευταία αυτόματη ενημέρωση: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}*\n"
-    with open(CENTRAL_LOG_FILE, 'w', encoding='utf-8') as f:
-        f.write(central_md)
+    safe_write_text(CENTRAL_LOG_FILE, central_md)
 
-    # 3. Update Research Dataset
-    with open(RESEARCH_JSON_FILE, 'w', encoding='utf-8') as f:
-        json.dump(observations, f, ensure_ascii=False, indent=2)
+    # 3. Central Excel Session Log (.xlsx)
+    try:
+        excel_generator.generate_sessions_excel(observations, students, CENTRAL_EXCEL_FILE)
+    except Exception as e:
+        print(f"[!] Warning generating Excel sessions log: {e}")
 
-    with open(RESEARCH_CSV_FILE, 'w', encoding='utf-8-sig') as f:
-        f.write("id,student_id,student_code,student_name,timestamp,domain_id,domain_name,bloom_id,bloom_name,strategy_id,strategy_name,technique,outcome_id,outcome_code,obstacle,raw_text\n")
-        student_code_map = {s['id']: s.get('code', s['name']) for s in students}
-        for o in observations:
-            s_code = student_code_map.get(o.get('student_id'), 'S00')
-            clean_text = o.get('raw_text', '').replace('"', '""').replace('\n', ' ')
-            clean_tech = o.get('technique', '').replace('"', '""')
-            clean_obst = o.get('obstacle', '').replace('"', '""')
-            f.write(f'"{o.get("id")}","{o.get("student_id")}","{s_code}","{o.get("student_name")}","{o.get("timestamp")}","{o.get("domain_id")}","{o.get("domain_name")}","{o.get("bloom_id","")}","{o.get("bloom_name","")}","{o.get("strategy_id","")}","{o.get("strategy_name","")}","{clean_tech}","{o.get("outcome_id")}","{o.get("outcome_code")}","{clean_obst}","{clean_text}"\n')
+    # 4. Update Research Datasets (JSON & CSV)
+    safe_write_json(RESEARCH_JSON_FILE, observations)
+
+    csv_header = "id,target_type,student_id,student_code,student_name,class_section,timestamp,domain_id,domain_name,bloom_id,bloom_name,duval_register,duval_name,strategy_id,strategy_name,technique,outcome_id,outcome_code,obstacle,obstacle_type,raw_text\n"
+    student_code_map = {s['id']: s.get('code', s['name']) for s in students}
+    student_sec_map = {s['id']: s.get('class_section', '') for s in students}
+    csv_rows = [csv_header]
+    for o in observations:
+        s_id = o.get('student_id', '')
+        s_code = student_code_map.get(s_id, 'S00')
+        s_sec = o.get('class_section') or student_sec_map.get(s_id, '')
+        clean_text = str(o.get('raw_text', '')).replace('"', '""').replace('\n', ' ')
+        clean_tech = str(o.get('technique', '')).replace('"', '""')
+        clean_obst = str(o.get('obstacle', '')).replace('"', '""')
+        ttype = o.get('target_type', 'individual')
+        row_str = f'"{o.get("id")}","{ttype}","{s_id}","{s_code}","{o.get("student_name")}","{s_sec}","{o.get("timestamp")}","{o.get("domain_id")}","{o.get("domain_name")}","{o.get("bloom_id","")}","{o.get("bloom_name","")}","{o.get("duval_register","")}","{o.get("duval_name","")}","{o.get("strategy_id","")}","{o.get("strategy_name","")}","{clean_tech}","{o.get("outcome_id")}","{o.get("outcome_code")}","{clean_obst}","{o.get("obstacle_type","")}","{clean_text}"\n'
+        csv_rows.append(row_str)
+    safe_write_text(RESEARCH_CSV_FILE, "".join(csv_rows))
+
+    # 5. Update Class / Section Markdown Logs
+    if os.path.exists(CLASS_OBSERVATIONS_FILE):
+        with open(CLASS_OBSERVATIONS_FILE, 'r', encoding='utf-8') as f:
+            class_obs = json.load(f)
+        sections = set([s.get('class_section') for s in students if s.get('class_section')] + [co.get('class_section') for co in class_obs if co.get('class_section')])
+        for sec in sections:
+            if not sec:
+                continue
+            sec_obs = [co for co in class_obs if co.get('class_section') == sec]
+            sec_md = f"""# Ημερολόγιο Διδασκαλίας Τμήματος Τ.Ε.: {sec}
+**Σχολικό Έτος:** 2026-2027 | ΔΗΜ.Ω.Σ. Γυμνάσιο Ξάνθης  
+**Εκπαιδευτικός Ε.Α.Ε.:** Δημήτριος Πολυχρόνης (ΠΕ03.ΕΑΕ)  
+
+---
+
+## Καταγραφές Συνεδριών Τμήματος ({len(sec_obs)} εγγραφές)
+
+| Ημερομηνία & Ώρα | Τομέας | Στρατηγική / Εμπόδιο | Αποτέλεσμα | Περιγραφή Συνεδρίας Τμήματος |
+| :--- | :--- | :--- | :---: | :--- |
+"""
+            for co in sorted(sec_obs, key=lambda x: x.get('timestamp', ''), reverse=True):
+                dt = co.get('timestamp', '')[:16].replace('T', ' ')
+                sec_md += f"| {dt} | {co.get('domain_name','-')} | {co.get('strategy_name','-')} / {co.get('obstacle','-')} | [{co.get('outcome_code','+')}] | {co.get('raw_text','')} |\n"
+            safe_write_text(os.path.join(CLASSES_DIR, f"{sec}_Ημερολόγιο.md"), sec_md)
 
 import secrets
 
@@ -492,8 +455,7 @@ def get_auth_pin():
     return '2026'
 
 def set_auth_pin(new_pin):
-    with open(AUTH_FILE, 'w', encoding='utf-8') as f:
-        json.dump({'pin': str(new_pin).strip(), 'updated_at': datetime.now().isoformat()}, f, indent=2)
+    safe_write_json(AUTH_FILE, {'pin': str(new_pin).strip(), 'updated_at': datetime.now().isoformat()})
 
 def is_client_authenticated(handler, query=None):
     auth_header = handler.headers.get('Authorization', '')
@@ -506,7 +468,6 @@ def is_client_authenticated(handler, query=None):
     if token and token in ACTIVE_SESSIONS:
         ACTIVE_SESSIONS[token]['last_seen'] = datetime.now().isoformat()
         return True
-        
     return False
 
 def get_local_ip():
@@ -519,6 +480,7 @@ def get_local_ip():
     except Exception:
         return "127.0.0.1"
 
+
 class InclusionAppHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=APP_DIR, **kwargs)
@@ -528,6 +490,7 @@ class InclusionAppHandler(SimpleHTTPRequestHandler):
         path = url.path
         query = urllib.parse.parse_qs(url.query)
 
+        # Static assets
         if path == '/' or path == '/index.html':
             index_path = os.path.join(APP_DIR, 'index.html')
             if not os.path.exists(index_path):
@@ -568,6 +531,7 @@ class InclusionAppHandler(SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps({"authenticated": is_auth}).encode('utf-8'))
             return
 
+        # Protect all other API routes
         if path.startswith('/api/') and not path.startswith('/api/auth/'):
             if not is_client_authenticated(self, query):
                 self.send_response(401)
@@ -576,12 +540,17 @@ class InclusionAppHandler(SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(json.dumps({"ok": False, "error": "Απαιτείται σύνδεση με PIN"}).encode('utf-8'))
                 return
-        
+
         if path == '/api/data':
             with open(STUDENTS_FILE, 'r', encoding='utf-8') as f:
                 students = json.load(f)
             with open(OBSERVATIONS_FILE, 'r', encoding='utf-8') as f:
                 observations = json.load(f)
+            
+            class_obs = []
+            if os.path.exists(CLASS_OBSERVATIONS_FILE):
+                with open(CLASS_OBSERVATIONS_FILE, 'r', encoding='utf-8') as f:
+                    class_obs = json.load(f)
             
             for st in students:
                 st['coverage'] = calculate_student_coverage(st['id'])
@@ -589,6 +558,7 @@ class InclusionAppHandler(SimpleHTTPRequestHandler):
             response_data = {
                 "students": students,
                 "observations": observations,
+                "class_observations": class_obs,
                 "taxonomy": TAXONOMY,
                 "server_info": {
                     "local_ip": get_local_ip(),
@@ -601,6 +571,105 @@ class InclusionAppHandler(SimpleHTTPRequestHandler):
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             self.wfile.write(json.dumps(response_data, ensure_ascii=False).encode('utf-8'))
+            return
+
+        elif path == '/api/classes':
+            with open(STUDENTS_FILE, 'r', encoding='utf-8') as f:
+                students = json.load(f)
+            sections = {}
+            for st in students:
+                sec = st.get('class_section') or st.get('grade', 'Γενική')
+                if sec not in sections:
+                    sections[sec] = {"section": sec, "grade": st.get('grade', ''), "students": []}
+                sections[sec]["students"].append({"id": st['id'], "name": st.get('name', ''), "surname": st.get('surname', '')})
+            
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps(list(sections.values()), ensure_ascii=False).encode('utf-8'))
+            return
+
+        elif path == '/api/export_excel':
+            sync_markdown_and_docx_files()
+            if os.path.exists(CENTRAL_EXCEL_FILE):
+                with open(CENTRAL_EXCEL_FILE, 'rb') as f:
+                    excel_bytes = f.read()
+                filename = os.path.basename(CENTRAL_EXCEL_FILE)
+                quoted_filename = urllib.parse.quote(filename)
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                self.send_header('Content-Disposition', f"attachment; filename*=UTF-8''{quoted_filename}")
+                self.send_header('Content-Length', str(len(excel_bytes)))
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(excel_bytes)
+                return
+            else:
+                self.send_response(404)
+                self.end_headers()
+                return
+
+        elif path == '/api/export_all_zip':
+            sync_markdown_and_docx_files()
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as z:
+                # Add central files
+                if os.path.exists(CENTRAL_EXCEL_FILE):
+                    z.write(CENTRAL_EXCEL_FILE, os.path.basename(CENTRAL_EXCEL_FILE))
+                if os.path.exists(CENTRAL_LOG_FILE):
+                    z.write(CENTRAL_LOG_FILE, os.path.basename(CENTRAL_LOG_FILE))
+                if os.path.exists(RESEARCH_CSV_FILE):
+                    z.write(RESEARCH_CSV_FILE, os.path.basename(RESEARCH_CSV_FILE))
+                if os.path.exists(RESEARCH_JSON_FILE):
+                    z.write(RESEARCH_JSON_FILE, os.path.basename(RESEARCH_JSON_FILE))
+                
+                # Add student portfolios
+                for root, dirs, files in os.walk(STUDENTS_DIR):
+                    for file in files:
+                        full_p = os.path.join(root, file)
+                        rel_p = os.path.relpath(full_p, BASE_DIR)
+                        z.write(full_p, rel_p)
+
+                # Add class logs
+                for root, dirs, files in os.walk(CLASSES_DIR):
+                    for file in files:
+                        full_p = os.path.join(root, file)
+                        rel_p = os.path.relpath(full_p, BASE_DIR)
+                        z.write(full_p, rel_p)
+
+            zip_bytes = zip_buffer.getvalue()
+            filename = f"Χαρτοφυλάκιο_ΤΕ_Ξάνθης_{datetime.now().strftime('%Y%m%d')}.zip"
+            quoted_filename = urllib.parse.quote(filename)
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/zip')
+            self.send_header('Content-Disposition', f"attachment; filename*=UTF-8''{quoted_filename}")
+            self.send_header('Content-Length', str(len(zip_bytes)))
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(zip_bytes)
+            return
+
+        elif path == '/api/backup/download':
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as z:
+                for root, dirs, files in os.walk(DATA_DIR):
+                    if 'backups' in root:
+                        continue
+                    for file in files:
+                        full_p = os.path.join(root, file)
+                        rel_p = os.path.relpath(full_p, BASE_DIR)
+                        z.write(full_p, rel_p)
+            zip_bytes = zip_buffer.getvalue()
+            filename = f"Backup_TE_Data_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip"
+            quoted_filename = urllib.parse.quote(filename)
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/zip')
+            self.send_header('Content-Disposition', f"attachment; filename*=UTF-8''{quoted_filename}")
+            self.send_header('Content-Length', str(len(zip_bytes)))
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(zip_bytes)
             return
 
         elif path == '/api/export_docx':
@@ -618,9 +687,7 @@ class InclusionAppHandler(SimpleHTTPRequestHandler):
                 self.end_headers()
                 return
 
-            st_name = student.get('name', 'Μαθητής')
             st_dir = get_student_dir(student)
-            
             try:
                 if doc_type == 'iep':
                     doc_path = docx_generator.generate_iep_docx(student, observations, st_dir)
@@ -767,30 +834,94 @@ class InclusionAppHandler(SimpleHTTPRequestHandler):
             with open(STUDENTS_FILE, 'r', encoding='utf-8') as f:
                 students = json.load(f)
 
+            raw_text = payload.get('raw_text', '')
+            target_type = payload.get('target_type', 'individual')
+            student_ids = payload.get('student_ids', [])
+            class_section = payload.get('class_section')
+
             # Auto-enrich with AI
-            if payload.get('raw_text'):
-                payload = ai_analyzer.enrich_observation_payload(payload, students=students)
+            if raw_text:
+                enriched = ai_analyzer.analyze_observation_text(raw_text, students=students)
+                for k in ["domain_id", "domain_name", "bloom_id", "bloom_name", "strategy_id", "strategy_name", 
+                          "obstacle", "obstacle_type", "obstacle_type_name", "duval_register", "duval_name", "duval_icon",
+                          "outcome_id", "outcome_code", "outcome_name"]:
+                    if not payload.get(k) or payload.get(k) in ["-", "", "undefined"]:
+                        if k in enriched:
+                            payload[k] = enriched[k]
+                if not target_type or target_type == 'individual':
+                    target_type = enriched.get('target_type', 'individual')
+                    payload['target_type'] = target_type
 
-            obs_id = payload.get('id') or f"obs_{int(datetime.now().timestamp() * 1000)}"
-            payload['id'] = obs_id
-            if not payload.get('timestamp'):
-                payload['timestamp'] = datetime.now().isoformat()
+            # Case 1: Class-level observation
+            if target_type == 'class' or (class_section and not payload.get('student_id') and not student_ids):
+                class_obs_list = []
+                if os.path.exists(CLASS_OBSERVATIONS_FILE):
+                    with open(CLASS_OBSERVATIONS_FILE, 'r', encoding='utf-8') as f:
+                        class_obs_list = json.load(f)
+                
+                c_id = payload.get('id') or f"cobs_{int(datetime.now().timestamp() * 1000)}"
+                payload['id'] = c_id
+                payload['target_type'] = 'class'
+                payload['class_section'] = class_section or payload.get('class_section', 'Γενική')
+                if not payload.get('timestamp'):
+                    payload['timestamp'] = datetime.now().isoformat()
+                
+                class_obs_list.insert(0, payload)
+                safe_write_json(CLASS_OBSERVATIONS_FILE, class_obs_list)
+                sync_markdown_and_docx_files()
 
-            existing_idx = next((i for i, o in enumerate(observations) if o.get('id') == obs_id), -1)
-            if existing_idx >= 0:
-                observations[existing_idx] = payload
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json; charset=utf-8')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "observation": payload, "type": "class"}, ensure_ascii=False).encode('utf-8'))
+                return
+
+            # Case 2: Multi-student Group observation
+            created_entries = []
+            if target_type == 'group' and len(student_ids) > 1:
+                group_id = f"grp_{int(datetime.now().timestamp())}"
+                for s_id in student_ids:
+                    st_obj = next((s for s in students if s['id'] == s_id), None)
+                    single_item = copy.deepcopy(payload)
+                    single_item['id'] = f"obs_{int(datetime.now().timestamp() * 1000)}_{s_id}"
+                    single_item['student_id'] = s_id
+                    single_item['student_name'] = st_obj.get('name', 'Μαθητής') if st_obj else 'Μαθητής'
+                    single_item['class_section'] = st_obj.get('class_section', '') if st_obj else ''
+                    single_item['target_type'] = 'group'
+                    single_item['group_id'] = group_id
+                    if not single_item.get('timestamp'):
+                        single_item['timestamp'] = datetime.now().isoformat()
+                    observations.insert(0, single_item)
+                    created_entries.append(single_item)
             else:
-                observations.insert(0, payload)
+                # Single Student observation
+                obs_id = payload.get('id') or f"obs_{int(datetime.now().timestamp() * 1000)}"
+                payload['id'] = obs_id
+                payload['target_type'] = 'individual'
+                if not payload.get('timestamp'):
+                    payload['timestamp'] = datetime.now().isoformat()
+                
+                st_id = payload.get('student_id')
+                if st_id:
+                    st_obj = next((s for s in students if s['id'] == st_id), None)
+                    if st_obj:
+                        payload['student_name'] = st_obj.get('name', '')
+                        payload['class_section'] = st_obj.get('class_section', '')
+                
+                existing_idx = next((i for i, o in enumerate(observations) if o.get('id') == obs_id), -1)
+                if existing_idx >= 0:
+                    observations[existing_idx] = payload
+                else:
+                    observations.insert(0, payload)
+                created_entries.append(payload)
 
-            with open(OBSERVATIONS_FILE, 'w', encoding='utf-8') as f:
-                json.dump(observations, f, ensure_ascii=False, indent=2)
+            safe_write_json(OBSERVATIONS_FILE, observations)
 
-            if payload.get('student_id'):
-                for st in students:
-                    if st['id'] == payload['student_id']:
-                        st['coverage'] = calculate_student_coverage(st['id'])
-                with open(STUDENTS_FILE, 'w', encoding='utf-8') as f:
-                    json.dump(students, f, ensure_ascii=False, indent=2)
+            # Update student coverage
+            for st in students:
+                st['coverage'] = calculate_student_coverage(st['id'])
+            safe_write_json(STUDENTS_FILE, students)
 
             sync_markdown_and_docx_files()
 
@@ -798,7 +929,46 @@ class InclusionAppHandler(SimpleHTTPRequestHandler):
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
-            self.wfile.write(json.dumps({"success": True, "observation": payload}, ensure_ascii=False).encode('utf-8'))
+            self.wfile.write(json.dumps({"success": True, "observations": created_entries}, ensure_ascii=False).encode('utf-8'))
+            return
+
+        elif path == '/api/student/iep_rubric_update':
+            student_id = payload.get('student_id')
+            target_id = payload.get('target_id')
+            rubric_level = int(payload.get('rubric_level', 2))
+            status = payload.get('status')
+            
+            with open(STUDENTS_FILE, 'r', encoding='utf-8') as f:
+                students = json.load(f)
+
+            student = next((s for s in students if s['id'] == student_id), None)
+            if not student:
+                self.send_response(404)
+                self.end_headers()
+                return
+
+            targets = student.get('iep_targets', [])
+            target = next((t for t in targets if t.get('id') == target_id), None)
+            if target:
+                target['rubric_level'] = rubric_level
+                target['rubric_updated_at'] = datetime.now().isoformat()
+                if status:
+                    target['status'] = status
+                elif rubric_level == 4:
+                    target['status'] = "Επιτεύχθηκε"
+                elif rubric_level >= 2:
+                    target['status'] = "Σε εξέλιξη"
+                else:
+                    target['status'] = "Αρχικό στάδιο"
+
+            safe_write_json(STUDENTS_FILE, students)
+            sync_markdown_and_docx_files()
+
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps({"success": True, "target": target, "student": student}, ensure_ascii=False).encode('utf-8'))
             return
 
         elif path == '/api/student':
@@ -816,9 +986,7 @@ class InclusionAppHandler(SimpleHTTPRequestHandler):
             else:
                 students.append(payload)
 
-            with open(STUDENTS_FILE, 'w', encoding='utf-8') as f:
-                json.dump(students, f, ensure_ascii=False, indent=2)
-
+            safe_write_json(STUDENTS_FILE, students)
             sync_markdown_and_docx_files()
 
             self.send_response(200)
@@ -832,7 +1000,6 @@ class InclusionAppHandler(SimpleHTTPRequestHandler):
             obs_id = payload.get('id')
             with open(OBSERVATIONS_FILE, 'r', encoding='utf-8') as f:
                 observations = json.load(f)
-            
             with open(STUDENTS_FILE, 'r', encoding='utf-8') as f:
                 students = json.load(f)
 
@@ -852,16 +1019,7 @@ class InclusionAppHandler(SimpleHTTPRequestHandler):
                     payload['timestamp'] = datetime.now().isoformat()
                 observations.append(payload)
 
-            with open(OBSERVATIONS_FILE, 'w', encoding='utf-8') as f:
-                json.dump(observations, f, ensure_ascii=False, indent=2)
-
-            if payload.get('student_id'):
-                for st in students:
-                    if st['id'] == payload['student_id']:
-                        st['coverage'] = calculate_student_coverage(st['id'])
-                with open(STUDENTS_FILE, 'w', encoding='utf-8') as f:
-                    json.dump(students, f, ensure_ascii=False, indent=2)
-
+            safe_write_json(OBSERVATIONS_FILE, observations)
             sync_markdown_and_docx_files()
 
             self.send_response(200)
@@ -877,9 +1035,7 @@ class InclusionAppHandler(SimpleHTTPRequestHandler):
                 observations = json.load(f)
             
             observations = [o for o in observations if o.get('id') != obs_id]
-            with open(OBSERVATIONS_FILE, 'w', encoding='utf-8') as f:
-                json.dump(observations, f, ensure_ascii=False, indent=2)
-
+            safe_write_json(OBSERVATIONS_FILE, observations)
             sync_markdown_and_docx_files()
 
             self.send_response(200)
@@ -906,13 +1062,14 @@ def run_server(port=8080):
     
     local_ip = get_local_ip()
     print("=" * 70)
-    print("  ΕΞΥΠΝΟΣ ΒΟΗΘΟΣ & ΚΑΡΤΕΛΑ ΜΑΘΗΤΗ ΤΜΗΜΑΤΟΣ ΕΝΤΑΞΗΣ")
+    print("  ΕΞΥΠΝΟΣ ΒΟΗΘΟΣ & ΚΑΡΤΕΛΑ ΜΑΘΗΤΗ ΤΜΗΜΑΤΟΣ ΕΝΤΑΞΗΣ (Τ.Ε.)")
     print("  ΔΗΜ.Ω.Σ. Γυμνάσιο Ξάνθης - Δημήτριος Πολυχρόνης (ΠΕ03.ΕΑΕ)")
     print("=" * 70)
     print(f"[*] Τοπική πρόσβαση από αυτόν τον Υπολογιστή: http://localhost:{port}")
     print(f"[*] Άμεση πρόσβαση από το Xiaomi Pad 6 (Tablet): http://{local_ip}:{port}")
     print("=" * 70)
-    print("[+] Τα έγγραφα Word (.docx), Markdown και Dataset συγχρονίζονται αυτόματα.")
+    print("[+] Αυτόματος συγχρονισμός: Word (.docx), Excel (.xlsx), Markdown και Dataset.")
+    print(f"[+] Κυλιόμενα αντίγραφα ασφαλείας (Backups) ενεργά στο: {BACKUPS_DIR}")
     
     server_address = ('', port)
     try:

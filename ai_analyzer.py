@@ -8,9 +8,10 @@ Architectural Layers:
 1. Discourse Parser & Clause Segmentation (Syntactic flow, contrastive & causal resolution)
 2. Mathematical Vector Semantic Space (TF-IDF N-Gram Vectorizer & Cosine Similarity via scikit-learn)
 3. Revised Bloom 2D Cognitive Matrix (Anderson & Krathwohl)
-4. Didactic & Epistemological Obstacle Matcher (Brousseau & Secondary School Misconceptions)
-5. Multi-Attribute Entity Disambiguation Engine (Weighted Bayesian Ranking)
-6. Universal Extensible AI Bridge (Local Vector Space + LLM/Embedding adapter)
+4. Duval Semiotic Representation Registers (Verbal, Symbolic, Visual, Manipulative & Transitions)
+5. Didactic & Epistemological Obstacle Matcher (Brousseau: Epistemological, Didactic, Ontogenetic, Didactic Contract)
+6. Scaffolding Recommender Engine (Actionable pedagogical strategies for PE03.EAE)
+7. Multi-Attribute Entity & Target Disambiguation (Individual, Group of 2-3 Students, Class/Section)
 """
 
 import re
@@ -78,20 +79,20 @@ DOMAIN_PROFILES = {
     },
     "socioemotional": {
         "name": "Ψυχοσυναισθηματικά",
-        "description": "Μαθηματικό άγχος, εκνευρισμός, θυμός, φόβος λάθους, ματαίωση, αυτοπεποίθηση και αυτοεικόνα στα μαθηματικά, χαρά της επιτυχίας, απογοήτευση, συνεργασία με συμμαθητές, πανικός, ντροπή.",
+        "description": "Μαθηματικό άγχος, εκνευρισμός, θυμός, φόβος λάθους, ματαίωση, αυτοπεποίθηση και αυτοεικόνα στα μαθηματικά, χαρά της επιτυχίας, απογοήτευση, συνεργασία στο Τμήμα Ένταξης, πανικός, ντροπή.",
         "terms": ["αγχος", "εκνευρισμ", "θυμος", "φοβος", "ματαιωσ", "αυτοπεποιθησ", "αυτοεικονα", "χαρα", "απογοητευσ", "συμμαθητ", "συνεργασι", "πανικος", "ντροπη"],
         "weight": 1.0
     },
     "collaboration_family": {
         "name": "Συνεργασία & Οικογένεια",
-        "description": "Επικοινωνία με γονείς, μητέρα, πατέρα, κηδεμόνα, τηλεφωνική επικοινωνία, δια ζώσης συνάντηση, γνωμάτευση ΚΕΔΑΣΥ, συνεργασία με ειδικούς, ενημέρωση προόδου.",
+        "description": "Επικοινωνία με γονείς, μητέρα, πατέρα, κηδεμόνα, τηλεφωνική επικοινωνία, δια ζώσης συνάντηση, γνωμάτευση ΚΕΔΑΣΥ, συνεργασία με ειδικούς, ενημέρωση προόδου στο Τμήμα Ένταξης.",
         "terms": ["γονε", "μητερα", "πατερας", "κηδεμον", "τηλεφωνημ", "συναντηση", "κεδασυ", "γνωματευση", "ενημερωση"],
         "weight": 1.0
     },
     "iep_goals": {
         "name": "Στόχοι Ε.Π.Ε.",
-        "description": "Εξατομικευμένο Πρόγραμμα Εκπαίδευσης, βραχυπρόθεσμοι και μακροπρόθεσμοι διδακτικοί στόχοι, ρουμπρίκες αξιολόγησης, επίτευξη στόχων ΕΠΕ, αξιολόγηση προόδου.",
-        "terms": ["στοχος επε", "στοχο", "επε", "βραχυπροθεσμος", "μακροπροθεσμος", "ρουμπρικ"],
+        "description": "Εξατομικευμένο Πρόγραμμα Εκπαίδευσης, βραχυπρόθεσμοι και μακροπρόθεσμοι διδακτικοί στόχοι, ρουμπρίκες αξιολόγησης 4 επιπέδων, επίτευξη στόχων ΕΠΕ, αξιολόγηση προόδου.",
+        "terms": ["στοχος επε", "στοχο", "επε", "βραχυπροθεσμος", "μακροπροθεσμος", "ρουμπρικ", "σταθμη", "ρουμπρικα 4 επιπεδων"],
         "weight": 1.0
     }
 }
@@ -135,6 +136,102 @@ BLOOM_PROFILES = {
     }
 }
 
+# ------------------------------------------------------------------------------
+# DUVAL SEMIOTIC REGISTERS (Ημιωτικές Αναπαραστάσεις Raymond Duval)
+# ------------------------------------------------------------------------------
+DUVAL_REGISTERS = {
+    "verbal": {
+        "name": "Λεκτική / Φυσική Γλώσσα",
+        "icon": "🗣️",
+        "description": "Εκφώνηση προβλήματος, λεκτική διατύπωση κανόνων, διάκριση δεδομένων και ζητουμένων.",
+        "terms": ["λεκτικ", "εκφωνηση", "περιγραφη", "προβλημα με λογια", "διατυπωση", "με λογια"]
+    },
+    "symbolic": {
+        "name": "Συμβολική / Αλγεβρική",
+        "icon": "🔢",
+        "description": "Αριθμητικά σύμβολα, πράξεις, μεταβλητές x/y, εξισώσεις, κλασματική γραφή.",
+        "terms": ["συμβολικ", "αλγεβρικ", "εξισωση", "συμβολα", "μεταβλητη x", "τυπος", "αριθμητικη γραφη"]
+    },
+    "visual": {
+        "name": "Γραφική / Οπτική",
+        "icon": "📐",
+        "description": "Γεωμετρικά σχήματα, διαγράμματα, γραφικές παραστάσεις, άξονες, εικονική απεικόνιση.",
+        "terms": ["γραφικ", "οπτικ", "σχημα", "διαγραμμα", "ραβδογραμμα", "γεωμετρικο", "εικονα", "καρτεσιανοι αξονες"]
+    },
+    "manipulative": {
+        "name": "Απτική / Εποπτική (CRA)",
+        "icon": "🧩",
+        "description": "Χειραπτικό υλικό, αριθμογραμμή, αλγεβρικά πλακίδια, κύβοι Dienes, απτά αντικείμενα.",
+        "terms": ["απτικ", "εποπτικ", "χειραπτικ", "αριθμογραμμη", "πλακιδια", "υλικα", "τουβλακια", "κυβακια", "πλαστελινη", "cra"]
+    }
+}
+
+# ------------------------------------------------------------------------------
+# BROUSSEAU OBSTACLE TYPES & MISCONCEPTIONS
+# ------------------------------------------------------------------------------
+BROUSSEAU_OBSTACLES = {
+    "Διαίρεση & Διαχείριση Μηδενός": {
+        "type": "epistemological",
+        "type_name": "Επιστημολογικό",
+        "terms": ["διαιρεσ", "διψηφι", "πολυψηφι", "μηδεν", "υπολοιπο", "κατεβασμα μηδενικου"],
+        "desc": "Επιστημολογική δυσκολία με τη δυαδική φύση του μηδενός και τον αλγόριθμο της διαίρεσης."
+    },
+    "Κλάσματα (Σύγχυση Αριθμητή/Παρονομαστή)": {
+        "type": "epistemological",
+        "type_name": "Επιστημολογικό",
+        "terms": ["κλασμ", "αριθμητη", "παρονομαστη", "ετερωνυμ", "ομωνυμ", "απλοποιησ"],
+        "desc": "Επιστημολογική σύγκρουση φυσικών αριθμών με τον ρητό αριθμό ως λόγο μέρους-όλου."
+    },
+    "Δανεισμός / Κρατούμενο στην Αφαίρεση": {
+        "type": "didactic",
+        "type_name": "Διδακτικό",
+        "terms": ["δανεισμ", "κρατουμεν", "αφαιρεσ", "δανειζεται", "αφαιρεση με κρατουμενο"],
+        "desc": "Διδακτικό εμπόδιο από μηχανιστική εκτέλεση αλγορίθμου χωρίς κατανόηση δεκαδικής αξίας θέσης."
+    },
+    "Σφάλμα του Ίσον (= ως πράξη αντί ισοδυναμίας)": {
+        "type": "didactic",
+        "type_name": "Διδακτικό",
+        "terms": ["ισον", "ισοτητ", "συμβολο ισον", "σημασια του ισον"],
+        "desc": "Διδακτικό εμπόδιο όπου το σύμβολο = εκλαμβάνεται ως εντολή 'υπολόγισε' αντί για σχέση ισορροπίας."
+    },
+    "Μεταβλητή (x ως ετικέτα αντί ποσότητας)": {
+        "type": "epistemological",
+        "type_name": "Επιστημολογικό",
+        "terms": ["μεταβλητ", "αγνωστος", "αγνωστου", "ποσοτητα", "το χ", "αγνωστος χ"],
+        "desc": "Επιστημολογικό άλμα από τη συγκεκριμένη αριθμητική τιμή στη γενικευμένη μεταβλητή ποσότητα."
+    },
+    "Κανόνες Προσήμων & Παρενθέσεων": {
+        "type": "didactic",
+        "type_name": "Διδακτικό",
+        "terms": ["προσημ", "παρενθεσ", "μειον", "συν", "επιμεριστικ", "απαλοιφη παρενθεσεων"],
+        "desc": "Σύγχυση μεταξύ του προσήμου ως πράξης (αφαίρεση) και ως ιδιότητας του ρητού αριθμού."
+    },
+    "Σύγχυση Περιμέτρου (1D) και Εμβαδού (2D)": {
+        "type": "ontogenetic",
+        "type_name": "Οντογενετικό",
+        "terms": ["περιμετρ", "εμβαδ", "εμβαδον", "τετραγωνικα", "μηκος", "επιφανεια"],
+        "desc": "Οντογενετική/χωρική δυσκολία διάκρισης μονοδιάστατης γραμμικής μέτρησης και δισδιάστατης επιφάνειας."
+    },
+    "Χωρική Περιστροφή & Προσανατολισμός": {
+        "type": "ontogenetic",
+        "type_name": "Οντογενετικό",
+        "terms": ["χωρικ", "περιστροφ", "προσανατολισμ", "γωνιων", "αναγνωριση σε αλλη θεση"],
+        "desc": "Δυσκολία αναγνώρισης γεωμετρικών σχημάτων όταν αλλάζει ο τυπικός οριζόντιος προσανατολισμός."
+    },
+    "Ρήξη Διδακτικού Συμβολαίου (Αναμονή Επιβεβαίωσης)": {
+        "type": "didactic_contract",
+        "type_name": "Ρήξη Διδακτικού Συμβολαίου",
+        "terms": ["περιμενει να του πω", "αναμονη επιβεβαιωσης", "δεν παιρνει πρωτοβουλια", "ρωταει αν ειναι σωστο", "εξαρτηση"],
+        "desc": "Παθητική στάση του μαθητή που μεταθέτει την ευθύνη ελέγχου και μαθηματικής κρίσης στον εκπαιδευτικό."
+    },
+    "Μαθηματικό Άγχος / Φόβος Λάθους": {
+        "type": "ontogenetic",
+        "type_name": "Ψυχοσυναισθηματικό / Άγχος",
+        "terms": ["αγχος", "φοβος", "πανικος", "μπλοκαρε", "ντρεπεται", "ματαιωση", "απογοητευση"],
+        "desc": "Συναισθηματικό μπλοκάρισμα και φόβος έκθεσης που υπερφορτώνει τη μνήμη εργασίας."
+    }
+}
+
 STRATEGY_PROFILES = {
     "cra": {
         "name": "Μοντέλο CRA (Συγκεκριμένο-Εικονικό-Αφηρημένο)",
@@ -170,18 +267,6 @@ STRATEGY_PROFILES = {
     }
 }
 
-OBSTACLE_TAXONOMY = {
-    "Διαίρεση & Διαχείριση Μηδενός": ["διαιρεσ", "διψηφι", "πολυψηφι", "μηδεν", "υπολοιπο", "κατεβασμα μηδενικου"],
-    "Κλάσματα (Σύγχυση Αριθμητή/Παρονομαστή)": ["κλασμ", "αριθμητη", "παρονομαστη", "ετερωνυμ", "ομωνυμ", "απλοποιησ"],
-    "Δανεισμός / Κρατούμενο στην Αφαίρεση": ["δανεισμ", "κρατουμεν", "αφαιρεσ", "δανειζεται", "αφαιρεση με κρατουμενο"],
-    "Σφάλμα του Ίσον (= ως πράξη αντί ισοδυναμίας)": ["ισον", "ισοτητ", "συμβολο ισον", "σημασια του ισον"],
-    "Μεταβλητή (x ως ετικέτα αντί ποσότητας)": ["μεταβλητ", "αγνωστος", "αγνωστου", "ποσοτητα", "το χ", "αγνωστος χ"],
-    "Κανόνες Προσήμων & Παρενθέσεων": ["προσημ", "παρενθεσ", "μειον", "συν", "επιμεριστικ", "απαλοιφη παρενθεσεων"],
-    "Σύγχυση Περιμέτρου (1D) και Εμβαδού (2D)": ["περιμετρ", "εμβαδ", "εμβαδον", "τετραγωνικα", "μηκος", "επιφανεια"],
-    "Χωρική Περιστροφή & Προσανατολισμός": ["χωρικ", "περιστροφ", "προσανατολισμ", "γωνιων", "αναγνωριση σε αλλη θεση"],
-    "Μαθηματικό Άγχος / Φόβος Λάθους": ["αγχος", "φοβος", "πανικος", "μπλοκαρε", "ντρεπεται", "ματαιωση"]
-}
-
 
 # ==============================================================================
 # 2. VECTOR SPACE MODEL INITIALIZER (TF-IDF COSINE SIMILARITY ENGINE)
@@ -209,7 +294,6 @@ class SemanticVectorEngine:
     def classify_domain(self, text):
         clean = strip_accents(text)
         scores = {}
-        
         cos_sims = {}
         if SKLEARN_AVAILABLE and self.dom_vectorizer:
             try:
@@ -236,7 +320,6 @@ class SemanticVectorEngine:
     def classify_bloom(self, text):
         clean = strip_accents(text)
         scores = {}
-        
         cos_sims = {}
         if SKLEARN_AVAILABLE and self.bloom_vectorizer:
             try:
@@ -261,19 +344,14 @@ class SemanticVectorEngine:
         return best_bloom, BLOOM_PROFILES[best_bloom]["name"], round(confidence, 2)
 
 
-# Singleton instance of vector engine
 VECTOR_ENGINE = SemanticVectorEngine()
 
 
 # ==============================================================================
-# 3. PHONETIC & SPEECH-TO-TEXT NORMALIZER
+# 3. SPEECH NORMALIZER & DISAMBIGUATION (INDIVIDUAL, GROUP, CLASS)
 # ==============================================================================
 
 def normalize_speech_text(text):
-    """
-    Normalizes numerical / phonetic speech-to-text artifacts from dictation.
-    E.g. '40γλου' -> 'Σαρόγλου', 'β δυο' -> 'Β2', 'το ιξ' -> 'το x'.
-    """
     if not text:
         return ""
     s = text
@@ -297,112 +375,156 @@ def normalize_speech_text(text):
     return s
 
 
-# ==============================================================================
-# 4. MULTI-ATTRIBUTE ENTITY DISAMBIGUATION (BAYESIAN EVIDENCE RANKING)
-# ==============================================================================
-
-def resolve_student_entity(raw_text, students, current_student_id=None):
+def resolve_targets(raw_text, students, current_student_id=None):
     """
-    Ranks student candidates using a multi-attribute weighted evidence scoring model:
-    - Full Name exact match: +100
-    - Exact Surname / Initial match (e.g. 'Γιώργος Β.' vs 'Γιώργος Α.'): +80
-    - Class Section in text ('Β2', 'Α1'): +50
-    - First name / Nickname / Case declension: +30
-    - Active / Currently selected student contextual prior: +15
+    Identifies target scope from speech/text:
+    - 'class': If text mentions specific class section (e.g. 'στο Β1', 'στο τμημα Α2', 'ολη η ταξη')
+    - 'group': If text mentions multiple students (e.g. 'ο Νικος και η Μιχαελα')
+    - 'individual': Single student
     """
     if not students:
-        return None
+        return {'target_type': 'individual', 'students': [], 'class_section': None}
     
     raw_text = normalize_speech_text(raw_text)
     clean = strip_accents(raw_text)
-    words = [re.sub(r'[^a-zα-ω0-9]', '', w) for w in clean.split()]
-    raw_tokens = raw_text.split()
     
-    scores = {}
+    # 1. Check for Class section mention
+    class_match = re.search(r'\b(στο\s+τμημα|στο|στην\s+ταξη|ταξη|τμημα)\s*([α-γ][1-3]|[α-γ]\s*[1-3])\b', clean)
+    section_direct = re.search(r'\b([α-γ][1-3])\b', clean)
+    
+    detected_section = None
+    if class_match:
+        detected_section = class_match.group(2).replace(' ', '').upper()
+    elif 'ολη η ταξη' in clean or 'στο τμημα' in clean:
+        if section_direct:
+            detected_section = section_direct.group(1).upper()
+
+    # 2. Check for Multiple Students
+    matched_students = []
     for st in students:
-        score = 0
-        st_full = strip_accents(st.get('name', ''))
-        st_parts = st_full.split()
-        first_name = st_parts[0] if st_parts else ''
-        last_name_or_initial = st_parts[1] if len(st_parts) > 1 else ''
-        section = strip_accents(st.get('class_section', ''))
-        
-        # 1. Full exact name match
-        if st_full and st_full in clean:
-            score += 100
-            
-        # 2. First name / stem match
-        first_stem = first_name[:3] if len(first_name) >= 3 else first_name
-        first_matched = False
-        aliases = {
-            'νικ': ['νικος', 'νικου', 'νικο', 'νικολας', 'νικ'],
-            'μιχαελ': ['μιχαελα', 'μιχαελας', 'μιχ'],
-            'γιωργ': ['γιωργος', 'γιωργου', 'γιωργο', 'γιωργης', 'γιωργη', 'γεωργιος'],
-            'σαρογλ': ['σαρογλου', '40γλου', 'σαραντογλου', 'σαρανταγλου', '40 γλου', 'σαρογλου'],
-            'σαρα': ['σαρα', 'σαρας'],
-            'κωστ': ['κωστας', 'κωστα', 'κωνσταντινος'],
-            'μαρι': ['μαρια', 'μαριας'],
-            'δημητρ': ['δημητρης', 'δημητριος', 'δημητρη'],
-            'ελεν': ['ελενη', 'ελενης']
+        st_name = strip_accents(st.get('name', ''))
+        first_stem = st_name[:3] if len(st_name) >= 3 else st_name
+        if st_name and (re.search(r'\b' + re.escape(st_name) + r'\b', clean) or re.search(r'\b' + re.escape(first_stem) + r'[α-ω]*\b', clean)):
+            if st not in matched_students:
+                matched_students.append(st)
+
+    if detected_section and len(matched_students) == 0:
+        return {
+            'target_type': 'class',
+            'students': [s for s in students if s.get('class_section', '').upper() == detected_section],
+            'class_section': detected_section
         }
-        
-        for w in words:
-            if w and (w == first_name or (len(w) >= 3 and first_name.startswith(w)) or (len(first_name) >= 3 and w.startswith(first_stem))):
-                first_matched = True
-                score += 30
-                break
-            for sKey, aList in aliases.items():
-                if first_name.startswith(sKey) and (w in aList or (len(w) >= 3 and w.startswith(sKey))):
-                    first_matched = True
-                    score += 30
-                    break
-            if first_matched:
-                break
-                
-        # 3. Disambiguate Initial / Surname
-        if first_matched and last_name_or_initial:
-            clean_initial = re.sub(r'[^a-zα-ω]', '', last_name_or_initial)
-            for rt in raw_tokens:
-                clean_rt = strip_accents(rt.replace('.', ''))
-                if clean_rt and clean_rt == clean_initial:
-                    score += 80
-                    break
-                if len(clean_rt) >= 3 and clean_rt == clean_initial:
-                    score += 80
-                    break
+    elif len(matched_students) >= 2:
+        return {
+            'target_type': 'group',
+            'students': matched_students,
+            'class_section': matched_students[0].get('class_section')
+        }
+    elif len(matched_students) == 1:
+        return {
+            'target_type': 'individual',
+            'students': matched_students,
+            'class_section': matched_students[0].get('class_section')
+        }
+    else:
+        # Fallback to current student or first student
+        fallback = next((s for s in students if s['id'] == current_student_id), students[0])
+        return {
+            'target_type': 'individual',
+            'students': [fallback],
+            'class_section': fallback.get('class_section')
+        }
 
-        # 4. Disambiguate by Class Section
-        if section and section in clean:
-            score += 50
-            
-        # 5. Prioritize currently selected student if first name matched
-        if first_matched and current_student_id and st.get('id') == current_student_id:
-            score += 15
-            
-        scores[st['id']] = score
 
-    if scores:
-        best_st_id = max(scores, key=scores.get)
-        if scores[best_st_id] > 0:
-            return next((s for s in students if s['id'] == best_st_id), None)
-    
-    if current_student_id:
-        return next((s for s in students if s['id'] == current_student_id), students[0])
-    return students[0]
+def resolve_student_entity(raw_text, students, current_student_id=None):
+    res = resolve_targets(raw_text, students, current_student_id)
+    if res['students']:
+        return res['students'][0]
+    return students[0] if students else None
 
 
 # ==============================================================================
-# 5. DISCOURSE & CONTRAST CLAUSE RESOLVER (PARATACTIC & HYPOTACTIC FLOW)
+# 4. DUVAL REGISTERS & BROUSSEAU OBSTACLE CLASSIFIER
+# ==============================================================================
+
+def classify_duval_register(raw_text):
+    """Classifies the primary semiotic register according to Duval (1995)."""
+    clean = strip_accents(raw_text)
+    scores = {}
+    for reg_id, info in DUVAL_REGISTERS.items():
+        hits = sum(1 for t in info["terms"] if t in clean)
+        scores[reg_id] = hits
+    
+    best_reg = max(scores, key=scores.get)
+    if scores[best_reg] == 0:
+        # default to symbolic for math if nothing else
+        best_reg = "symbolic"
+    return best_reg, DUVAL_REGISTERS[best_reg]["name"], DUVAL_REGISTERS[best_reg]["icon"]
+
+
+def classify_brousseau_obstacle(raw_text):
+    """Detects specific obstacle and categorizes it under Brousseau's typology."""
+    clean = strip_accents(raw_text)
+    for obst_name, info in BROUSSEAU_OBSTACLES.items():
+        if any(t in clean for t in info["terms"]):
+            return obst_name, info["type"], info["type_name"]
+    return "", "none", "-"
+
+
+# ==============================================================================
+# 5. SCAFFOLDING RECOMMENDER ENGINE
+# ==============================================================================
+
+def recommend_scaffolding(domain_id, obstacle_name, bloom_level=3, duval_reg="symbolic"):
+    """
+    Returns 2-3 tailored didactic scaffolding interventions based on detected 
+    obstacle, domain, and Duval register.
+    """
+    recs = []
+    
+    # Obstacle-specific scaffolding
+    if "Κλάσματα" in obstacle_name:
+        recs.append("🧩 Χρήση χειραπτικών κλασματικών ράβδων ή κυκλικών πιτών (CRA - Επίπεδο Συγκεκριμένου).")
+        recs.append("🎨 Χρωματική κωδικοποίηση: πράσινο στον αριθμητή (μέρη που παίρνουμε), κόκκινο στον παρονομαστή (ίσα μέρη συνόλου).")
+        recs.append("📏 Τοποθέτηση κλασμάτων σε αριθμογραμμή από το 0 έως το 1 για εννοιολόγηση μεγέθους.")
+    elif "Διαίρεση" in obstacle_name or "Μηδενός" in obstacle_name:
+        recs.append("📝 Λίστα αυτορρύθμισης 4 βημάτων: 1. Διαιρώ, 2. Πολλαπλασιάζω, 3. Αφαιρώ, 4. Κατεβάζω.")
+        recs.append("🧮 Αναπαράσταση με πλακίδια δεκάδων/μονάδων για οπτικοποίηση της διαδικασίας 'μοιρασιάς'.")
+    elif "Ίσον" in obstacle_name or "Εξίσωση" in obstacle_name or "Μεταβλητή" in obstacle_name:
+        recs.append("⚖️ Αναπαράσταση εξίσωσης με ζυγαριά ισορροπίας δύο δίσκων (ισοδυναμία μελών).")
+        recs.append("🟩 Χρήση Αλγεβρικών Πλακιδίων (Algebra Tiles): πράσινα πλακίδια για το x, κίτρινα/κόκκινα για αριθμούς.")
+        recs.append("🔍 Αντικατάσταση του x με 'κουτάκι μυστηρίου' [ ? ] πριν την εισαγωγή του συμβόλου.")
+    elif "Προσήμων" in obstacle_name:
+        recs.append("🚶 Κίνηση πάνω στην οριζόντια αριθμογραμμή (δεξιά = θετικά/κέρδος, αριστερά = αρνητικά/ζημία).")
+        recs.append("🔴🔵 Δίχρωμα πιόνια (μπλε για θετικά, κόκκινα για αρνητικά με κανόνα μηδενικού ζεύγους).")
+    elif "Περιμέτρου" in obstacle_name or "Εμβαδού" in obstacle_name:
+        recs.append("🧶 Απτική διάκριση: Σπάγκος για την περίμετρο (μήκος γύρω-γύρω) vs. Κάλυψη με τετραγωνάκια Post-it για το εμβαδόν.")
+        recs.append("📐 Επισήμανση μονάδων μέτρησης: cm (1D διάσταση) vs. cm² (2D τετραγωνάκια).")
+    elif "Άγχος" in obstacle_name or "Ρήξη" in obstacle_name:
+        recs.append("🤝 Μοντέλο 'Εγώ κάνω - Εμείς κάνουμε - Εσύ κάνεις' (Gradual Release of Responsibility).")
+        recs.append("📋 Παροχή λυμένου υποδείγματος (Worked Example) με κενά μόνο στα τελικά βήματα.")
+        recs.append("🌟 Αποδοχή του λάθους ως 'εργαλείο μάθησης' και αποσυμπίεση χρόνου.")
+    else:
+        # Domain fallback
+        if domain_id == "algebra":
+            recs.append("🎨 Χρωματική κωδικοποίηση όμοιων όρων (κυκλώστε με ίδιο χρώμα τα x, με άλλο τους αριθμούς).")
+            recs.append("📋 Λίστα βημάτων επίλυσης πρωτοβάθμιας εξίσωσης με παραδείγματα.")
+        elif domain_id == "geometry":
+            recs.append("🖐️ Χρήση διαφανειών και φυσική περιστροφή του σχήματος στο θρανίο.")
+            recs.append("💻 Δυναμική εξερεύνηση στο Geogebra μέσω του Tablet.")
+        else:
+            recs.append("🪜 Διάσπαση του προβλήματος σε 2 απλούστερα υπο-ερωτήματα.")
+            recs.append("🗣️ Ενθάρρυνση για λεκτική εξήγηση της σκέψης (Think-Aloud Protocol).")
+
+    return recs[:3]
+
+
+# ==============================================================================
+# 6. DISCOURSE & CONTRAST CLAUSE RESOLVER
 # ==============================================================================
 
 def resolve_outcome_and_consequence(raw_text):
-    """
-    Parses complex Greek discourse flow to determine the true pedagogical outcome:
-    - Analyzes clause boundaries ('αλλά', 'ωστόσο', 'παρόλα αυτά', 'όμως', 'ενώ', 'παρότι').
-    - Weights post-contrast resolution 2.5x higher than initial antecedent difficulty.
-    """
     clean = strip_accents(raw_text)
-    
     pos_terms = ["πετυχε", "καταφερε", "αριστα", "πολυ καλα", "ευκολα", "βοηθησε", "θετικο", "σωστα", "βρηκε", "ελυσε σωστα", "εμπεδωσε", "κατανοησε πληρως"]
     partial_terms = ["μερικη", "μερικως", "με βοηθεια", "μετρια", "διστακτικα", "με καθοδηγηση", "ημιτελες", "με καποια βοηθεια"]
     neg_terms = ["δυσκολευεται", "δυσκολευτηκε", "δυσκολια", "δεν καταφερε", "απετυχε", "συγχυση", "λαθος", "κολλησε", "αδυναμια", "απογοητευτηκε", "αρνηθηκε"]
@@ -419,7 +541,6 @@ def resolve_outcome_and_consequence(raw_text):
             if re.search(r'\b' + re.escape(conj) + r'\b', clean):
                 parts = re.split(r'\b' + re.escape(conj) + r'\b', clean, maxsplit=1)
                 after_part = parts[1] if len(parts) > 1 else ""
-                
                 if any(p in after_part for p in pos_terms):
                     outcome_id = "positive"
                     outcome_code = "+"
@@ -451,27 +572,28 @@ def resolve_outcome_and_consequence(raw_text):
 
 
 # ==============================================================================
-# 6. MASTER AI OBSERVATION ANALYZER & ENRICHER
+# 7. MASTER AI OBSERVATION ANALYZER & ENRICHER
 # ==============================================================================
 
 def analyze_observation_text(raw_text, students=None, current_student_id=None):
-    """
-    State-of-the-Art Semantic AI Extraction Pipeline.
-    Takes unstructured Greek natural language and outputs structured pedagogical intelligence.
-    """
     raw_text = normalize_speech_text(raw_text)
     clean = strip_accents(raw_text)
     
-    # 1. Match Student via Entity Disambiguation
-    matched_student = resolve_student_entity(raw_text, students, current_student_id) if students else None
-
-    # 2. Vector Semantic Classification of Mathematical Domain
+    # 1. Target and Entity Resolution
+    target_info = resolve_targets(raw_text, students, current_student_id)
+    matched_student = target_info['students'][0] if target_info['students'] else None
+    
+    # 2. Vector Semantic Domain & Bloom
     best_domain_id, best_domain_name, dom_conf = VECTOR_ENGINE.classify_domain(raw_text)
-
-    # 3. Vector Semantic Classification of Revised Bloom Level
     best_bloom_id, best_bloom_name, bloom_conf = VECTOR_ENGINE.classify_bloom(raw_text)
 
-    # 4. Evidence-Based Teaching Strategy Extraction
+    # 3. Duval Register
+    duval_reg, duval_name, duval_icon = classify_duval_register(raw_text)
+
+    # 4. Brousseau Obstacle
+    obst_name, obst_type, obst_type_name = classify_brousseau_obstacle(raw_text)
+
+    # 5. Teaching Strategy
     best_strat_id = "other"
     best_strat_name = "Εξατομικευμένη Παρέμβαση"
     for strat_id, info in STRATEGY_PROFILES.items():
@@ -480,18 +602,18 @@ def analyze_observation_text(raw_text, students=None, current_student_id=None):
             best_strat_name = info["name"]
             break
 
-    # 5. Diagnostic Obstacle Detection (Epistemological Situations)
-    detected_obstacle = ""
-    for obst_name, terms in OBSTACLE_TAXONOMY.items():
-        if any(t in clean for t in terms):
-            detected_obstacle = obst_name
-            break
+    # 6. Scaffolding Recommendations
+    bloom_num = BLOOM_PROFILES.get(best_bloom_id, {}).get("level", 3)
+    scaffolding_recs = recommend_scaffolding(best_domain_id, obst_name, bloom_num, duval_reg)
 
-    # 6. Discourse Clause Flow Outcome Resolution
+    # 7. Outcome
     outcome_id, outcome_code, outcome_name = resolve_outcome_and_consequence(raw_text)
 
     return {
+        "target_type": target_info['target_type'],
+        "class_section": target_info.get('class_section'),
         "student": matched_student,
+        "students": target_info['students'],
         "student_id": matched_student.get("id") if matched_student else "st_1",
         "student_name": matched_student.get("name") if matched_student else "Μαθητής",
         "domain_id": best_domain_id,
@@ -500,9 +622,15 @@ def analyze_observation_text(raw_text, students=None, current_student_id=None):
         "bloom_id": best_bloom_id,
         "bloom_name": best_bloom_name,
         "bloom_confidence": round(bloom_conf, 2),
+        "duval_register": duval_reg,
+        "duval_name": duval_name,
+        "duval_icon": duval_icon,
+        "obstacle": obst_name,
+        "obstacle_type": obst_type,
+        "obstacle_type_name": obst_type_name,
         "strategy_id": best_strat_id,
         "strategy_name": best_strat_name,
-        "obstacle": detected_obstacle,
+        "scaffolding_recommendations": scaffolding_recs,
         "outcome_id": outcome_id,
         "outcome_code": outcome_code,
         "outcome_name": outcome_name,
@@ -511,9 +639,6 @@ def analyze_observation_text(raw_text, students=None, current_student_id=None):
 
 
 def enrich_observation_payload(payload, students=None):
-    """
-    Takes an observation dictionary and enriches it with AI semantic classification.
-    """
     raw_text = payload.get("raw_text", "")
     if not raw_text:
         return payload
@@ -521,9 +646,15 @@ def enrich_observation_payload(payload, students=None):
     current_st_id = payload.get("student_id")
     analyzed = analyze_observation_text(raw_text, students=students, current_student_id=current_st_id)
     
-    for k in ["domain_id", "domain_name", "bloom_id", "bloom_name", "strategy_id", "strategy_name", "obstacle", "outcome_id", "outcome_code", "outcome_name"]:
+    for k in ["domain_id", "domain_name", "bloom_id", "bloom_name", "strategy_id", "strategy_name", 
+              "obstacle", "obstacle_type", "obstacle_type_name", "duval_register", "duval_name", "duval_icon",
+              "outcome_id", "outcome_code", "outcome_name", "target_type"]:
         if not payload.get(k) or payload.get(k) in ["-", "", "undefined"]:
-            payload[k] = analyzed[k]
+            if k in analyzed:
+                payload[k] = analyzed[k]
+
+    if "scaffolding_recommendations" not in payload and analyzed.get("scaffolding_recommendations"):
+        payload["scaffolding_recommendations"] = analyzed["scaffolding_recommendations"]
 
     if not payload.get("student_id") or payload.get("student_id") == "undefined":
         payload["student_id"] = analyzed["student_id"]

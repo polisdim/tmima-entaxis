@@ -3,7 +3,7 @@
 """
 Word (.docx) Document Generator for Inclusion Class (Τμήμα Ένταξης)
 Populates official school templates based on live student data, Bloom levels,
-interventions, and IEP goals.
+interventions, 4-level IEP rubrics, and Duval/Brousseau didactic frameworks.
 School: ΔΗΜ.Ω.Σ. Γυμνάσιο Ξάνθης
 Teacher: Δημήτριος Πολυχρόνης (ΠΕ03.ΕΑΕ)
 """
@@ -11,9 +11,19 @@ Teacher: Δημήτριος Πολυχρόνης (ΠΕ03.ΕΑΕ)
 import os
 import copy
 import docx
+from docx.shared import Inches, Pt, RGBColor
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.table import WD_TABLE_ALIGNMENT
 from datetime import datetime
 
 TEMPLATES_BASE_DIR = r"c:\Users\polis\OneDrive - Democritus University of Thrace\Υλικά\ΕΑΕ\Ένταξη"
+
+RUBRIC_LEVEL_MAP = {
+    1: "1. Αρχικό (Πλήρης καθοδήγηση)",
+    2: "2. Αναδυόμενο (Μερική υποστήριξη)",
+    3: "3. Ικανό (Αυτόνομη επίλυση)",
+    4: "4. Γενικευμένο (Πλήρης κατάκτηση)"
+}
 
 def get_template_file(template_filename, gender="Κορίτσι"):
     """Finds the template file in gender-specific folder with fallback. Returns None if not found."""
@@ -36,21 +46,31 @@ def get_template_file(template_filename, gender="Κορίτσι"):
     return None
 
 def create_standalone_docx(student, observations, doc_type="iep"):
-    """Creates a complete, beautifully styled Word document when official school templates are not present locally."""
+    """Creates a beautifully styled Word document formatted for Greek Inclusion Class."""
     doc = docx.Document()
     full_name = f"{student.get('name', '')} {student.get('surname', '')}".strip()
     
+    # Title
     title = doc.add_heading("ΤΜΗΜΑ ΕΝΤΑΞΗΣ - ΔΗΜ.Ω.Σ. ΓΥΜΝΑΣΙΟ ΞΑΝΘΗΣ", level=0)
-    title.alignment = 1
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    doc_titles = {
+        "iep": "ΕΞΑΤΟΜΙΚΕΥΜΕΝΟ ΠΡΟΓΡΑΜΜΑ ΕΚΠΑΙΔΕΥΣΗΣ (Ε.Π.Ε.)",
+        "aa": "ΑΡΧΙΚΗ ΔΙΑΓΝΩΣΤΙΚΗ ΑΞΙΟΛΟΓΗΣΗ",
+        "rubrics": "ΕΝΔΙΑΜΕΣΗ ΑΞΙΟΛΟΓΗΣΗ & ΡΟΥΜΠΡΙΚΕΣ ΔΙΑΒΑΘΜΙΣΗΣ",
+        "ta": "ΤΕΛΙΚΗ ΕΚΘΕΣΗ ΑΠΟΤΙΜΗΣΗΣ & ΜΕΤΑΒΑΣΗΣ"
+    }
     
     subtitle = doc.add_paragraph()
-    subtitle.alignment = 1
-    r = subtitle.add_run(f"ΕΞΑΤΟΜΙΚΕΥΜΕΝΟ ΠΡΟΓΡΑΜΜΑ ΕΚΠΑΙΔΕΥΣΗΣ (Ε.Π.Ε.) - ΣΧΟΛΙΚΟ ΕΤΟΣ 2026-2027\nΕκπαιδευτικός: Δημήτριος Πολυχρόνης (ΠΕ03.ΕΑΕ)")
+    subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    r = subtitle.add_run(f"{doc_titles.get(doc_type, 'Ε.Π.Ε.')} - ΣΧΟΛΙΚΟ ΕΤΟΣ 2026-2027\nΕκπαιδευτικός Ε.Α.Ε.: Δημήτριος Πολυχρόνης (ΠΕ03.ΕΑΕ)")
     r.bold = True
     
-    doc.add_heading("1. Δημογραφικά Στοιχεία & Στοιχεία Επικοινωνίας", level=1)
+    # 1. Demographic Info
+    doc.add_heading("1. Δημογραφικά Στοιχεία & Διαγνωστικό Ιστορικό", level=1)
     table = doc.add_table(rows=5, cols=2)
     table.style = 'Table Grid'
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
     
     father = student.get('parent_father', {})
     mother = student.get('parent_mother', {})
@@ -67,6 +87,7 @@ def create_standalone_docx(student, observations, doc_type="iep"):
     table.rows[4].cells[0].text = "Στοιχεία Μητέρας:"
     table.rows[4].cells[1].text = f"{mother.get('name', '-')} (Τηλ: {mother.get('phone', '-')})"
     
+    # 2. Math Profile
     doc.add_heading("2. Μαθησιακό & Γνωστικό Προφίλ στα Μαθηματικά", level=1)
     mprof = student.get('math_profile', {})
     doc.add_paragraph(f"• Επίπεδο Μαθηματικού Άγχους: {mprof.get('math_anxiety', 'Μέτριο')}")
@@ -78,39 +99,48 @@ def create_standalone_docx(student, observations, doc_type="iep"):
     if mprof.get('effective_strategies'):
         doc.add_paragraph(f"• Αποτελεσματικές Διδακτικές Στρατηγικές: {mprof.get('effective_strategies')}")
         
-    doc.add_heading("3. Στοχοθεσία Ε.Π.Ε. 2026-2027", level=1)
+    # 3. IEP Goals & 4-Level Rubric
+    doc.add_heading("3. Στοχοθεσία Ε.Π.Ε. & Διαβαθμισμένη Ρουμπρίκα 4 Επιπέδων", level=1)
     iep_targets = student.get('iep_targets', [])
     if iep_targets:
-        t_table = doc.add_table(rows=1 + len(iep_targets), cols=3)
+        t_table = doc.add_table(rows=1 + len(iep_targets), cols=4)
         t_table.style = 'Table Grid'
+        t_table.alignment = WD_TABLE_ALIGNMENT.CENTER
         t_table.rows[0].cells[0].text = "Τομέας"
-        t_table.rows[0].cells[1].text = "Διδακτικός Στόχος"
-        t_table.rows[0].cells[2].text = "Κατάσταση"
+        t_table.rows[0].cells[1].text = "Διδακτικός Στόχος Ε.Π.Ε."
+        t_table.rows[0].cells[2].text = "Στάθμη Ρουμπρίκας (1-4)"
+        t_table.rows[0].cells[3].text = "Κατάσταση"
         for i, t in enumerate(iep_targets, 1):
             t_table.rows[i].cells[0].text = t.get('area', 'Μαθηματικά')
             t_table.rows[i].cells[1].text = t.get('target', '-')
-            t_table.rows[i].cells[2].text = t.get('status', 'Σε εξέλιξη')
+            r_lvl = t.get('rubric_level', 2)
+            t_table.rows[i].cells[2].text = RUBRIC_LEVEL_MAP.get(r_lvl, f"Επίπεδο {r_lvl}")
+            t_table.rows[i].cells[3].text = t.get('status', 'Σε εξέλιξη')
             
-    doc.add_heading("4. Ιστορικό Διδακτικών Παρεμβάσεων & Παρατηρήσεων", level=1)
+    # 4. History of Interventions
+    doc.add_heading("4. Ιστορικό Διδακτικών Παρεμβάσεων στο Τμήμα Ένταξης", level=1)
     st_id = student.get('id')
     st_obs = [o for o in observations if o.get('student_id') == st_id or o.get('student_name') == student.get('name')]
     if st_obs:
-        obs_table = doc.add_table(rows=1 + len(st_obs), cols=4)
+        obs_table = doc.add_table(rows=1 + len(st_obs), cols=5)
         obs_table.style = 'Table Grid'
+        obs_table.alignment = WD_TABLE_ALIGNMENT.CENTER
         obs_table.rows[0].cells[0].text = "Ημερομηνία"
-        obs_table.rows[0].cells[1].text = "Τομέας / Bloom"
-        obs_table.rows[0].cells[2].text = "Στρατηγική / Αποτέλεσμα"
-        obs_table.rows[0].cells[3].text = "Περιγραφή Παρατήρησης"
+        obs_table.rows[0].cells[1].text = "Τομέας & Bloom"
+        obs_table.rows[0].cells[2].text = "Αναπαράσταση (Duval)"
+        obs_table.rows[0].cells[3].text = "Στρατηγική & Αποτέλεσμα"
+        obs_table.rows[0].cells[4].text = "Περιγραφή Παρατήρησης"
         for i, o in enumerate(st_obs, 1):
             obs_table.rows[i].cells[0].text = (o.get('timestamp') or '')[:10]
             obs_table.rows[i].cells[1].text = f"{o.get('domain_name','')}\n({o.get('bloom_name','')})"
-            obs_table.rows[i].cells[2].text = f"{o.get('strategy_name','')}\n[{o.get('outcome_code','+')}]"
-            obs_table.rows[i].cells[3].text = o.get('raw_text', '')
+            obs_table.rows[i].cells[2].text = o.get('duval_name', o.get('duval_register', '-'))
+            obs_table.rows[i].cells[3].text = f"{o.get('strategy_name','')}\n[{o.get('outcome_code','+')}]"
+            obs_table.rows[i].cells[4].text = o.get('raw_text', '')
             
     return doc
 
 def generate_iep_docx(student, observations, output_dir):
-    """Generates the official IEP (.docx) document using the user's template (3. ΕΠΕ.docx)."""
+    """Generates the official IEP (.docx) document."""
     gender = student.get('gender', 'Κορίτσι')
     tmpl_path = get_template_file("3. ΕΠΩΝΥΜΟ ΟΝΟΜΑ ΕΠΕ.docx", gender)
     if not tmpl_path:
@@ -118,7 +148,6 @@ def generate_iep_docx(student, observations, output_dir):
     else:
         doc = docx.Document(tmpl_path)
     
-    # 1. Fill Table 0 (Student Details)
     if len(doc.tables) > 0:
         t0 = doc.tables[0]
         parts = student.get('name', '').split(' ', 1)
@@ -137,23 +166,6 @@ def generate_iep_docx(student, observations, output_dir):
             t0.rows[3].cells[1].text = student.get('diagnosis', 'Ειδική Μαθησιακή Δυσκολία')
             t0.rows[3].cells[3].text = "2026-2027"
 
-    # Filter observations for this student
-    st_id = student.get('id')
-    st_obs = [o for o in observations if o.get('student_id') == st_id or o.get('student_name') == student.get('name')]
-    math_obs = [o for o in st_obs if o.get('domain_id') in ['arithmetic', 'algebra', 'geometry', 'stochastics']]
-    
-    # 2. Iterate paragraphs and enrich math adaptations
-    for p in doc.paragraphs:
-        txt = p.text.strip()
-        if "Στην Άλγεβρα:" in txt:
-            alg_obs = [o for o in math_obs if o.get('domain_id') == 'algebra']
-            alg_desc = alg_obs[0].get('raw_text', '') if alg_obs else "Χρήση χρωματικής κωδικοποίησης και νοητικών χαρτών βημάτων για την επίλυση εξισώσεων."
-            p.text = f"Στην Άλγεβρα: {alg_desc}"
-        elif "Στη Γεωμετρία:" in txt:
-            geom_obs = [o for o in math_obs if o.get('domain_id') == 'geometry']
-            geom_desc = geom_obs[0].get('raw_text', '') if geom_obs else "Διαχωρισμός περιμέτρου και εμβαδού με χρήση απτών οπτικών αναπαραστάσεων και σχημάτων."
-            p.text = f"Στη Γεωμετρία: {geom_desc}"
-
     os.makedirs(output_dir, exist_ok=True)
     st_clean_name = student.get('name', 'Μαθητής').replace(' ', '_')
     out_filename = f"2_ΕΠΕ_{st_clean_name}_2026-2027.docx"
@@ -162,7 +174,7 @@ def generate_iep_docx(student, observations, output_dir):
     return out_path
 
 def generate_initial_assessment_docx(student, observations, output_dir):
-    """Generates the Initial Assessment (.docx) document (2. ΑΑ.docx)."""
+    """Generates the Initial Assessment (.docx) document."""
     gender = student.get('gender', 'Κορίτσι')
     tmpl_path = get_template_file("2. ΕΠΩΝΥΜΟ ΟΝΟΜΑ ΑΑ.docx", gender)
     if not tmpl_path:
@@ -194,7 +206,7 @@ def generate_initial_assessment_docx(student, observations, output_dir):
     return out_path
 
 def generate_rubrics_docx(student, observations, output_dir):
-    """Generates the Mid-Year Evaluation / Rubrics (.docx) document (4. ΑΞΙΟΛΟΓΗΣΗ.docx)."""
+    """Generates the Mid-Year Evaluation / Rubrics (.docx) document."""
     gender = student.get('gender', 'Κορίτσι')
     tmpl_path = get_template_file("4. ΕΠΩΝΥΜΟ ΟΝΟΜΑ ΑΞΙΟΛΟΓΗΣΗ.docx", gender)
     if not tmpl_path:
@@ -218,7 +230,7 @@ def generate_rubrics_docx(student, observations, output_dir):
     return out_path
 
 def generate_final_evaluation_docx(student, observations, output_dir):
-    """Generates the Final Summative Evaluation Report (.docx) document (6. ΤΑ.docx)."""
+    """Generates the Final Summative Evaluation Report (.docx) document."""
     gender = student.get('gender', 'Κορίτσι')
     tmpl_path = get_template_file("6. ΕΠΩΝΥΜΟ ΟΝΟΜΑ ΤΑ.docx", gender)
     if not tmpl_path:
