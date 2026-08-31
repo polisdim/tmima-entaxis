@@ -261,31 +261,78 @@ def sync_markdown_and_docx_files():
         
         st_obs = [o for o in observations if o.get('student_id') == st['id'] or o.get('student_name') == st_name]
         
+        # Calculate age if birth_date is present
+        age_str = ""
+        if st.get('birth_date'):
+            try:
+                b_date = datetime.strptime(st['birth_date'][:10], '%Y-%m-%d')
+                today = datetime.now()
+                age_years = today.year - b_date.year - ((today.month, today.day) < (b_date.month, b_date.day))
+                age_str = f" ({age_years} ετών)"
+            except Exception:
+                pass
+
+        father = st.get('parent_father', {})
+        mother = st.get('parent_mother', {})
+        contact = st.get('contact', {})
+        diag = st.get('diagnosis_info', {})
+        mprof = st.get('math_profile', {})
+        psprof = st.get('psychosocial_profile', {})
+
+        full_name = f"{st.get('name', '')} {st.get('surname', '')}".strip()
+        
         # 1.1 Profile Markdown
-        profile_md = f"""# Καρτέλα Μαθητή: {st['name']} ({st.get('code', 'S00')})
-**Τάξη / Τμήμα:** {st.get('grade', '')} {st.get('class_section', '')}  
-**Φύλο:** {st.get('gender', '')}  
-**Εβδομαδιαίες Ώρες Τ.Ε.:** {st.get('hours_per_week', 3)}  
-**Διάγνωση / ΕΕΑ:** {st.get('diagnosis', 'Εκκρεμεί')}  
-**Ημερομηνία Εγγραφής:** {st.get('created_at', '')[:10]}  
+        profile_md = f"""# Πλήρης Ατομική Καρτέλα Μαθητή: {full_name} ({st.get('code', 'S00')})
+**Σχολείο:** ΔΗΜ.Ω.Σ. Γυμνάσιο Ξάνθης  
+**Σχολικό Έτος:** 2026-2027  
+**Εκπαιδευτικός:** Δημήτριος Πολυχρόνης (ΠΕ03.ΕΑΕ)  
 
 ---
 
-## Α. Γενικό Προφίλ & Παρατηρήσεις
-{st.get('notes', 'Δεν έχουν καταχωρηθεί γενικές σημειώσεις.')}
+## 1. Δημογραφικά Στοιχεία & Στοιχεία Επικοινωνίας
+* **Ονοματεπώνυμο:** {full_name}
+* **Φύλο:** {st.get('gender', 'Μαθητής')}
+* **Ημερομηνία Γέννησης:** {st.get('birth_date', 'Εκκρεμεί')}{age_str}
+* **Τάξη & Τμήμα:** {st.get('grade', '')} {st.get('class_section', '')}
+* **Αριθμός Μητρώου (Α.Μ.):** {st.get('registration_no', '-')}
+* **Πατέρας:** {father.get('name', '-')} (Τηλ: {father.get('phone', '-')})
+* **Μητέρα:** {mother.get('name', '-')} (Τηλ: {mother.get('phone', '-')})
+* **Διεύθυνση Κατοικίας:** {contact.get('address', '-')}
+* **Email Επικοινωνίας:** {contact.get('email', '-')}
+* **Σημειώσεις Οικογένειας:** {contact.get('family_notes', '-')}
 
 ---
 
-## Β. Πληρότητα Χαρτογράφησης Μαθησιακού Προφίλ (Coverage %)
+## 2. Διαγνωστικό Ιστορικό & Γνωμάτευση ΚΕΔΑΣΥ
+* **Φορέας Διάγνωσης:** {diag.get('authority', 'ΚΕΔΑΣΥ Ξάνθης')}
+* **Αρ. & Ημ/νία Πρωτοκόλλου:** {diag.get('protocol_no', '-')}
+* **Είδος Ειδικών Εκπαιδευτικών Αναγκών:** {diag.get('diagnosis_type', st.get('diagnosis', 'Ειδική Μαθησιακή Δυσκολία'))}
+* **Ιστορικό Υποστήριξης:** {diag.get('support_history', '-')}
+
+---
+
+## 3. Μαθησιακό & Γνωστικό Προφίλ στα Μαθηματικά
+* **Μαθηματικό Άγχος:** {mprof.get('math_anxiety', 'Μέτριο')}
+* **Δυνατά Σημεία:** {mprof.get('strengths', '-')}
+* **Κύρια Εμπόδια / Τομείς Δυσκολίας:** {mprof.get('weaknesses', '-')}
+* **Προτιμώμενο Μαθησιακό Στυλ:** {mprof.get('learning_style', 'Οπτικό / Πολυαισθητηριακό')}
+* **Αποτελεσματικές Διδακτικές Στρατηγικές:** {mprof.get('effective_strategies', '-')}
+
+---
+
+## 4. Ψυχοκοινωνικό Προφίλ & Συμπεριφορά
+* **Αυτοαντίληψη & Αυτοπεποίθηση:** {psprof.get('self_concept', '-')}
+* **Εστίαση & Διάρκεια Προσοχής:** {psprof.get('attention_focus', '-')}
+* **Κοινωνική Αλληλεπίδραση & Συνεργασία:** {psprof.get('social_interaction', '-')}
+
+---
+
+## 5. Πληρότητα Χαρτογράφησης Μαθησιακού Προφίλ
 * **Συνολική Πληρότητα:** {st.get('coverage', {}).get('total', 0)}%
 * **Αριθμητική:** {st.get('coverage', {}).get('arithmetic', 0)}%
 * **Άλγεβρα:** {st.get('coverage', {}).get('algebra', 0)}%
 * **Γεωμετρία:** {st.get('coverage', {}).get('geometry', 0)}%
 * **Στοχαστικά:** {st.get('coverage', {}).get('stochastics', 0)}%
-* **Μαθησιακή Εμπλοκή & Συνέπεια:** {st.get('coverage', {}).get('engagement', 0)}%
-* **Ψυχοσυναισθηματικός Τομέας:** {st.get('coverage', {}).get('socioemotional', 0)}%
-* **Συνεργασία & Οικογένεια:** {st.get('coverage', {}).get('collaboration_family', 0)}%
-* **Στόχοι Ε.Π.Ε.:** {st.get('coverage', {}).get('iep_goals', 0)}%
 
 ---
 *Τελευταία ενημέρωση αρχείου: {datetime.now().strftime('%d/%m/%Y %H:%M')}*

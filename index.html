@@ -117,7 +117,7 @@
           Καταγραφή
         </button>
         <button onclick="switchTab('students')" id="tab-students" class="touch-btn text-xs sm:text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 border border-brand-border">
-          Μαθητές
+          👤 Καρτέλες Μαθητών
         </button>
         <button onclick="switchTab('matrix')" id="tab-matrix" class="touch-btn text-xs sm:text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 border border-brand-border">
           Πίνακας
@@ -187,58 +187,46 @@
 
     </section>
 
-    <!-- ========================================== -->
-    <!-- TAB 2: STUDENTS VIEW                       -->
+        <!-- ========================================== -->
+    <!-- TAB 2: MASTER STUDENT DOSSIERS VIEW        -->
     <!-- ========================================== -->
     <section id="view-students" class="space-y-4 hidden">
       
-      <!-- Student Selector Bar -->
-      <div class="flex flex-wrap items-center justify-between gap-2 bg-brand-card border border-brand-border rounded-xl p-3">
-        <div id="student-pills" class="flex flex-wrap gap-1.5"></div>
-        <button onclick="openNewStudentModal()" class="touch-btn bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-semibold rounded-lg border border-brand-border">
-          + Νέος Μαθητής
-        </button>
+      <!-- Top Control & Filter Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-brand-card border border-brand-border rounded-xl p-3 shadow-sm">
+        <div class="flex items-center gap-1.5 flex-wrap" id="grade-filter-buttons">
+          <button onclick="filterStudentsByGrade('ALL')" id="filter-grade-all" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-cyan text-slate-950 transition-all">Όλοι οι Μαθητές</button>
+          <button onclick="filterStudentsByGrade('Α')" id="filter-grade-a" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-brand-border transition-all">Α' Γυμνασίου</button>
+          <button onclick="filterStudentsByGrade('Β')" id="filter-grade-b" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-brand-border transition-all">Β' Γυμνασίου</button>
+          <button onclick="filterStudentsByGrade('Γ')" id="filter-grade-c" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-brand-border transition-all">Γ' Γυμνασίου</button>
+        </div>
+
+        <div class="flex items-center gap-2 flex-1 sm:flex-none justify-end">
+          <input type="text" id="student-search-input" oninput="renderStudentsGrid()" placeholder="🔍 Αναζήτηση μαθητή..."
+                 class="bg-slate-900 border border-brand-border rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:ring-1 focus:ring-cyan-500 w-full sm:w-48">
+          <button onclick="openStudentDossier('new')" class="touch-btn bg-brand-cyan hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-lg shadow-sm whitespace-nowrap">
+            + Νέα Καρτέλα
+          </button>
+        </div>
       </div>
 
-      <!-- Student Card -->
-      <div class="bg-brand-card border border-brand-border rounded-xl p-5 space-y-5">
-        
-        <!-- Header -->
-        <div class="flex items-start justify-between gap-4 pb-3 border-b border-brand-border">
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 id="st-name" class="text-xl font-bold text-white"></h2>
-              <span id="st-grade" class="text-xs px-2 py-0.5 rounded bg-slate-800 text-cyan-300 border border-slate-700"></span>
+      <!-- Master Students Cards Grid -->
+      <div id="students-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4"></div>
+
+      <!-- Cognitive / Bloom Inspector Drawer (Appears when clicking Inspect on a student) -->
+      <div id="cognitive-bloom-drawer" class="bg-brand-card border border-brand-border rounded-xl p-5 space-y-4 shadow-lg hidden">
+        <div class="flex items-center justify-between pb-3 border-b border-brand-border">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">📊</span>
+            <div>
+              <h3 id="cog-student-name" class="text-sm font-bold text-white">Γνωστική Χαρτογράφηση</h3>
+              <p class="text-[11px] text-slate-400">Επίπεδα Bloom (1-5) & Πληρότητα ανά Τομέα Μαθηματικών</p>
             </div>
-            <p id="st-diagnosis" class="text-xs text-slate-400 mt-1"></p>
           </div>
-          <div class="bg-slate-900 border border-cyan-800/60 rounded-lg p-2 text-center min-w-[90px]">
-            <span class="text-xs text-slate-400 block">Πληρότητα</span>
-            <span id="st-coverage-total" class="text-xl font-bold text-brand-cyan">0%</span>
-          </div>
+          <button onclick="closeCognitiveDrawer()" class="text-slate-400 hover:text-white text-xs px-2 py-1 rounded bg-slate-900 border border-slate-800">✕ Κλείσιμο</button>
         </div>
-
-        <!-- Coverage Grid with Integrated Per-Domain 1-5 Scale -->
-        <div class="space-y-3">
-          <div class="flex items-center justify-between text-xs text-slate-400 font-bold">
-            <span>ΧΑΡΤΟΓΡΑΦΗΣΗ ΤΟΜΕΩΝ & ΓΝΩΣΤΙΚΗ ΔΙΑΒΑΘΜΙΣΗ (1-5)</span>
-            <span class="text-[11px] text-brand-cyan font-normal cursor-pointer hover:underline" onclick="inspectDomain('arithmetic', 'Αριθμητική')">💡 Κάντε κλικ σε τομέα για λεπτομερή ανάλυση</span>
-          </div>
-          <div id="coverage-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
-        </div>
-
-        <!-- Selected Domain Detailed Inspector (Dynamic Cognitive Drawer) -->
+        <div id="coverage-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
         <div id="domain-detail-card" class="bg-slate-900 border border-cyan-800/60 rounded-xl p-4 text-xs space-y-3 hidden transition-all shadow-lg"></div>
-
-        <!-- IEP Targets -->
-        <div class="space-y-2 pt-2 border-t border-brand-border">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-400">ΣΤΟΧΟΙ Ε.Π.Ε.</span>
-            <button onclick="openAddTargetModal()" class="text-xs text-brand-cyan hover:underline font-semibold">+ Προσθήκη</button>
-          </div>
-          <div id="student-iep-list" class="space-y-1.5"></div>
-        </div>
-
       </div>
 
     </section>
@@ -299,24 +287,296 @@
 
   </main>
 
-  <!-- MODAL: ADD STUDENT -->
-  <div id="modal-new-student" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 hidden">
-    <div class="bg-brand-card border border-brand-border rounded-xl max-w-sm w-full p-5 space-y-3 shadow-2xl">
-      <h3 class="text-sm font-bold text-white">Νέος Μαθητής</h3>
-      <input type="text" id="new-st-name" class="w-full bg-slate-900 border border-brand-border rounded p-2 text-xs text-white" placeholder="Όνομα (π.χ. Γιώργος)">
-      <div class="grid grid-cols-2 gap-2">
-        <select id="new-st-gender" class="bg-slate-900 border border-brand-border rounded p-2 text-xs text-white">
-          <option value="Αγόρι">Αγόρι</option>
-          <option value="Κορίτσι">Κορίτσι</option>
-        </select>
-        <input type="text" id="new-st-grade" class="bg-slate-900 border border-brand-border rounded p-2 text-xs text-white" placeholder="Τάξη (π.χ. Β1)">
-      </div>
-      <input type="text" id="new-st-diagnosis" class="w-full bg-slate-900 border border-brand-border rounded p-2 text-xs text-white" placeholder="Διάγνωση (π.χ. Δυσαριθμησία)">
+  <!-- ==================================================== -->
+  <!-- MODAL: MASTER STUDENT DOSSIER (ΠΛΗΡΗΣ ΚΑΡΤΕΛΑ ΜΑΘΗΤΗ) -->
+  <!-- ==================================================== -->
+  <div id="modal-student-dossier" class="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-2 sm:p-4 hidden backdrop-blur-sm">
+    <div class="bg-brand-card border border-brand-border rounded-2xl max-w-4xl w-full max-h-[94vh] flex flex-col shadow-2xl overflow-hidden">
       
-      <div class="flex justify-end gap-2 pt-2">
-        <button onclick="closeNewStudentModal()" class="touch-btn bg-slate-800 text-slate-300 rounded text-xs">Ακύρωση</button>
-        <button onclick="saveNewStudent()" class="touch-btn bg-brand-cyan text-slate-950 font-bold rounded text-xs">Αποθήκευση</button>
+      <!-- Modal Header -->
+      <div class="p-4 sm:p-5 border-b border-brand-border bg-slate-900/90 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div id="dos-avatar-badge" class="w-11 h-11 rounded-xl bg-cyan-950 border border-cyan-700/80 text-cyan-300 font-bold text-lg flex items-center justify-center shadow-inner">
+            👤
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 id="dos-modal-title" class="text-base sm:text-lg font-bold text-white tracking-wide">Πλήρης Καρτέλα Μαθητή</h2>
+              <span id="dos-header-badge" class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-800 text-cyan-300 border border-slate-700"></span>
+            </div>
+            <p class="text-[11px] text-slate-400">Τμήμα Ένταξης | ΔΗΜ.Ω.Σ. Γυμνάσιο Ξάνθης</p>
+          </div>
+        </div>
+        <button onclick="closeStudentDossier()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm transition-all">✕</button>
       </div>
+
+      <!-- Dossier Sub-Tabs Navigation -->
+      <div class="flex items-center gap-1.5 px-4 sm:px-5 py-2.5 bg-slate-950 border-b border-brand-border overflow-x-auto custom-scroll">
+        <button type="button" onclick="switchDossierSubTab(1)" id="dossier-tab-1" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-cyan text-slate-950 transition-all whitespace-nowrap shadow-sm">
+          👤 1. Προσωπικά & Γονείς
+        </button>
+        <button type="button" onclick="switchDossierSubTab(2)" id="dossier-tab-2" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 border border-brand-border transition-all whitespace-nowrap">
+          🏥 2. Διαγνωστικό ΚΕΔΑΣΥ
+        </button>
+        <button type="button" onclick="switchDossierSubTab(3)" id="dossier-tab-3" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 border border-brand-border transition-all whitespace-nowrap">
+          📐 3. Μαθηματικό Προφίλ & Άγχος
+        </button>
+        <button type="button" onclick="switchDossierSubTab(4)" id="dossier-tab-4" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 border border-brand-border transition-all whitespace-nowrap">
+          🧠 4. Ψυχοκοινωνικό & Στόχοι ΕΠΕ
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable Form) -->
+      <form id="dossier-form" onsubmit="event.preventDefault(); saveStudentDossier();" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 custom-scroll">
+        <input type="hidden" id="dos-id">
+
+        <!-- SUB-TAB 1: ΠΡΟΣΩΠΙΚΑ & ΓΟΝΕΙΣ -->
+        <div id="dossier-subtab-view-1" class="space-y-4">
+          
+          <div class="bg-slate-900/60 border border-brand-border rounded-xl p-4 space-y-3">
+            <h4 class="text-xs font-bold text-cyan-400 tracking-wider">ΣΤΟΙΧΕΙΑ ΜΑΘΗΤΗ/ΤΡΙΑΣ</h4>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Όνομα *</label>
+                <input type="text" id="dos-name" required class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Μιχαέλα">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Επώνυμο</label>
+                <input type="text" id="dos-surname" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Παπαδοπούλου">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Φύλο</label>
+                <select id="dos-gender" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400">
+                  <option value="Κορίτσι">Κορίτσι</option>
+                  <option value="Αγόρι">Αγόρι</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Ημ/νία Γέννησης</label>
+                <input type="date" id="dos-birthdate" onchange="updateCalculatedAgeDisplay()" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400">
+                <span id="dos-age-display" class="text-[10px] text-cyan-400 mt-0.5 block"></span>
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Τάξη</label>
+                <select id="dos-grade" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400">
+                  <option value="Α' Γυμνασίου">Α' Γυμνασίου</option>
+                  <option value="Β' Γυμνασίου">Β' Γυμνασίου</option>
+                  <option value="Γ' Γυμνασίου">Γ' Γυμνασίου</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Τμήμα</label>
+                <input type="text" id="dos-section" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Β1">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Αριθμός Μητρώου (Α.Μ.)</label>
+                <input type="text" id="dos-regno" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. 4521">
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900/60 border border-brand-border rounded-xl p-4 space-y-3">
+            <h4 class="text-xs font-bold text-cyan-400 tracking-wider">ΣΤΟΙΧΕΙΑ ΓΟΝΕΩΝ & ΕΠΙΚΟΙΝΩΝΙΑ</h4>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="bg-slate-950/80 p-3 rounded-lg border border-brand-border space-y-2">
+                <span class="text-xs font-bold text-slate-300 flex items-center gap-1">👨 Στοιχεία Πατέρα</span>
+                <div>
+                  <label class="block text-[10px] text-slate-400">Ονοματεπώνυμο</label>
+                  <input type="text" id="dos-father-name" class="w-full bg-slate-900 border border-slate-800 rounded p-1.5 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Ιωάννης Παπαδόπουλος">
+                </div>
+                <div>
+                  <label class="block text-[10px] text-slate-400">Τηλέφωνο Επικοινωνίας</label>
+                  <input type="tel" id="dos-father-phone" class="w-full bg-slate-900 border border-slate-800 rounded p-1.5 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. 6971234567">
+                </div>
+              </div>
+
+              <div class="bg-slate-950/80 p-3 rounded-lg border border-brand-border space-y-2">
+                <span class="text-xs font-bold text-slate-300 flex items-center gap-1">👩 Στοιχεία Μητέρας</span>
+                <div>
+                  <label class="block text-[10px] text-slate-400">Ονοματεπώνυμο</label>
+                  <input type="text" id="dos-mother-name" class="w-full bg-slate-900 border border-slate-800 rounded p-1.5 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Ελένη Παπαδοπούλου">
+                </div>
+                <div>
+                  <label class="block text-[10px] text-slate-400">Τηλέφωνο Επικοινωνίας</label>
+                  <input type="tel" id="dos-mother-phone" class="w-full bg-slate-900 border border-slate-800 rounded p-1.5 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. 6987654321">
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Διεύθυνση Κατοικίας</label>
+                <input type="text" id="dos-address" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Ξάνθη">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Email Επικοινωνίας</label>
+                <input type="email" id="dos-email" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. parents@example.com">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-300 mb-1">Σημειώσεις Οικογενειακού Πλαισίου / Συνεργασίας</label>
+              <textarea id="dos-family-notes" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="Σημειώσεις για την επικοινωνία με τους γονείς..."></textarea>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- SUB-TAB 2: ΔΙΑΓΝΩΣΤΙΚΟ ΚΕΔΑΣΥ -->
+        <div id="dossier-subtab-view-2" class="space-y-4 hidden">
+          
+          <div class="bg-slate-900/60 border border-brand-border rounded-xl p-4 space-y-3">
+            <h4 class="text-xs font-bold text-cyan-400 tracking-wider">ΙΑΤΡΟΠΑΙΔΑΓΩΓΙΚΗ ΕΚΘΕΣΗ & ΓΝΩΜΑΤΕΥΣΗ</h4>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Φορέας Διάγνωσης</label>
+                <input type="text" id="dos-diag-authority" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. ΚΕΔΑΣΥ Ξάνθης">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Αριθμός & Ημ/νία Πρωτοκόλλου</label>
+                <input type="text" id="dos-diag-protocol" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. 284/12-04-2024">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-300 mb-1">Είδος Ειδικών Εκπαιδευτικών Αναγκών / Διάγνωση *</label>
+              <input type="text" id="dos-diag-type" required class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Ειδική Μαθησιακή Δυσκολία (Δυσαριθμησία & Δυσλεξία)">
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-300 mb-1">Ιστορικό Εκπαιδευτικής Υποστήριξης</label>
+              <input type="text" id="dos-diag-history" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. 2ο έτος φοίτησης στο Τμήμα Ένταξης, προηγούμενη στήριξη στο Δημοτικό">
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-300 mb-1">Γενικές Παρατηρήσεις / Σημειώσεις Εκπαιδευτικού</label>
+              <textarea id="dos-notes" rows="3" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="Γενικές παιδαγωγικές παρατηρήσεις για τον/την μαθητή/τρια..."></textarea>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SUB-TAB 3: ΜΑΘΗΣΙΑΚΟ ΠΡΟΦΙΛ & ΑΓΧΟΣ -->
+        <div id="dossier-subtab-view-3" class="space-y-4 hidden">
+          
+          <div class="bg-slate-900/60 border border-brand-border rounded-xl p-4 space-y-3">
+            <h4 class="text-xs font-bold text-cyan-400 tracking-wider">ΓΝΩΣΤΙΚΟ & ΜΑΘΗΣΙΑΚΟ ΠΡΟΦΙΛ ΣΤΑ ΜΑΘΗΜΑΤΙΚΑ</h4>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 mb-1">📊 Επίπεδο Μαθηματικού Άγχους (Math Anxiety)</label>
+                <select id="dos-math-anxiety" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400 font-bold">
+                  <option value="Χαμηλό">🟢 Χαμηλό Άγχος (Άνετη συμμετοχή)</option>
+                  <option value="Μέτριο" selected>🟡 Μέτριο Άγχος (Χρειάζεται ενθάρρυνση)</option>
+                  <option value="Υψηλό">🔴 Υψηλό Άγχος (Άγχος επίδοσης / αποφυγή)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 mb-1">🧠 Προτιμώμενο Μαθησιακό Στυλ</label>
+                <select id="dos-learning-style" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400">
+                  <option value="Οπτικό / Πολυαισθητηριακό">Οπτικό / Πολυαισθητηριακό</option>
+                  <option value="Ακουστικό / Προφορικό">Ακουστικό / Προφορικό</option>
+                  <option value="Κιναισθητικό / Απτικό">Κιναισθητικό / Απτικό (Χειραπτικό υλικό)</option>
+                  <option value="Δομημένο / Βήμα-προς-Βήμα">Δομημένο / Βήμα-προς-Βήμα</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-300 mb-1">✨ Δυνατά Σημεία στα Μαθηματικά (Strengths)</label>
+              <textarea id="dos-math-strengths" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Εξαιρετική οπτική αντίληψη, αγάπη για τα γεωμετρικά σχήματα, δεξιότητα στο Geogebra..."></textarea>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-300 mb-1">⚠️ Κύρια Εμπόδια & Τομείς Δυσκολίας (Target Weaknesses)</label>
+              <textarea id="dos-math-weaknesses" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Δυσκολία στις πράξεις με κλάσματα, αυτοματοποίηση προπαίδειας, επίλυση εξισώσεων..."></textarea>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-300 mb-1">🛠️ Αποτελεσματικές Διδακτικές Στρατηγικές & Προσαρμογές</label>
+              <textarea id="dos-math-strategies" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Χρήση αριθμογραμμής, βήμα-προς-βήμα καθοδήγηση (scaffolding), χρωματική κωδικοποίηση προσήμων..."></textarea>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- SUB-TAB 4: ΨΥΧΟΚΟΙΝΩΝΙΚΟ & ΣΤΟΧΟΙ ΕΠΕ -->
+        <div id="dossier-subtab-view-4" class="space-y-4 hidden">
+          
+          <div class="bg-slate-900/60 border border-brand-border rounded-xl p-4 space-y-3">
+            <h4 class="text-xs font-bold text-cyan-400 tracking-wider">ΨΥΧΟΚΟΙΝΩΝΙΚΟ ΠΡΟΦΙΛ & ΣΥΜΠΕΡΙΦΟΡΑ</h4>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 mb-1">🌟 Αυτοαντίληψη & Αυτοπεποίθηση</label>
+                <textarea id="dos-self-concept" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="Στάση απέναντι στην προσπάθεια..."></textarea>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 mb-1">⏳ Εστίαση & Διάρκεια Προσοχής</label>
+                <textarea id="dos-attention-focus" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="Διάρκεια συγκέντρωσης..."></textarea>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 mb-1">🤝 Κοινωνική Αλληλεπίδραση</label>
+                <textarea id="dos-social-interaction" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="Συνεργασία στην ομάδα..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- IEP TARGETS BUILDER -->
+          <div class="bg-slate-900/60 border border-brand-border rounded-xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold text-cyan-400 tracking-wider">🎯 ΣΤΟΧΟΙ Ε.Π.Ε. 2026-2027</h4>
+              <span class="text-[11px] text-slate-400">Εξατομικευμένη Στοχοθεσία</span>
+            </div>
+
+            <div class="flex gap-2">
+              <select id="dos-new-target-area" class="bg-slate-950 border border-brand-border rounded-lg px-2 py-1.5 text-xs text-white w-36 flex-shrink-0">
+                <option value="Αριθμητική">Αριθμητική</option>
+                <option value="Άλγεβρα">Άλγεβρα</option>
+                <option value="Γεωμετρία">Γεωμετρία</option>
+                <option value="Στοχαστικά">Στοχαστικά</option>
+                <option value="Εμπλοκή">Εμπλοκή</option>
+                <option value="Μαθηματικό Προφίλ">Μαθηματικό Προφίλ</option>
+              </select>
+              <input type="text" id="dos-new-target-text" placeholder="Νέος διδακτικός στόχος Ε.Π.Ε...." class="flex-1 bg-slate-950 border border-brand-border rounded-lg px-3 py-1.5 text-xs text-white outline-none focus:border-cyan-400">
+              <button type="button" onclick="addIepTargetToDossier()" class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs rounded-lg whitespace-nowrap">+ Προσθήκη</button>
+            </div>
+
+            <div id="dos-iep-targets-container" class="space-y-2 pt-1 max-h-48 overflow-y-auto custom-scroll"></div>
+          </div>
+
+        </div>
+
+      </form>
+
+      <!-- Modal Footer -->
+      <div class="p-4 sm:p-5 border-t border-brand-border bg-slate-900/90 flex items-center justify-between gap-3">
+        <div>
+          <button type="button" id="dos-btn-export-docx" onclick="downloadCurrentDossierDocx()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-800/80 text-xs font-semibold flex items-center gap-1.5 transition-all">
+            📄 Εξαγωγή Word (.docx)
+          </button>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="closeStudentDossier()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-all">
+            Ακύρωση
+          </button>
+          <button type="button" onclick="saveStudentDossier()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-black text-xs shadow-lg active:scale-95 transition-all">
+            💾 Αποθήκευση Καρτέλας
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -1025,6 +1285,7 @@
           }
           populateSelects();
           renderRecent();
+          renderStudentsGrid();
         }
       } catch (e) {}
     }
@@ -1321,7 +1582,433 @@
       detailCard.classList.remove('hidden');
     }
 
+    
+    // =========================================================================
+    // MASTER STUDENT DOSSIER & GRID MANAGEMENT
+    // =========================================================================
+    let currentGradeFilter = 'ALL';
+    let currentDossierIepTargets = [];
+
+    function calculateStudentAge(birthDateStr) {
+      if (!birthDateStr) return '';
+      try {
+        const bDate = new Date(birthDateStr);
+        if (isNaN(bDate.getTime())) return '';
+        const today = new Date();
+        let age = today.getFullYear() - bDate.getFullYear();
+        const m = today.getMonth() - bDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < bDate.getDate())) {
+          age--;
+        }
+        return age > 0 ? `${age} ετών` : '';
+      } catch (e) {
+        return '';
+      }
+    }
+
+    function filterStudentsByGrade(grade) {
+      currentGradeFilter = grade;
+      ['all', 'a', 'b', 'c'].forEach(g => {
+        const btn = document.getElementById(`filter-grade-${g}`);
+        if (btn) {
+          const match = (g === 'all' && grade === 'ALL') || (g === 'a' && grade === 'Α') || (g === 'b' && grade === 'Β') || (g === 'c' && grade === 'Γ');
+          btn.className = match
+            ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-cyan text-slate-950 transition-all shadow-sm'
+            : 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-brand-border transition-all';
+        }
+      });
+      renderStudentsGrid();
+    }
+
+    function renderStudentsGrid() {
+      const grid = document.getElementById('students-cards-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const searchInput = document.getElementById('student-search-input');
+      const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+      let list = (appData.students || []).slice();
+
+      if (currentGradeFilter !== 'ALL') {
+        list = list.filter(s => {
+          const g = (s.grade || '') + (s.class_section || '');
+          return g.includes(currentGradeFilter);
+        });
+      }
+
+      if (q) {
+        list = list.filter(s => {
+          const full = `${s.name || ''} ${s.surname || ''} ${s.grade || ''} ${s.class_section || ''} ${s.diagnosis || ''}`.toLowerCase();
+          return full.includes(q);
+        });
+      }
+
+      if (list.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-slate-500 bg-brand-card border border-brand-border rounded-xl">
+            <span class="text-3xl block mb-2">🔍</span>
+            <p class="text-sm font-semibold">Δεν βρέθηκαν μαθητές με τα επιλεγμένα κριτήρια.</p>
+          </div>`;
+        return;
+      }
+
+      list.forEach(st => {
+        const full_name = `${st.name || ''} ${st.surname || ''}`.trim();
+        const ageStr = calculateStudentAge(st.birth_date);
+        const father = st.parent_father || {};
+        const mother = st.parent_mother || {};
+        const mprof = st.math_profile || {};
+        const diag = st.diagnosis_info || {};
+        const anxiety = mprof.math_anxiety || 'Μέτριο';
+        const isBoy = (st.gender || 'Αγόρι') === 'Αγόρι';
+
+        const anxietyBadge = anxiety === 'Χαμηλό'
+          ? '<span class="px-2 py-0.5 rounded-md bg-emerald-950 text-emerald-300 border border-emerald-800 text-[11px] font-bold">🟢 Χαμηλό Άγχος</span>'
+          : anxiety === 'Υψηλό'
+          ? '<span class="px-2 py-0.5 rounded-md bg-rose-950 text-rose-300 border border-rose-800 text-[11px] font-bold">🔴 Υψηλό Άγχος</span>'
+          : '<span class="px-2 py-0.5 rounded-md bg-amber-950 text-amber-300 border border-amber-800 text-[11px] font-bold">🟡 Μέτριο Άγχος</span>';
+
+        const stObs = (appData.observations || []).filter(o => o.student_id === st.id);
+        const covTotal = (st.coverage && st.coverage.total) || 0;
+
+        grid.innerHTML += `
+          <div class="bg-brand-card border border-brand-border hover:border-slate-700 rounded-2xl p-4 sm:p-5 space-y-4 transition-all shadow-sm flex flex-col justify-between">
+            
+            <!-- Top Row: Avatar & Basic Info -->
+            <div class="space-y-3">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-2xl ${isBoy ? 'bg-cyan-950/80 border-cyan-800/80 text-cyan-300' : 'bg-purple-950/80 border-purple-800/80 text-purple-300'} border text-2xl flex items-center justify-center shadow-inner flex-shrink-0">
+                    ${isBoy ? '👦' : '👧'}
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-white leading-tight flex items-center gap-1.5 flex-wrap">
+                      <span>${full_name}</span>
+                      <span class="text-xs px-2 py-0.5 rounded bg-slate-900 text-cyan-300 border border-slate-700 font-normal">${st.grade || ''} ${st.class_section ? `(${st.class_section})` : ''}</span>
+                    </h3>
+                    <p class="text-[11px] text-slate-400 mt-0.5">
+                      ${st.gender || ''} ${ageStr ? `• ${ageStr}` : ''} ${st.registration_no ? `• Α.Μ: ${st.registration_no}` : ''}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="bg-slate-900 border border-brand-border rounded-xl px-2.5 py-1.5 text-center flex-shrink-0">
+                  <span class="text-[10px] text-slate-400 block font-semibold">Πληρότητα</span>
+                  <span class="text-sm font-bold text-brand-cyan">${covTotal}%</span>
+                </div>
+              </div>
+
+              <!-- Diagnosis Row -->
+              <div class="p-2.5 rounded-xl bg-slate-950/80 border border-brand-border text-xs space-y-1">
+                <div class="flex items-center justify-between text-[11px] text-slate-400 font-semibold">
+                  <span class="flex items-center gap-1">🏥 <span>${diag.authority || 'ΚΕΔΑΣΥ Ξάνθης'}</span> ${diag.protocol_no ? `<span class="text-slate-500 font-mono">(${diag.protocol_no})</span>` : ''}</span>
+                </div>
+                <p class="text-slate-200 font-medium text-[11px] line-clamp-1">${diag.diagnosis_type || st.diagnosis || 'Ειδική Μαθησιακή Δυσκολία'}</p>
+              </div>
+
+              <!-- Parents Contact Grid -->
+              <div class="grid grid-cols-2 gap-2 text-[11px]">
+                <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                  <span class="text-slate-400 block text-[10px] font-semibold">👨 Πατέρας:</span>
+                  <span class="text-white font-medium block truncate">${father.name || '-'}</span>
+                  ${father.phone ? `<a href="tel:${father.phone}" class="text-cyan-400 hover:underline font-mono text-[10px]">📞 ${father.phone}</a>` : '<span class="text-slate-500 text-[10px]">-</span>'}
+                </div>
+                <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                  <span class="text-slate-400 block text-[10px] font-semibold">👩 Μητέρα:</span>
+                  <span class="text-white font-medium block truncate">${mother.name || '-'}</span>
+                  ${mother.phone ? `<a href="tel:${mother.phone}" class="text-cyan-400 hover:underline font-mono text-[10px]">📞 ${mother.phone}</a>` : '<span class="text-slate-500 text-[10px]">-</span>'}
+                </div>
+              </div>
+
+              <!-- Math Profile & Anxiety Badges -->
+              <div class="flex items-center justify-between gap-2 flex-wrap pt-1">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  ${anxietyBadge}
+                  <span class="px-2 py-0.5 rounded-md bg-purple-950/60 text-purple-300 border border-purple-800 text-[11px] font-semibold">🧠 ${mprof.learning_style || 'Οπτικό'}</span>
+                </div>
+                <span class="text-[11px] text-slate-400 font-mono font-semibold">${stObs.length} καταγραφές</span>
+              </div>
+            </div>
+
+            <!-- Card Bottom Action Buttons -->
+            <div class="pt-3 border-t border-brand-border flex items-center justify-between gap-2">
+              <button onclick="openStudentDossier('${st.id}')" class="flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-xs border border-cyan-800/60 flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-sm">
+                ✏️ Πλήρης Καρτέλα
+              </button>
+              <button onclick="openCognitiveDrawer('${st.id}')" class="py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold text-xs border border-brand-border flex items-center gap-1 transition-all active:scale-95">
+                📊 Bloom
+              </button>
+              <button onclick="downloadDocxForStudent('${st.id}')" class="py-2 px-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold text-xs border border-brand-border flex items-center gap-1 transition-all active:scale-95" title="Εξαγωγή Word">
+                📄
+              </button>
+            </div>
+
+          </div>`;
+      });
+    }
+
+    function openStudentDossier(stId) {
+      const modal = document.getElementById('modal-student-dossier');
+      if (!modal) return;
+
+      const isNew = stId === 'new' || !stId;
+      const st = isNew ? null : (appData.students || []).find(s => s.id === stId);
+
+      // Reset & set values
+      document.getElementById('dos-id').value = isNew ? '' : st.id;
+      document.getElementById('dos-name').value = st ? (st.name || '') : '';
+      document.getElementById('dos-surname').value = st ? (st.surname || '') : '';
+      document.getElementById('dos-gender').value = st ? (st.gender || 'Αγόρι') : 'Αγόρι';
+      document.getElementById('dos-birthdate').value = st ? (st.birth_date || '') : '';
+      document.getElementById('dos-grade').value = st ? (st.grade || "Β' Γυμνασίου") : "Β' Γυμνασίου";
+      document.getElementById('dos-section').value = st ? (st.class_section || '') : '';
+      document.getElementById('dos-regno').value = st ? (st.registration_no || '') : '';
+
+      const father = (st && st.parent_father) || {};
+      document.getElementById('dos-father-name').value = father.name || '';
+      document.getElementById('dos-father-phone').value = father.phone || '';
+
+      const mother = (st && st.parent_mother) || {};
+      document.getElementById('dos-mother-name').value = mother.name || '';
+      document.getElementById('dos-mother-phone').value = mother.phone || '';
+
+      const contact = (st && st.contact) || {};
+      document.getElementById('dos-address').value = contact.address || '';
+      document.getElementById('dos-email').value = contact.email || '';
+      document.getElementById('dos-family-notes').value = contact.family_notes || '';
+
+      const diag = (st && st.diagnosis_info) || {};
+      document.getElementById('dos-diag-authority').value = diag.authority || 'ΚΕΔΑΣΥ Ξάνθης';
+      document.getElementById('dos-diag-protocol').value = diag.protocol_no || '';
+      document.getElementById('dos-diag-type').value = diag.diagnosis_type || (st ? st.diagnosis : '') || '';
+      document.getElementById('dos-diag-history').value = diag.support_history || '';
+      document.getElementById('dos-notes').value = st ? (st.notes || '') : '';
+
+      const mprof = (st && st.math_profile) || {};
+      document.getElementById('dos-math-anxiety').value = mprof.math_anxiety || 'Μέτριο';
+      document.getElementById('dos-learning-style').value = mprof.learning_style || 'Οπτικό / Πολυαισθητηριακό';
+      document.getElementById('dos-math-strengths').value = mprof.strengths || '';
+      document.getElementById('dos-math-weaknesses').value = mprof.weaknesses || '';
+      document.getElementById('dos-math-strategies').value = mprof.effective_strategies || '';
+
+      const psprof = (st && st.psychosocial_profile) || {};
+      document.getElementById('dos-self-concept').value = psprof.self_concept || '';
+      document.getElementById('dos-attention-focus').value = psprof.attention_focus || '';
+      document.getElementById('dos-social-interaction').value = psprof.social_interaction || '';
+
+      // Title & badges
+      const titleEl = document.getElementById('dos-modal-title');
+      const badgeEl = document.getElementById('dos-header-badge');
+      const avatarEl = document.getElementById('dos-avatar-badge');
+
+      if (isNew) {
+        if (titleEl) titleEl.innerText = 'Νέα Καρτέλα Μαθητή';
+        if (badgeEl) badgeEl.innerText = 'Νέα Εγγραφή';
+        if (avatarEl) avatarEl.innerText = '➕';
+        currentDossierIepTargets = [];
+      } else {
+        if (titleEl) titleEl.innerText = `${st.name} ${st.surname || ''}`.trim();
+        if (badgeEl) badgeEl.innerText = `${st.grade || ''} ${st.class_section || ''}`;
+        if (avatarEl) avatarEl.innerText = (st.gender === 'Κορίτσι') ? '👧' : '👦';
+        currentDossierIepTargets = (st.iep_targets || []).slice();
+      }
+
+      updateCalculatedAgeDisplay();
+      renderDossierIepTargetsList();
+      switchDossierSubTab(1);
+      modal.classList.remove('hidden');
+    }
+
+    function closeStudentDossier() {
+      const modal = document.getElementById('modal-student-dossier');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function switchDossierSubTab(tabNum) {
+      for (let i = 1; i <= 4; i++) {
+        const view = document.getElementById(`dossier-subtab-view-${i}`);
+        const btn = document.getElementById(`dossier-tab-${i}`);
+        if (view) {
+          if (i === tabNum) view.classList.remove('hidden');
+          else view.classList.add('hidden');
+        }
+        if (btn) {
+          btn.className = (i === tabNum)
+            ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-cyan text-slate-950 transition-all whitespace-nowrap shadow-sm'
+            : 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 border border-brand-border transition-all whitespace-nowrap';
+        }
+      }
+    }
+
+    function updateCalculatedAgeDisplay() {
+      const bDateVal = document.getElementById('dos-birthdate').value;
+      const ageDisp = document.getElementById('dos-age-display');
+      if (ageDisp) {
+        const age = calculateStudentAge(bDateVal);
+        ageDisp.innerText = age ? `Ηλικία: ${age}` : '';
+      }
+    }
+
+    function renderDossierIepTargetsList() {
+      const c = document.getElementById('dos-iep-targets-container');
+      if (!c) return;
+      c.innerHTML = '';
+      if (currentDossierIepTargets.length === 0) {
+        c.innerHTML = '<p class="text-xs text-slate-500 italic p-2">Δεν έχουν προστεθεί ακόμη στόχοι Ε.Π.Ε.</p>';
+        return;
+      }
+      currentDossierIepTargets.forEach((t, idx) => {
+        const statusColor = t.status === 'Εμπεδώθηκε' ? 'text-emerald-300 border-emerald-700 bg-emerald-950/60'
+          : t.status === 'Επιτεύχθηκε' ? 'text-cyan-300 border-cyan-700 bg-cyan-950/60'
+          : 'text-amber-300 border-amber-700 bg-amber-950/60';
+
+        c.innerHTML += `
+          <div class="p-2.5 rounded-xl bg-slate-950 border border-brand-border flex items-center justify-between gap-2 text-xs">
+            <div class="flex items-center gap-2 flex-1">
+              <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-cyan-300 font-bold text-[10px] flex-shrink-0">${t.area || 'Μαθηματικά'}</span>
+              <span class="text-slate-200">${t.target}</span>
+            </div>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <button type="button" onclick="toggleIepTargetStatus(${idx})" class="px-2 py-1 rounded-lg border font-bold text-[11px] ${statusColor} hover:scale-105 transition-all">
+                ${t.status || 'Σε εξέλιξη'}
+              </button>
+              <button type="button" onclick="removeIepTargetFromDossier(${idx})" class="text-slate-500 hover:text-rose-400 p-1 text-xs">✕</button>
+            </div>
+          </div>`;
+      });
+    }
+
+    function addIepTargetToDossier() {
+      const areaEl = document.getElementById('dos-new-target-area');
+      const textEl = document.getElementById('dos-new-target-text');
+      const text = textEl ? textEl.value.trim() : '';
+      if (!text) return;
+      currentDossierIepTargets.push({
+        id: 't_' + Date.now(),
+        area: areaEl ? areaEl.value : 'Μαθηματικά',
+        target: text,
+        status: 'Σε εξέλιξη'
+      });
+      if (textEl) textEl.value = '';
+      renderDossierIepTargetsList();
+    }
+
+    function removeIepTargetFromDossier(idx) {
+      currentDossierIepTargets.splice(idx, 1);
+      renderDossierIepTargetsList();
+    }
+
+    function toggleIepTargetStatus(idx) {
+      const t = currentDossierIepTargets[idx];
+      if (!t) return;
+      const order = ['Σε εξέλιξη', 'Επιτεύχθηκε', 'Εμπεδώθηκε'];
+      const curIdx = order.indexOf(t.status || 'Σε εξέλιξη');
+      t.status = order[(curIdx + 1) % order.length];
+      renderDossierIepTargetsList();
+    }
+
+    async function saveStudentDossier() {
+      const id = document.getElementById('dos-id').value;
+      const name = document.getElementById('dos-name').value.trim();
+      if (!name) {
+        alert('Παρακαλώ συμπληρώστε το όνομα του/της μαθητή/τριας.');
+        switchDossierSubTab(1);
+        return;
+      }
+
+      const existingSt = id ? (appData.students || []).find(s => s.id === id) : null;
+
+      const payload = {
+        id: id || ('st_' + Date.now()),
+        name: name,
+        surname: document.getElementById('dos-surname').value.trim(),
+        code: (existingSt && existingSt.code) || ('S0' + ((appData.students || []).length + 1)),
+        gender: document.getElementById('dos-gender').value,
+        birth_date: document.getElementById('dos-birthdate').value,
+        grade: document.getElementById('dos-grade').value,
+        class_section: document.getElementById('dos-section').value.trim(),
+        registration_no: document.getElementById('dos-regno').value.trim(),
+        parent_father: {
+          name: document.getElementById('dos-father-name').value.trim(),
+          phone: document.getElementById('dos-father-phone').value.trim()
+        },
+        parent_mother: {
+          name: document.getElementById('dos-mother-name').value.trim(),
+          phone: document.getElementById('dos-mother-phone').value.trim()
+        },
+        contact: {
+          address: document.getElementById('dos-address').value.trim(),
+          email: document.getElementById('dos-email').value.trim(),
+          family_notes: document.getElementById('dos-family-notes').value.trim()
+        },
+        diagnosis_info: {
+          authority: document.getElementById('dos-diag-authority').value.trim(),
+          protocol_no: document.getElementById('dos-diag-protocol').value.trim(),
+          diagnosis_type: document.getElementById('dos-diag-type').value.trim(),
+          support_history: document.getElementById('dos-diag-history').value.trim()
+        },
+        diagnosis: document.getElementById('dos-diag-type').value.trim(),
+        notes: document.getElementById('dos-notes').value.trim(),
+        math_profile: {
+          math_anxiety: document.getElementById('dos-math-anxiety').value,
+          learning_style: document.getElementById('dos-learning-style').value,
+          strengths: document.getElementById('dos-math-strengths').value.trim(),
+          weaknesses: document.getElementById('dos-math-weaknesses').value.trim(),
+          effective_strategies: document.getElementById('dos-math-strategies').value.trim()
+        },
+        psychosocial_profile: {
+          self_concept: document.getElementById('dos-self-concept').value.trim(),
+          attention_focus: document.getElementById('dos-attention-focus').value.trim(),
+          social_interaction: document.getElementById('dos-social-interaction').value.trim()
+        },
+        iep_targets: currentDossierIepTargets,
+        coverage: (existingSt && existingSt.coverage) || { arithmetic: 10, algebra: 10, geometry: 10, stochastics: 10, total: 10 },
+        created_at: (existingSt && existingSt.created_at) || new Date().toISOString()
+      };
+
+      await authFetch('/api/student', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      closeStudentDossier();
+      await loadData();
+      alert(`Η καρτέλα του/της ${payload.name} αποθηκεύτηκε επιτυχώς!`);
+    }
+
+    function openCognitiveDrawer(stId) {
+      selectStudent(stId);
+      const drawer = document.getElementById('cognitive-bloom-drawer');
+      const st = (appData.students || []).find(s => s.id === stId);
+      if (drawer && st) {
+        document.getElementById('cog-student-name').innerText = `Γνωστική Χαρτογράφηση: ${st.name} ${st.surname || ''}`.trim();
+        drawer.classList.remove('hidden');
+        drawer.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function closeCognitiveDrawer() {
+      const drawer = document.getElementById('cognitive-bloom-drawer');
+      if (drawer) drawer.classList.add('hidden');
+    }
+
+    function downloadDocxForStudent(stId) {
+      window.location.href = `/api/export_docx?student_id=${stId}&doc_type=1_initial`;
+    }
+
+    function downloadCurrentDossierDocx() {
+      const id = document.getElementById('dos-id').value;
+      if (!id) {
+        alert('Παρακαλώ αποθηκεύστε πρώτα την καρτέλα του μαθητή.');
+        return;
+      }
+      downloadDocxForStudent(id);
+    }
+
     function renderStudents() {
+      renderStudentsGrid();
       const st = (appData.students || []).find(s => s.id === appData.selectedStudentId);
       if (!st) return;
 
