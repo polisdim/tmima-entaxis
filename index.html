@@ -904,7 +904,7 @@
         const btn = document.getElementById('submit-btn');
         if (btn) {
           btn.innerText = 'Καταχώριση';
-          btn.className = 'touch-btn bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-sm px-5 transition-all';
+          btn.className = 'touch-btn bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-300 hover:to-cyan-400 text-slate-950 font-black rounded-2xl text-lg sm:text-xl px-9 py-4 shadow-xl active:scale-95 transition-all';
         }
         return;
       }
@@ -958,7 +958,7 @@
           const submitBtn = document.getElementById('submit-btn');
           if (submitBtn) {
             submitBtn.innerText = `✨ + Δημιουργία: ${name} (${section})`;
-            submitBtn.className = 'touch-btn bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-sm px-4 transition-all shadow-md';
+            submitBtn.className = 'touch-btn bg-gradient-to-r from-emerald-400 to-emerald-500 hover:from-emerald-300 hover:to-emerald-400 text-slate-950 font-black rounded-2xl text-lg sm:text-xl px-9 py-4 shadow-xl active:scale-95 transition-all';
           }
           return;
         }
@@ -973,7 +973,7 @@
           const submitBtn = document.getElementById('submit-btn');
           if (submitBtn) {
             submitBtn.innerText = `🎯 + Στόχος για ${st.name}`;
-            submitBtn.className = 'touch-btn bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-sm px-4 transition-all shadow-md';
+            submitBtn.className = 'touch-btn bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black rounded-2xl text-lg sm:text-xl px-9 py-4 shadow-xl active:scale-95 transition-all';
           }
           return;
         }
@@ -983,7 +983,7 @@
       const btn = document.getElementById('submit-btn');
       if (btn) {
         btn.innerText = 'Καταχώριση';
-        btn.className = 'touch-btn bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-sm px-5 transition-all';
+        btn.className = 'touch-btn bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-300 hover:to-cyan-400 text-slate-950 font-black rounded-2xl text-lg sm:text-xl px-9 py-4 shadow-xl active:scale-95 transition-all';
       }
 
       // 3. AI Semantic Extraction
@@ -1108,7 +1108,7 @@
       const submitBtn = document.getElementById('submit-btn');
       if (submitBtn) {
         submitBtn.innerText = `💾 Ενημέρωση`;
-        submitBtn.className = 'touch-btn bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-sm px-5 transition-all shadow-md';
+        submitBtn.className = 'touch-btn bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black rounded-2xl text-lg sm:text-xl px-9 py-4 shadow-xl active:scale-95 transition-all';
       }
 
       const statusEl = document.getElementById('save-status');
@@ -1126,7 +1126,7 @@
       const submitBtn = document.getElementById('submit-btn');
       if (submitBtn) {
         submitBtn.innerText = 'Καταχώριση';
-        submitBtn.className = 'touch-btn bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-sm px-5 transition-all';
+        submitBtn.className = 'touch-btn bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-300 hover:to-cyan-400 text-slate-950 font-black rounded-2xl text-lg sm:text-xl px-9 py-4 shadow-xl active:scale-95 transition-all';
       }
       const statusEl = document.getElementById('save-status');
       if (statusEl) {
@@ -1235,7 +1235,7 @@
             const btn = document.getElementById('submit-btn');
             if (btn) {
               btn.innerText = 'Καταχώριση';
-              btn.className = 'touch-btn bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-sm px-5 transition-all';
+              btn.className = 'touch-btn bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-300 hover:to-cyan-400 text-slate-950 font-black rounded-2xl text-lg sm:text-xl px-9 py-4 shadow-xl active:scale-95 transition-all';
             }
             if (statusEl) {
               statusEl.innerText = `✓ Η καταγραφή ενημερώθηκε επιτυχώς!`;
@@ -1296,9 +1296,9 @@
         if (sec) sec.classList.toggle('hidden', t !== tId);
         if (btn) {
           if (t === tId) {
-            btn.className = 'touch-btn text-xs sm:text-sm font-semibold rounded-lg bg-brand-cyan text-slate-950';
+            btn.className = 'touch-btn text-lg sm:text-xl font-black rounded-2xl px-6 py-3.5 bg-brand-cyan text-slate-950 shadow-md whitespace-nowrap transition-all';
           } else {
-            btn.className = 'touch-btn text-xs sm:text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 border border-brand-border';
+            btn.className = 'touch-btn text-lg sm:text-xl font-bold rounded-2xl px-6 py-3.5 text-slate-100 hover:bg-slate-800 border-2 border-slate-700 whitespace-nowrap transition-all';
           }
         }
       });
