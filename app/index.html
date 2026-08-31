@@ -107,8 +107,8 @@
     <div class="max-w-6xl mx-auto flex items-center justify-between gap-3">
       
       <div class="flex items-center gap-2">
-        <span class="font-bold text-brand-cyan text-lg sm:text-xl tracking-wide">Τμήμα Ένταξης</span>
-        <span class="font-bold text-slate-200 text-lg sm:text-xl">| ΔΗΜ.Ω.Σ. Ξάνθης</span>
+        <span class="font-black text-brand-cyan text-xl sm:text-2xl tracking-wide">Τμήμα Ένταξης</span>
+        <span class="font-black text-slate-100 text-xl sm:text-2xl">| ΔΗΜ.Ω.Σ. Ξάνθης</span>
       </div>
 
       <!-- Navigation Tabs -->
@@ -143,11 +143,11 @@
         
         <div class="relative">
           <textarea id="smart-input" rows="2" 
-            class="w-full bg-slate-950 border-2 border-brand-border focus:border-brand-cyan rounded-2xl p-4 sm:p-5 pr-16 text-base sm:text-lg text-white font-medium placeholder-slate-400 focus:outline-none resize-none shadow-inner leading-relaxed"
+            class="w-full bg-slate-950 border-2 border-slate-700 focus:border-brand-cyan rounded-2xl p-5 sm:p-6 pr-20 text-xl sm:text-2xl text-white font-medium placeholder-slate-400 focus:outline-none resize-none shadow-inner leading-relaxed min-h-[150px]"
             placeholder="Γράψτε ή υπαγορεύστε (π.χ. «Ο Νικ δυσκολεύεται σε διαίρεση διψήφιων» ή «Πρόσθεσε νέο μαθητή Γιώργος Β2»)..."></textarea>
           
           <button id="voice-btn" onclick="toggleVoiceRecording()" 
-            class="absolute right-3.5 bottom-4 w-12 h-12 rounded-xl bg-slate-800 hover:bg-slate-700 border border-brand-border flex items-center justify-center text-2xl shadow-lg active:scale-95 transition-all"
+            class="absolute right-4 bottom-5 w-16 h-16 rounded-2xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 flex items-center justify-center text-3xl shadow-xl active:scale-95 transition-all font-bold"
             title="Υπαγόρευση">
             🎙️
           </button>
@@ -168,8 +168,11 @@
 
         <!-- Action Bar -->
         <div class="flex items-center justify-between pt-1">
-          <span id="save-status" class="text-xs text-slate-400">Enter για καταχώριση</span>
-          <button id="submit-btn" onclick="executeAction()" class="touch-btn bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-300 hover:to-cyan-400 text-slate-950 font-black rounded-xl text-base px-7 py-3.5 shadow-md active:scale-95 transition-all">
+          <div class="flex items-center gap-3">
+            <span id="save-status" class="text-base sm:text-lg text-slate-400 font-medium">Enter για καταχώριση</span>
+            <button type="button" onclick="document.getElementById('smart-input').value=''; parseInput('');" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-sm font-bold text-slate-300">✕ Καθαρισμός</button>
+          </div>
+          <button id="submit-btn" onclick="executeAction()" class="touch-btn bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-300 hover:to-cyan-400 text-slate-950 font-black rounded-2xl text-lg sm:text-xl px-9 py-4 shadow-xl active:scale-95 transition-all">
             Καταχώριση
           </button>
         </div>
@@ -195,16 +198,16 @@
       <!-- Top Control & Filter Bar -->
       <div class="flex flex-wrap items-center justify-between gap-3 bg-brand-card border border-brand-border rounded-xl p-3 shadow-sm">
         <div class="flex items-center gap-1.5 flex-wrap" id="grade-filter-buttons">
-          <button onclick="filterStudentsByGrade('ALL')" id="filter-grade-all" class="px-4 py-2 rounded-xl text-sm font-bold bg-brand-cyan text-slate-950 transition-all">Όλοι οι Μαθητές</button>
-          <button onclick="filterStudentsByGrade('Α')" id="filter-grade-a" class="px-4 py-2 rounded-xl text-sm font-bold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-brand-border transition-all">Α' Γυμνασίου</button>
-          <button onclick="filterStudentsByGrade('Β')" id="filter-grade-b" class="px-4 py-2 rounded-xl text-sm font-bold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-brand-border transition-all">Β' Γυμνασίου</button>
-          <button onclick="filterStudentsByGrade('Γ')" id="filter-grade-c" class="px-4 py-2 rounded-xl text-sm font-bold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-brand-border transition-all">Γ' Γυμνασίου</button>
+          <button onclick="filterStudentsByGrade('ALL')" id="filter-grade-all" class="px-5 py-2.5 rounded-2xl text-base sm:text-lg font-black bg-brand-cyan text-slate-950 transition-all shadow-md">Όλοι οι Μαθητές</button>
+          <button onclick="filterStudentsByGrade('Α')" id="filter-grade-a" class="px-5 py-2.5 rounded-2xl text-base sm:text-lg font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border-2 border-slate-700 transition-all">Α' Γυμνασίου</button>
+          <button onclick="filterStudentsByGrade('Β')" id="filter-grade-b" class="px-5 py-2.5 rounded-2xl text-base sm:text-lg font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border-2 border-slate-700 transition-all">Β' Γυμνασίου</button>
+          <button onclick="filterStudentsByGrade('Γ')" id="filter-grade-c" class="px-5 py-2.5 rounded-2xl text-base sm:text-lg font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border-2 border-slate-700 transition-all">Γ' Γυμνασίου</button>
         </div>
 
         <div class="flex items-center gap-2 flex-1 sm:flex-none justify-end">
           <input type="text" id="student-search-input" oninput="renderStudentsGrid()" placeholder="🔍 Αναζήτηση μαθητή..."
                  class="bg-slate-900 border border-brand-border rounded-xl px-4 py-2.5 text-sm sm:text-base text-white placeholder-slate-400 outline-none focus:ring-2 focus:ring-cyan-500 w-full sm:w-64 font-medium">
-          <button onclick="openStudentDossier('new')" class="touch-btn bg-brand-cyan hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-lg shadow-sm whitespace-nowrap">
+          <button onclick="openStudentDossier('new')" class="touch-btn bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-300 hover:to-cyan-400 text-slate-950 font-black text-base sm:text-lg rounded-2xl px-6 py-3 shadow-md whitespace-nowrap">
             + Νέα Καρτέλα
           </button>
         </div>
@@ -1613,8 +1616,8 @@
         if (btn) {
           const match = (g === 'all' && grade === 'ALL') || (g === 'a' && grade === 'Α') || (g === 'b' && grade === 'Β') || (g === 'c' && grade === 'Γ');
           btn.className = match
-            ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-cyan text-slate-950 transition-all shadow-sm'
-            : 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-brand-border transition-all';
+            ? 'px-5 py-2.5 rounded-2xl text-base sm:text-lg font-black bg-brand-cyan text-slate-950 transition-all shadow-md'
+            : 'px-5 py-2.5 rounded-2xl text-base sm:text-lg font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border-2 border-slate-700 transition-all';
         }
       });
       renderStudentsGrid();
@@ -1672,81 +1675,84 @@
         const stObs = (appData.observations || []).filter(o => o.student_id === st.id);
         const covTotal = (st.coverage && st.coverage.total) || 0;
 
-        const anxietyBadgeLarge = anxiety === 'Χαμηλό'
-          ? '<span class="px-3.5 py-1.5 rounded-xl bg-emerald-950 text-emerald-300 border border-emerald-700 text-sm sm:text-base font-bold">🟢 Χαμηλό Μαθηματικό Άγχος</span>'
+                const anxietyBadgeUltra = anxiety === 'Χαμηλό'
+          ? '<span class="px-4 py-2 rounded-xl bg-emerald-950 text-emerald-300 border-2 border-emerald-700 text-base sm:text-lg font-black shadow-sm">🟢 Χαμηλό Μαθηματικό Άγχος</span>'
           : anxiety === 'Υψηλό'
-          ? '<span class="px-3.5 py-1.5 rounded-xl bg-rose-950 text-rose-300 border border-rose-700 text-sm sm:text-base font-bold">🔴 Υψηλό Μαθηματικό Άγχος</span>'
-          : '<span class="px-3.5 py-1.5 rounded-xl bg-amber-950 text-amber-300 border border-amber-700 text-sm sm:text-base font-bold">🟡 Μέτριο Μαθηματικό Άγχος</span>';
+          ? '<span class="px-4 py-2 rounded-xl bg-rose-950 text-rose-300 border-2 border-rose-700 text-base sm:text-lg font-black shadow-sm">🔴 Υψηλό Μαθηματικό Άγχος</span>'
+          : '<span class="px-4 py-2 rounded-xl bg-amber-950 text-amber-300 border-2 border-amber-700 text-base sm:text-lg font-black shadow-sm">🟡 Μέτριο Μαθηματικό Άγχος</span>';
 
         grid.innerHTML += `
-          <div class="bg-brand-card border-2 border-brand-border hover:border-cyan-500/80 rounded-2xl p-5 sm:p-7 space-y-5 transition-all shadow-md flex flex-col justify-between">
+          <div class="bg-brand-card border-2 border-slate-700 hover:border-cyan-400 rounded-3xl p-6 sm:p-8 space-y-6 transition-all shadow-xl flex flex-col justify-between">
             
-            <!-- Top Header: Avatar & Main Identity -->
-            <div class="space-y-4">
-              <div class="flex items-start justify-between gap-4 pb-3 border-b border-brand-border">
+            <!-- 1. Header: Avatar & Main Identity -->
+            <div class="space-y-5">
+              <div class="flex items-start justify-between gap-4 pb-4 border-b-2 border-slate-800">
                 <div class="flex items-center gap-4">
-                  <div class="w-16 h-16 rounded-2xl ${isBoy ? 'bg-cyan-950 border-2 border-cyan-600 text-cyan-300' : 'bg-purple-950 border-2 border-purple-600 text-purple-300'} text-3xl flex items-center justify-center shadow-inner flex-shrink-0">
+                  <div class="w-20 h-20 rounded-2xl ${isBoy ? 'bg-cyan-950 border-2 border-cyan-500 text-cyan-300' : 'bg-purple-950 border-2 border-purple-500 text-purple-300'} text-4xl flex items-center justify-center shadow-inner flex-shrink-0">
                     ${isBoy ? '👦' : '👧'}
                   </div>
                   <div>
-                    <h3 class="text-2xl sm:text-3xl font-black text-white leading-tight flex items-center gap-2.5 flex-wrap">
+                    <h3 class="text-3xl sm:text-4xl font-black text-white leading-tight flex items-center gap-3 flex-wrap">
                       <span>${full_name}</span>
-                      <span class="text-sm sm:text-base px-3 py-1 rounded-xl bg-slate-900 text-cyan-300 border border-cyan-800 font-bold">${st.grade || ''} ${st.class_section ? `(${st.class_section})` : ''}</span>
+                      <span class="text-base sm:text-lg px-4 py-1.5 rounded-xl bg-slate-900 text-cyan-300 border-2 border-cyan-700 font-bold">${st.grade || ''} ${st.class_section ? `(${st.class_section})` : ''}</span>
                     </h3>
-                    <p class="text-sm sm:text-base text-slate-300 font-semibold mt-1">
-                      ${st.gender || ''} ${ageStr ? `• ${ageStr}` : ''} ${st.registration_no ? `• Α.Μ: ${st.registration_no}` : ''}
+                    <p class="text-base sm:text-lg text-slate-300 font-bold mt-1.5 flex items-center gap-2 flex-wrap">
+                      <span>${st.gender || ''}</span>
+                      ${ageStr ? `<span>• ${ageStr}</span>` : ''}
+                      ${st.registration_no ? `<span class="text-slate-400 font-mono">• Α.Μ: ${st.registration_no}</span>` : ''}
                     </p>
                   </div>
                 </div>
 
-                <div class="bg-slate-900 border-2 border-cyan-700/80 rounded-2xl px-4 py-2.5 text-center flex-shrink-0 shadow-sm">
-                  <span class="text-xs text-slate-300 block font-bold">Πληρότητα</span>
-                  <span class="text-xl sm:text-2xl font-black text-brand-cyan">${covTotal}%</span>
+                <div class="bg-slate-950 border-2 border-cyan-600 rounded-2xl px-5 py-3 text-center flex-shrink-0 shadow-md">
+                  <span class="text-xs sm:text-sm text-slate-300 block font-bold">Πληρότητα</span>
+                  <span class="text-2xl sm:text-3xl font-black text-brand-cyan">${covTotal}%</span>
                 </div>
               </div>
 
-              <!-- Diagnosis Box (Large & High Contrast) -->
-              <div class="p-4 rounded-xl bg-slate-950 border border-brand-border space-y-1.5 shadow-inner">
-                <div class="flex items-center justify-between text-xs sm:text-sm text-cyan-400 font-bold">
-                  <span class="flex items-center gap-1.5">🏥 <span>${diag.authority || 'ΚΕΔΑΣΥ Ξάνθης'}</span> ${diag.protocol_no ? `<span class="text-slate-400 font-mono">(${diag.protocol_no})</span>` : ''}</span>
+              <!-- 2. Diagnosis Box (Extra Large Font & High Contrast) -->
+              <div class="p-5 rounded-2xl bg-slate-950 border-2 border-slate-800 space-y-2 shadow-inner">
+                <div class="flex items-center justify-between text-sm sm:text-base text-cyan-300 font-black">
+                  <span class="flex items-center gap-2">🏥 <span>${diag.authority || 'ΚΕΔΑΣΥ Ξάνθης'}</span> ${diag.protocol_no ? `<span class="text-slate-400 font-mono">(${diag.protocol_no})</span>` : ''}</span>
                 </div>
-                <p class="text-white font-bold text-sm sm:text-base leading-relaxed">${diag.diagnosis_type || st.diagnosis || 'Ειδική Μαθησιακή Δυσκολία'}</p>
+                <p class="text-white font-bold text-lg sm:text-xl leading-relaxed">${diag.diagnosis_type || st.diagnosis || 'Ειδική Μαθησιακή Δυσκολία'}</p>
+                ${st.notes ? `<p class="text-slate-300 text-sm sm:text-base pt-1 border-t border-slate-800/80 font-medium">💬 ${st.notes}</p>` : ''}
               </div>
 
-              <!-- Parents Contact (Large Grid) -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div class="p-3.5 sm:p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
-                  <span class="text-slate-400 block text-xs font-bold">👨 Στοιχεία Πατέρα:</span>
-                  <span class="text-white font-bold text-base sm:text-lg block truncate">${father.name || '-'}</span>
-                  ${father.phone ? `<a href="tel:${father.phone}" class="inline-flex items-center gap-1 text-cyan-300 hover:text-cyan-200 font-mono text-sm sm:text-base font-bold mt-1 bg-cyan-950/60 px-2.5 py-1 rounded-lg border border-cyan-800">📞 ${father.phone}</a>` : '<span class="text-slate-500 text-xs">-</span>'}
+              <!-- 3. Parents Contact (Large Single / Double Flow) -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border-2 border-slate-800 space-y-1.5">
+                  <span class="text-slate-400 block text-xs sm:text-sm font-bold">👨 Στοιχεία Πατέρα:</span>
+                  <span class="text-white font-black text-lg sm:text-xl block truncate">${father.name || '-'}</span>
+                  ${father.phone ? `<a href="tel:${father.phone}" class="inline-flex items-center gap-2 text-cyan-300 hover:text-cyan-200 font-mono text-base sm:text-lg font-black mt-1.5 bg-cyan-950/80 px-3.5 py-1.5 rounded-xl border border-cyan-700 shadow-sm">📞 ${father.phone}</a>` : '<span class="text-slate-500 text-sm">-</span>'}
                 </div>
 
-                <div class="p-3.5 sm:p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
-                  <span class="text-slate-400 block text-xs font-bold">👩 Στοιχεία Μητέρας:</span>
-                  <span class="text-white font-bold text-base sm:text-lg block truncate">${mother.name || '-'}</span>
-                  ${mother.phone ? `<a href="tel:${mother.phone}" class="inline-flex items-center gap-1 text-cyan-300 hover:text-cyan-200 font-mono text-sm sm:text-base font-bold mt-1 bg-cyan-950/60 px-2.5 py-1 rounded-lg border border-cyan-800">📞 ${mother.phone}</a>` : '<span class="text-slate-500 text-xs">-</span>'}
+                <div class="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border-2 border-slate-800 space-y-1.5">
+                  <span class="text-slate-400 block text-xs sm:text-sm font-bold">👩 Στοιχεία Μητέρας:</span>
+                  <span class="text-white font-black text-lg sm:text-xl block truncate">${mother.name || '-'}</span>
+                  ${mother.phone ? `<a href="tel:${mother.phone}" class="inline-flex items-center gap-2 text-cyan-300 hover:text-cyan-200 font-mono text-base sm:text-lg font-black mt-1.5 bg-cyan-950/80 px-3.5 py-1.5 rounded-xl border border-cyan-700 shadow-sm">📞 ${mother.phone}</a>` : '<span class="text-slate-500 text-sm">-</span>'}
                 </div>
               </div>
 
-              <!-- Math Profile & Anxiety Badges -->
+              <!-- 4. Math Profile & Anxiety Badges (Big Badges) -->
               <div class="flex items-center justify-between gap-3 flex-wrap pt-2">
-                <div class="flex items-center gap-2 flex-wrap">
-                  ${anxietyBadgeLarge}
-                  <span class="px-3.5 py-1.5 rounded-xl bg-purple-950 text-purple-200 border border-purple-700 text-sm sm:text-base font-bold">🧠 ${mprof.learning_style || 'Οπτικό Στυλ'}</span>
+                <div class="flex items-center gap-2.5 flex-wrap">
+                  ${anxietyBadgeUltra}
+                  <span class="px-4 py-2 rounded-xl bg-purple-950 text-purple-200 border-2 border-purple-700 text-base sm:text-lg font-bold shadow-sm">🧠 ${mprof.learning_style || 'Οπτικό Στυλ'}</span>
                 </div>
-                <span class="text-sm font-mono font-bold text-slate-300 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">${stObs.length} καταγραφές</span>
+                <span class="text-base font-mono font-bold text-slate-300 bg-slate-900 px-4 py-2 rounded-xl border-2 border-slate-800">${stObs.length} καταγραφές</span>
               </div>
             </div>
 
-            <!-- Card Bottom Action Buttons (Large Touch Targets) -->
-            <div class="pt-4 border-t border-brand-border flex items-center gap-3">
-              <button onclick="openStudentDossier('${st.id}')" class="flex-1 py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-slate-950 font-black text-sm sm:text-base flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md">
+            <!-- 5. Card Bottom Action Buttons (Huge Touch Targets) -->
+            <div class="pt-5 border-t-2 border-slate-800 flex flex-wrap items-center gap-3">
+              <button onclick="openStudentDossier('${st.id}')" class="flex-1 py-4 px-5 rounded-2xl bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-slate-950 font-black text-base sm:text-lg flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg">
                 ✏️ Πλήρης Καρτέλα Μαθητή
               </button>
-              <button onclick="openCognitiveDrawer('${st.id}')" class="py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 font-bold text-sm sm:text-base border border-slate-700 flex items-center gap-1.5 transition-all active:scale-95 shadow-sm">
+              <button onclick="openCognitiveDrawer('${st.id}')" class="py-4 px-5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-slate-200 font-black text-base sm:text-lg border-2 border-slate-700 flex items-center gap-2 transition-all active:scale-95 shadow-md">
                 📊 Bloom
               </button>
-              <button onclick="downloadDocxForStudent('${st.id}')" class="py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold text-sm sm:text-base border border-cyan-800 flex items-center gap-1.5 transition-all active:scale-95 shadow-sm" title="Εξαγωγή Word">
+              <button onclick="downloadDocxForStudent('${st.id}')" class="py-4 px-5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-cyan-300 font-black text-base sm:text-lg border-2 border-cyan-800 flex items-center gap-2 transition-all active:scale-95 shadow-md" title="Εξαγωγή Word">
                 📄 Word
               </button>
             </div>
@@ -1842,8 +1848,8 @@
         }
         if (btn) {
           btn.className = (i === tabNum)
-            ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-cyan text-slate-950 transition-all whitespace-nowrap shadow-sm'
-            : 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 border border-brand-border transition-all whitespace-nowrap';
+            ? 'px-5 py-3 rounded-2xl text-base sm:text-lg font-black bg-brand-cyan text-slate-950 transition-all whitespace-nowrap shadow-md'
+            : 'px-5 py-3 rounded-2xl text-base sm:text-lg font-bold text-slate-200 hover:bg-slate-800 border-2 border-slate-700 transition-all whitespace-nowrap';
         }
       }
     }
@@ -2231,49 +2237,41 @@
 
     let initialInputPrefix = '';
     let speechRestartTimeout = null;
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    function mergeSpeechChunks(chunks) {
-      if (!chunks || chunks.length === 0) return '';
-      let combined = chunks[0].trim();
-      for (let i = 1; i < chunks.length; i++) {
-        const next = (chunks[i] || '').trim();
-        if (!next) continue;
+    function cleanAndMergeSpeech(existingText, incomingSpeech) {
+      if (!incomingSpeech) return existingText || '';
+      incomingSpeech = normalizeSpeechTranscript(incomingSpeech.trim());
+      if (!existingText) return incomingSpeech;
 
-        const combLower = combined.toLowerCase();
-        const nextLower = next.toLowerCase();
+      existingText = existingText.trim();
+      const exLower = existingText.toLowerCase();
+      const inLower = incomingSpeech.toLowerCase();
 
-        // If next already starts with combined, next supersedes
-        if (nextLower.startsWith(combLower)) {
-          combined = next;
-          continue;
-        }
-        // If combined already ends with or contains next
-        if (combLower.endsWith(nextLower) || combLower.includes(nextLower)) {
-          continue;
-        }
+      // 1. Exact or prefix/suffix containment
+      if (inLower.startsWith(exLower)) return incomingSpeech;
+      if (exLower.endsWith(inLower) || exLower.includes(inLower)) return existingText;
 
-        // Find word-level overlap
-        const combWords = combined.split(/\s+/);
-        const nextWords = next.split(/\s+/);
-        let maxOverlap = 0;
-        const maxK = Math.min(combWords.length, nextWords.length);
+      // 2. Token overlap merge
+      const exWords = existingText.split(/\s+/);
+      const inWords = incomingSpeech.split(/\s+/);
+      let maxOverlap = 0;
+      const maxK = Math.min(exWords.length, inWords.length);
 
-        for (let k = maxK; k >= 1; k--) {
-          const suffix = combWords.slice(combWords.length - k).join(' ').toLowerCase();
-          const prefix = nextWords.slice(0, k).join(' ').toLowerCase();
-          if (suffix === prefix) {
-            maxOverlap = k;
-            break;
-          }
-        }
-
-        if (maxOverlap > 0) {
-          combined = combWords.concat(nextWords.slice(maxOverlap)).join(' ');
-        } else {
-          combined += ' ' + next;
+      for (let k = maxK; k >= 1; k--) {
+        const suffix = exWords.slice(exWords.length - k).map(w => w.toLowerCase()).join(' ');
+        const prefix = inWords.slice(0, k).map(w => w.toLowerCase()).join(' ');
+        if (suffix === prefix) {
+          maxOverlap = k;
+          break;
         }
       }
-      return combined;
+
+      if (maxOverlap > 0) {
+        return exWords.concat(inWords.slice(maxOverlap)).join(' ');
+      }
+
+      return existingText + ' ' + incomingSpeech;
     }
 
     function initSpeechRecognition() {
@@ -2282,8 +2280,9 @@
 
       const sr = new SpeechRecognition();
       sr.lang = 'el-GR';
-      sr.continuous = true;
-      sr.interimResults = true;
+      // For Android/Tablet, use discrete phrases to prevent Chrome repeating speech
+      sr.continuous = !isMobileDevice;
+      sr.interimResults = !isMobileDevice;
       sr.maxAlternatives = 1;
 
       sr.onstart = () => {
@@ -2291,36 +2290,30 @@
         const voiceBtn = document.getElementById('voice-btn');
         if (voiceBtn) {
           voiceBtn.innerHTML = '⏹️';
-          voiceBtn.className = 'absolute right-2.5 bottom-3 w-10 h-10 rounded-lg bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center text-lg shadow-lg animate-pulse';
+          voiceBtn.className = 'absolute right-4 bottom-5 w-16 h-16 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center text-3xl shadow-2xl animate-pulse font-bold transition-all';
           voiceBtn.title = 'Διακοπή ηχογράφησης';
         }
         const statusEl = document.getElementById('save-status');
         if (statusEl) {
-          statusEl.innerText = '🎙️ Ακούω... Μιλήστε ελεύθερα';
-          statusEl.className = 'text-xs text-brand-cyan font-semibold animate-pulse';
+          statusEl.innerText = '🎙️ Ακούω... Μιλήστε άνετα';
+          statusEl.className = 'text-base sm:text-lg text-cyan-300 font-bold animate-pulse';
         }
       };
 
       sr.onresult = (event) => {
-        const chunks = [];
-        for (let i = 0; i < event.results.length; ++i) {
+        let latestPhrase = '';
+        for (let i = event.resultIndex || 0; i < event.results.length; ++i) {
           const t = event.results[i][0].transcript.trim();
-          if (t) chunks.push(t);
-        }
-
-        let merged = mergeSpeechChunks(chunks);
-        merged = normalizeSpeechTranscript(merged);
-
-        let finalOutput = merged;
-        if (initialInputPrefix) {
-          finalOutput = mergeSpeechChunks([initialInputPrefix, merged]);
+          if (t) latestPhrase = t;
         }
 
         const inputEl = document.getElementById('smart-input');
-        if (inputEl) {
-          inputEl.value = finalOutput;
+        if (inputEl && latestPhrase) {
+          const currentVal = inputEl.value;
+          const merged = cleanAndMergeSpeech(currentVal, latestPhrase);
+          inputEl.value = merged;
+          parseInput(merged);
         }
-        parseInput(finalOutput);
       };
 
       sr.onerror = (event) => {
@@ -2340,7 +2333,7 @@
               if (isRecording) {
                 try { sr.start(); } catch (e) {}
               }
-            }, 250);
+            }, 100);
           } catch (e) {}
         } else {
           stopVoiceRecordingUI();
@@ -2354,13 +2347,13 @@
       const voiceBtn = document.getElementById('voice-btn');
       if (voiceBtn) {
         voiceBtn.innerHTML = '🎙️';
-        voiceBtn.className = 'absolute right-2.5 bottom-3 w-10 h-10 rounded-lg bg-slate-800 hover:bg-slate-700 border border-brand-border flex items-center justify-center text-lg shadow active:scale-95';
+        voiceBtn.className = 'absolute right-4 bottom-5 w-16 h-16 rounded-2xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 flex items-center justify-center text-3xl shadow-xl active:scale-95 transition-all font-bold';
         voiceBtn.title = 'Υπαγόρευση';
       }
       const statusEl = document.getElementById('save-status');
       if (statusEl && statusEl.innerText.includes('Ακούω')) {
         statusEl.innerText = 'Enter για καταχώριση';
-        statusEl.className = 'text-xs text-slate-400';
+        statusEl.className = 'text-base sm:text-lg text-slate-400 font-medium';
       }
     }
 
