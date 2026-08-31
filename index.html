@@ -107,22 +107,22 @@
     <div class="max-w-6xl mx-auto flex items-center justify-between gap-3">
       
       <div class="flex items-center gap-2">
-        <span class="font-bold text-brand-cyan text-base tracking-wide">Τμήμα Ένταξης</span>
-        <span class="font-bold text-slate-300 text-base">| ΔΗΜ.Ω.Σ. Ξάνθης</span>
+        <span class="font-bold text-brand-cyan text-lg sm:text-xl tracking-wide">Τμήμα Ένταξης</span>
+        <span class="font-bold text-slate-200 text-lg sm:text-xl">| ΔΗΜ.Ω.Σ. Ξάνθης</span>
       </div>
 
       <!-- Navigation Tabs -->
-      <nav class="flex items-center gap-1 overflow-x-auto py-0.5 custom-scroll">
-        <button onclick="switchTab('logger')" id="tab-logger" class="touch-btn text-xs sm:text-sm font-semibold rounded-lg bg-brand-cyan text-slate-950">
+      <nav class="flex items-center gap-2 overflow-x-auto py-1 custom-scroll">
+        <button onclick="switchTab('logger')" id="tab-logger" class="touch-btn text-sm sm:text-base font-bold rounded-xl px-4 py-2.5 bg-brand-cyan text-slate-950">
           Καταγραφή
         </button>
-        <button onclick="switchTab('students')" id="tab-students" class="touch-btn text-xs sm:text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 border border-brand-border">
+        <button onclick="switchTab('students')" id="tab-students" class="touch-btn text-sm sm:text-base font-bold rounded-xl px-4 py-2.5 text-slate-300 hover:bg-slate-800 border border-brand-border">
           👤 Καρτέλες Μαθητών
         </button>
-        <button onclick="switchTab('matrix')" id="tab-matrix" class="touch-btn text-xs sm:text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 border border-brand-border">
+        <button onclick="switchTab('matrix')" id="tab-matrix" class="touch-btn text-sm sm:text-base font-bold rounded-xl px-4 py-2.5 text-slate-300 hover:bg-slate-800 border border-brand-border">
           Πίνακας
         </button>
-        <button onclick="switchTab('timeline')" id="tab-timeline" class="touch-btn text-xs sm:text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 border border-brand-border">
+        <button onclick="switchTab('timeline')" id="tab-timeline" class="touch-btn text-sm sm:text-base font-bold rounded-xl px-4 py-2.5 text-slate-300 hover:bg-slate-800 border border-brand-border">
           Ημερολόγιο
         </button>
       </nav>
@@ -143,33 +143,33 @@
         
         <div class="relative">
           <textarea id="smart-input" rows="2" 
-            class="w-full bg-slate-950 border border-brand-border focus:border-brand-cyan rounded-lg p-3 pr-14 text-white placeholder-slate-500 focus:outline-none resize-none"
+            class="w-full bg-slate-950 border-2 border-brand-border focus:border-brand-cyan rounded-2xl p-4 sm:p-5 pr-16 text-base sm:text-lg text-white font-medium placeholder-slate-400 focus:outline-none resize-none shadow-inner leading-relaxed"
             placeholder="Γράψτε ή υπαγορεύστε (π.χ. «Ο Νικ δυσκολεύεται σε διαίρεση διψήφιων» ή «Πρόσθεσε νέο μαθητή Γιώργος Β2»)..."></textarea>
           
           <button id="voice-btn" onclick="toggleVoiceRecording()" 
-            class="absolute right-2.5 bottom-3 w-10 h-10 rounded-lg bg-slate-800 hover:bg-slate-700 border border-brand-border flex items-center justify-center text-lg shadow active:scale-95"
+            class="absolute right-3.5 bottom-4 w-12 h-12 rounded-xl bg-slate-800 hover:bg-slate-700 border border-brand-border flex items-center justify-center text-2xl shadow-lg active:scale-95 transition-all"
             title="Υπαγόρευση">
             🎙️
           </button>
         </div>
 
         <!-- Live AI Extracted Tags Bar (Zero Manual Dropdowns) -->
-        <div id="ai-live-bar" class="flex flex-wrap items-center gap-1.5 pt-1 text-xs transition-all">
+        <div id="ai-live-bar" class="flex flex-wrap items-center gap-2 pt-2 text-sm transition-all font-semibold">
           <span class="text-slate-400 font-semibold flex items-center gap-1">
             <span>✨</span> <span>Αυτόματη AI Ανάλυση:</span>
           </span>
-          <span id="ai-badge-student" class="px-2.5 py-1 rounded-md bg-cyan-950/70 text-cyan-300 border border-cyan-800 font-bold">👤 -</span>
-          <span id="ai-badge-domain" class="px-2.5 py-1 rounded-md bg-purple-950/70 text-purple-300 border border-purple-800 font-bold">📐 -</span>
-          <span id="ai-badge-bloom" class="px-2.5 py-1 rounded-md bg-amber-950/70 text-amber-300 border border-amber-800 font-bold">🧠 -</span>
-          <span id="ai-badge-strategy" class="px-2.5 py-1 rounded-md bg-indigo-950/70 text-indigo-300 border border-indigo-800 font-bold">🛠️ -</span>
-          <span id="ai-badge-obstacle" class="px-2.5 py-1 rounded-md bg-rose-950/70 text-rose-300 border border-rose-800 font-bold hidden">⚠️ -</span>
-          <span id="ai-badge-outcome" class="px-2.5 py-1 rounded-md bg-emerald-950/70 text-emerald-300 border border-emerald-800 font-bold font-mono">🟢 [+]</span>
+          <span id="ai-badge-student" class="px-3 py-1.5 rounded-lg bg-cyan-950 text-cyan-300 border border-cyan-800 text-sm font-bold shadow-sm">👤 -</span>
+          <span id="ai-badge-domain" class="px-3 py-1.5 rounded-lg bg-purple-950 text-purple-300 border border-purple-800 text-sm font-bold shadow-sm">📐 -</span>
+          <span id="ai-badge-bloom" class="px-3 py-1.5 rounded-lg bg-amber-950 text-amber-300 border border-amber-800 text-sm font-bold shadow-sm">🧠 -</span>
+          <span id="ai-badge-strategy" class="px-3 py-1.5 rounded-lg bg-indigo-950 text-indigo-300 border border-indigo-800 text-sm font-bold shadow-sm">🛠️ -</span>
+          <span id="ai-badge-obstacle" class="px-3 py-1.5 rounded-lg bg-rose-950 text-rose-300 border border-rose-800 text-sm font-bold hidden shadow-sm">⚠️ -</span>
+          <span id="ai-badge-outcome" class="px-3 py-1.5 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-800 text-sm font-bold font-mono shadow-sm">🟢 [+]</span>
         </div>
 
         <!-- Action Bar -->
         <div class="flex items-center justify-between pt-1">
           <span id="save-status" class="text-xs text-slate-400">Enter για καταχώριση</span>
-          <button id="submit-btn" onclick="executeAction()" class="touch-btn bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-sm px-5 transition-all">
+          <button id="submit-btn" onclick="executeAction()" class="touch-btn bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-300 hover:to-cyan-400 text-slate-950 font-black rounded-xl text-base px-7 py-3.5 shadow-md active:scale-95 transition-all">
             Καταχώριση
           </button>
         </div>
@@ -195,15 +195,15 @@
       <!-- Top Control & Filter Bar -->
       <div class="flex flex-wrap items-center justify-between gap-3 bg-brand-card border border-brand-border rounded-xl p-3 shadow-sm">
         <div class="flex items-center gap-1.5 flex-wrap" id="grade-filter-buttons">
-          <button onclick="filterStudentsByGrade('ALL')" id="filter-grade-all" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-cyan text-slate-950 transition-all">Όλοι οι Μαθητές</button>
-          <button onclick="filterStudentsByGrade('Α')" id="filter-grade-a" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-brand-border transition-all">Α' Γυμνασίου</button>
-          <button onclick="filterStudentsByGrade('Β')" id="filter-grade-b" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-brand-border transition-all">Β' Γυμνασίου</button>
-          <button onclick="filterStudentsByGrade('Γ')" id="filter-grade-c" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-brand-border transition-all">Γ' Γυμνασίου</button>
+          <button onclick="filterStudentsByGrade('ALL')" id="filter-grade-all" class="px-4 py-2 rounded-xl text-sm font-bold bg-brand-cyan text-slate-950 transition-all">Όλοι οι Μαθητές</button>
+          <button onclick="filterStudentsByGrade('Α')" id="filter-grade-a" class="px-4 py-2 rounded-xl text-sm font-bold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-brand-border transition-all">Α' Γυμνασίου</button>
+          <button onclick="filterStudentsByGrade('Β')" id="filter-grade-b" class="px-4 py-2 rounded-xl text-sm font-bold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-brand-border transition-all">Β' Γυμνασίου</button>
+          <button onclick="filterStudentsByGrade('Γ')" id="filter-grade-c" class="px-4 py-2 rounded-xl text-sm font-bold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-brand-border transition-all">Γ' Γυμνασίου</button>
         </div>
 
         <div class="flex items-center gap-2 flex-1 sm:flex-none justify-end">
           <input type="text" id="student-search-input" oninput="renderStudentsGrid()" placeholder="🔍 Αναζήτηση μαθητή..."
-                 class="bg-slate-900 border border-brand-border rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:ring-1 focus:ring-cyan-500 w-full sm:w-48">
+                 class="bg-slate-900 border border-brand-border rounded-xl px-4 py-2.5 text-sm sm:text-base text-white placeholder-slate-400 outline-none focus:ring-2 focus:ring-cyan-500 w-full sm:w-64 font-medium">
           <button onclick="openStudentDossier('new')" class="touch-btn bg-brand-cyan hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-lg shadow-sm whitespace-nowrap">
             + Νέα Καρτέλα
           </button>
@@ -211,7 +211,7 @@
       </div>
 
       <!-- Master Students Cards Grid -->
-      <div id="students-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4"></div>
+      <div id="students-cards-grid" class="grid grid-cols-1 gap-6 max-w-3xl mx-auto w-full"></div>
 
       <!-- Cognitive / Bloom Inspector Drawer (Appears when clicking Inspect on a student) -->
       <div id="cognitive-bloom-drawer" class="bg-brand-card border border-brand-border rounded-xl p-5 space-y-4 shadow-lg hidden">
@@ -312,16 +312,16 @@
 
       <!-- Dossier Sub-Tabs Navigation -->
       <div class="flex items-center gap-1.5 px-4 sm:px-5 py-2.5 bg-slate-950 border-b border-brand-border overflow-x-auto custom-scroll">
-        <button type="button" onclick="switchDossierSubTab(1)" id="dossier-tab-1" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-cyan text-slate-950 transition-all whitespace-nowrap shadow-sm">
+        <button type="button" onclick="switchDossierSubTab(1)" id="dossier-tab-1" class="px-4 py-2.5 rounded-xl text-sm sm:text-base font-black bg-brand-cyan text-slate-950 transition-all whitespace-nowrap shadow-sm">
           👤 1. Προσωπικά & Γονείς
         </button>
-        <button type="button" onclick="switchDossierSubTab(2)" id="dossier-tab-2" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 border border-brand-border transition-all whitespace-nowrap">
+        <button type="button" onclick="switchDossierSubTab(2)" id="dossier-tab-2" class="px-4 py-2.5 rounded-xl text-sm sm:text-base font-bold text-slate-300 hover:bg-slate-800 border border-brand-border transition-all whitespace-nowrap">
           🏥 2. Διαγνωστικό ΚΕΔΑΣΥ
         </button>
-        <button type="button" onclick="switchDossierSubTab(3)" id="dossier-tab-3" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 border border-brand-border transition-all whitespace-nowrap">
+        <button type="button" onclick="switchDossierSubTab(3)" id="dossier-tab-3" class="px-4 py-2.5 rounded-xl text-sm sm:text-base font-bold text-slate-300 hover:bg-slate-800 border border-brand-border transition-all whitespace-nowrap">
           📐 3. Μαθηματικό Προφίλ & Άγχος
         </button>
-        <button type="button" onclick="switchDossierSubTab(4)" id="dossier-tab-4" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 border border-brand-border transition-all whitespace-nowrap">
+        <button type="button" onclick="switchDossierSubTab(4)" id="dossier-tab-4" class="px-4 py-2.5 rounded-xl text-sm sm:text-base font-bold text-slate-300 hover:bg-slate-800 border border-brand-border transition-all whitespace-nowrap">
           🧠 4. Ψυχοκοινωνικό & Στόχοι ΕΠΕ
         </button>
       </div>
@@ -334,20 +334,20 @@
         <div id="dossier-subtab-view-1" class="space-y-4">
           
           <div class="bg-slate-900/60 border border-brand-border rounded-xl p-4 space-y-3">
-            <h4 class="text-xs font-bold text-cyan-400 tracking-wider">ΣΤΟΙΧΕΙΑ ΜΑΘΗΤΗ/ΤΡΙΑΣ</h4>
+            <h4 class="text-sm sm:text-base font-black text-cyan-400 tracking-wide flex items-center gap-2">ΣΤΟΙΧΕΙΑ ΜΑΘΗΤΗ/ΤΡΙΑΣ</h4>
             
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Όνομα *</label>
-                <input type="text" id="dos-name" required class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Μιχαέλα">
+                <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">Όνομα *</label>
+                <input type="text" id="dos-name" required class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="π.χ. Μιχαέλα">
               </div>
               <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Επώνυμο</label>
-                <input type="text" id="dos-surname" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Παπαδοπούλου">
+                <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">Επώνυμο</label>
+                <input type="text" id="dos-surname" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="π.χ. Παπαδοπούλου">
               </div>
               <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Φύλο</label>
-                <select id="dos-gender" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400">
+                <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">Φύλο</label>
+                <select id="dos-gender" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner">
                   <option value="Κορίτσι">Κορίτσι</option>
                   <option value="Αγόρι">Αγόρι</option>
                 </select>
@@ -356,72 +356,72 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
               <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Ημ/νία Γέννησης</label>
-                <input type="date" id="dos-birthdate" onchange="updateCalculatedAgeDisplay()" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400">
+                <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">Ημ/νία Γέννησης</label>
+                <input type="date" id="dos-birthdate" onchange="updateCalculatedAgeDisplay()" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner">
                 <span id="dos-age-display" class="text-[10px] text-cyan-400 mt-0.5 block"></span>
               </div>
               <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Τάξη</label>
-                <select id="dos-grade" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400">
+                <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">Τάξη</label>
+                <select id="dos-grade" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner">
                   <option value="Α' Γυμνασίου">Α' Γυμνασίου</option>
                   <option value="Β' Γυμνασίου">Β' Γυμνασίου</option>
                   <option value="Γ' Γυμνασίου">Γ' Γυμνασίου</option>
                 </select>
               </div>
               <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Τμήμα</label>
-                <input type="text" id="dos-section" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Β1">
+                <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">Τμήμα</label>
+                <input type="text" id="dos-section" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="π.χ. Β1">
               </div>
               <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Αριθμός Μητρώου (Α.Μ.)</label>
-                <input type="text" id="dos-regno" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. 4521">
+                <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">Αριθμός Μητρώου (Α.Μ.)</label>
+                <input type="text" id="dos-regno" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="π.χ. 4521">
               </div>
             </div>
           </div>
 
           <div class="bg-slate-900/60 border border-brand-border rounded-xl p-4 space-y-3">
-            <h4 class="text-xs font-bold text-cyan-400 tracking-wider">ΣΤΟΙΧΕΙΑ ΓΟΝΕΩΝ & ΕΠΙΚΟΙΝΩΝΙΑ</h4>
+            <h4 class="text-sm sm:text-base font-black text-cyan-400 tracking-wide flex items-center gap-2">ΣΤΟΙΧΕΙΑ ΓΟΝΕΩΝ & ΕΠΙΚΟΙΝΩΝΙΑ</h4>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div class="bg-slate-950/80 p-3 rounded-lg border border-brand-border space-y-2">
                 <span class="text-xs font-bold text-slate-300 flex items-center gap-1">👨 Στοιχεία Πατέρα</span>
                 <div>
-                  <label class="block text-[10px] text-slate-400">Ονοματεπώνυμο</label>
-                  <input type="text" id="dos-father-name" class="w-full bg-slate-900 border border-slate-800 rounded p-1.5 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Ιωάννης Παπαδόπουλος">
+                  <label class="block text-xs sm:text-sm font-bold text-slate-300 mb-1">Ονοματεπώνυμο</label>
+                  <input type="text" id="dos-father-name" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-base text-white font-semibold outline-none focus:border-cyan-400" placeholder="π.χ. Ιωάννης Παπαδόπουλος">
                 </div>
                 <div>
-                  <label class="block text-[10px] text-slate-400">Τηλέφωνο Επικοινωνίας</label>
-                  <input type="tel" id="dos-father-phone" class="w-full bg-slate-900 border border-slate-800 rounded p-1.5 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. 6971234567">
+                  <label class="block text-xs sm:text-sm font-bold text-slate-300 mb-1">Τηλέφωνο Επικοινωνίας</label>
+                  <input type="tel" id="dos-father-phone" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-base text-white font-semibold outline-none focus:border-cyan-400" placeholder="π.χ. 6971234567">
                 </div>
               </div>
 
               <div class="bg-slate-950/80 p-3 rounded-lg border border-brand-border space-y-2">
                 <span class="text-xs font-bold text-slate-300 flex items-center gap-1">👩 Στοιχεία Μητέρας</span>
                 <div>
-                  <label class="block text-[10px] text-slate-400">Ονοματεπώνυμο</label>
-                  <input type="text" id="dos-mother-name" class="w-full bg-slate-900 border border-slate-800 rounded p-1.5 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Ελένη Παπαδοπούλου">
+                  <label class="block text-xs sm:text-sm font-bold text-slate-300 mb-1">Ονοματεπώνυμο</label>
+                  <input type="text" id="dos-mother-name" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-base text-white font-semibold outline-none focus:border-cyan-400" placeholder="π.χ. Ελένη Παπαδοπούλου">
                 </div>
                 <div>
-                  <label class="block text-[10px] text-slate-400">Τηλέφωνο Επικοινωνίας</label>
-                  <input type="tel" id="dos-mother-phone" class="w-full bg-slate-900 border border-slate-800 rounded p-1.5 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. 6987654321">
+                  <label class="block text-xs sm:text-sm font-bold text-slate-300 mb-1">Τηλέφωνο Επικοινωνίας</label>
+                  <input type="tel" id="dos-mother-phone" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-base text-white font-semibold outline-none focus:border-cyan-400" placeholder="π.χ. 6987654321">
                 </div>
               </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
               <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Διεύθυνση Κατοικίας</label>
-                <input type="text" id="dos-address" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Ξάνθη">
+                <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">Διεύθυνση Κατοικίας</label>
+                <input type="text" id="dos-address" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="π.χ. Ξάνθη">
               </div>
               <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Email Επικοινωνίας</label>
-                <input type="email" id="dos-email" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. parents@example.com">
+                <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">Email Επικοινωνίας</label>
+                <input type="email" id="dos-email" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="π.χ. parents@example.com">
               </div>
             </div>
 
             <div>
-              <label class="block text-[11px] font-semibold text-slate-300 mb-1">Σημειώσεις Οικογενειακού Πλαισίου / Συνεργασίας</label>
-              <textarea id="dos-family-notes" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="Σημειώσεις για την επικοινωνία με τους γονείς..."></textarea>
+              <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">Σημειώσεις Οικογενειακού Πλαισίου / Συνεργασίας</label>
+              <textarea id="dos-family-notes" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="Σημειώσεις για την επικοινωνία με τους γονείς..."></textarea>
             </div>
 
           </div>
@@ -432,32 +432,32 @@
         <div id="dossier-subtab-view-2" class="space-y-4 hidden">
           
           <div class="bg-slate-900/60 border border-brand-border rounded-xl p-4 space-y-3">
-            <h4 class="text-xs font-bold text-cyan-400 tracking-wider">ΙΑΤΡΟΠΑΙΔΑΓΩΓΙΚΗ ΕΚΘΕΣΗ & ΓΝΩΜΑΤΕΥΣΗ</h4>
+            <h4 class="text-sm sm:text-base font-black text-cyan-400 tracking-wide flex items-center gap-2">ΙΑΤΡΟΠΑΙΔΑΓΩΓΙΚΗ ΕΚΘΕΣΗ & ΓΝΩΜΑΤΕΥΣΗ</h4>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Φορέας Διάγνωσης</label>
-                <input type="text" id="dos-diag-authority" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. ΚΕΔΑΣΥ Ξάνθης">
+                <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">Φορέας Διάγνωσης</label>
+                <input type="text" id="dos-diag-authority" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="π.χ. ΚΕΔΑΣΥ Ξάνθης">
               </div>
               <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Αριθμός & Ημ/νία Πρωτοκόλλου</label>
-                <input type="text" id="dos-diag-protocol" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. 284/12-04-2024">
+                <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">Αριθμός & Ημ/νία Πρωτοκόλλου</label>
+                <input type="text" id="dos-diag-protocol" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="π.χ. 284/12-04-2024">
               </div>
             </div>
 
             <div>
-              <label class="block text-[11px] font-semibold text-slate-300 mb-1">Είδος Ειδικών Εκπαιδευτικών Αναγκών / Διάγνωση *</label>
-              <input type="text" id="dos-diag-type" required class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Ειδική Μαθησιακή Δυσκολία (Δυσαριθμησία & Δυσλεξία)">
+              <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">Είδος Ειδικών Εκπαιδευτικών Αναγκών / Διάγνωση *</label>
+              <input type="text" id="dos-diag-type" required class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="π.χ. Ειδική Μαθησιακή Δυσκολία (Δυσαριθμησία & Δυσλεξία)">
             </div>
 
             <div>
-              <label class="block text-[11px] font-semibold text-slate-300 mb-1">Ιστορικό Εκπαιδευτικής Υποστήριξης</label>
-              <input type="text" id="dos-diag-history" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. 2ο έτος φοίτησης στο Τμήμα Ένταξης, προηγούμενη στήριξη στο Δημοτικό">
+              <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">Ιστορικό Εκπαιδευτικής Υποστήριξης</label>
+              <input type="text" id="dos-diag-history" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="π.χ. 2ο έτος φοίτησης στο Τμήμα Ένταξης, προηγούμενη στήριξη στο Δημοτικό">
             </div>
 
             <div>
-              <label class="block text-[11px] font-semibold text-slate-300 mb-1">Γενικές Παρατηρήσεις / Σημειώσεις Εκπαιδευτικού</label>
-              <textarea id="dos-notes" rows="3" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="Γενικές παιδαγωγικές παρατηρήσεις για τον/την μαθητή/τρια..."></textarea>
+              <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">Γενικές Παρατηρήσεις / Σημειώσεις Εκπαιδευτικού</label>
+              <textarea id="dos-notes" rows="3" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="Γενικές παιδαγωγικές παρατηρήσεις για τον/την μαθητή/τρια..."></textarea>
             </div>
           </div>
 
@@ -467,12 +467,12 @@
         <div id="dossier-subtab-view-3" class="space-y-4 hidden">
           
           <div class="bg-slate-900/60 border border-brand-border rounded-xl p-4 space-y-3">
-            <h4 class="text-xs font-bold text-cyan-400 tracking-wider">ΓΝΩΣΤΙΚΟ & ΜΑΘΗΣΙΑΚΟ ΠΡΟΦΙΛ ΣΤΑ ΜΑΘΗΜΑΤΙΚΑ</h4>
+            <h4 class="text-sm sm:text-base font-black text-cyan-400 tracking-wide flex items-center gap-2">ΓΝΩΣΤΙΚΟ & ΜΑΘΗΣΙΑΚΟ ΠΡΟΦΙΛ ΣΤΑ ΜΑΘΗΜΑΤΙΚΑ</h4>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">📊 Επίπεδο Μαθηματικού Άγχους (Math Anxiety)</label>
-                <select id="dos-math-anxiety" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400 font-bold">
+                <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">📊 Επίπεδο Μαθηματικού Άγχους (Math Anxiety)</label>
+                <select id="dos-math-anxiety" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-bold outline-none focus:border-cyan-400">
                   <option value="Χαμηλό">🟢 Χαμηλό Άγχος (Άνετη συμμετοχή)</option>
                   <option value="Μέτριο" selected>🟡 Μέτριο Άγχος (Χρειάζεται ενθάρρυνση)</option>
                   <option value="Υψηλό">🔴 Υψηλό Άγχος (Άγχος επίδοσης / αποφυγή)</option>
@@ -480,8 +480,8 @@
               </div>
 
               <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">🧠 Προτιμώμενο Μαθησιακό Στυλ</label>
-                <select id="dos-learning-style" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400">
+                <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">🧠 Προτιμώμενο Μαθησιακό Στυλ</label>
+                <select id="dos-learning-style" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner">
                   <option value="Οπτικό / Πολυαισθητηριακό">Οπτικό / Πολυαισθητηριακό</option>
                   <option value="Ακουστικό / Προφορικό">Ακουστικό / Προφορικό</option>
                   <option value="Κιναισθητικό / Απτικό">Κιναισθητικό / Απτικό (Χειραπτικό υλικό)</option>
@@ -491,18 +491,18 @@
             </div>
 
             <div>
-              <label class="block text-[11px] font-semibold text-slate-300 mb-1">✨ Δυνατά Σημεία στα Μαθηματικά (Strengths)</label>
-              <textarea id="dos-math-strengths" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Εξαιρετική οπτική αντίληψη, αγάπη για τα γεωμετρικά σχήματα, δεξιότητα στο Geogebra..."></textarea>
+              <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">✨ Δυνατά Σημεία στα Μαθηματικά (Strengths)</label>
+              <textarea id="dos-math-strengths" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="π.χ. Εξαιρετική οπτική αντίληψη, αγάπη για τα γεωμετρικά σχήματα, δεξιότητα στο Geogebra..."></textarea>
             </div>
 
             <div>
-              <label class="block text-[11px] font-semibold text-slate-300 mb-1">⚠️ Κύρια Εμπόδια & Τομείς Δυσκολίας (Target Weaknesses)</label>
-              <textarea id="dos-math-weaknesses" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Δυσκολία στις πράξεις με κλάσματα, αυτοματοποίηση προπαίδειας, επίλυση εξισώσεων..."></textarea>
+              <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">⚠️ Κύρια Εμπόδια & Τομείς Δυσκολίας (Target Weaknesses)</label>
+              <textarea id="dos-math-weaknesses" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="π.χ. Δυσκολία στις πράξεις με κλάσματα, αυτοματοποίηση προπαίδειας, επίλυση εξισώσεων..."></textarea>
             </div>
 
             <div>
-              <label class="block text-[11px] font-semibold text-slate-300 mb-1">🛠️ Αποτελεσματικές Διδακτικές Στρατηγικές & Προσαρμογές</label>
-              <textarea id="dos-math-strategies" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="π.χ. Χρήση αριθμογραμμής, βήμα-προς-βήμα καθοδήγηση (scaffolding), χρωματική κωδικοποίηση προσήμων..."></textarea>
+              <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">🛠️ Αποτελεσματικές Διδακτικές Στρατηγικές & Προσαρμογές</label>
+              <textarea id="dos-math-strategies" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="π.χ. Χρήση αριθμογραμμής, βήμα-προς-βήμα καθοδήγηση (scaffolding), χρωματική κωδικοποίηση προσήμων..."></textarea>
             </div>
 
           </div>
@@ -513,22 +513,22 @@
         <div id="dossier-subtab-view-4" class="space-y-4 hidden">
           
           <div class="bg-slate-900/60 border border-brand-border rounded-xl p-4 space-y-3">
-            <h4 class="text-xs font-bold text-cyan-400 tracking-wider">ΨΥΧΟΚΟΙΝΩΝΙΚΟ ΠΡΟΦΙΛ & ΣΥΜΠΕΡΙΦΟΡΑ</h4>
+            <h4 class="text-sm sm:text-base font-black text-cyan-400 tracking-wide flex items-center gap-2">ΨΥΧΟΚΟΙΝΩΝΙΚΟ ΠΡΟΦΙΛ & ΣΥΜΠΕΡΙΦΟΡΑ</h4>
             
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">🌟 Αυτοαντίληψη & Αυτοπεποίθηση</label>
-                <textarea id="dos-self-concept" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="Στάση απέναντι στην προσπάθεια..."></textarea>
+                <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">🌟 Αυτοαντίληψη & Αυτοπεποίθηση</label>
+                <textarea id="dos-self-concept" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="Στάση απέναντι στην προσπάθεια..."></textarea>
               </div>
 
               <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">⏳ Εστίαση & Διάρκεια Προσοχής</label>
-                <textarea id="dos-attention-focus" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="Διάρκεια συγκέντρωσης..."></textarea>
+                <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">⏳ Εστίαση & Διάρκεια Προσοχής</label>
+                <textarea id="dos-attention-focus" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="Διάρκεια συγκέντρωσης..."></textarea>
               </div>
 
               <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">🤝 Κοινωνική Αλληλεπίδραση</label>
-                <textarea id="dos-social-interaction" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-lg p-2 text-xs text-white outline-none focus:border-cyan-400" placeholder="Συνεργασία στην ομάδα..."></textarea>
+                <label class="block text-sm sm:text-base font-bold text-slate-200 mb-1.5">🤝 Κοινωνική Αλληλεπίδραση</label>
+                <textarea id="dos-social-interaction" rows="2" class="w-full bg-slate-950 border border-brand-border rounded-xl p-3 sm:p-3.5 text-base sm:text-lg text-white font-medium outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-inner" placeholder="Συνεργασία στην ομάδα..."></textarea>
               </div>
             </div>
           </div>
@@ -536,7 +536,7 @@
           <!-- IEP TARGETS BUILDER -->
           <div class="bg-slate-900/60 border border-brand-border rounded-xl p-4 space-y-3">
             <div class="flex items-center justify-between">
-              <h4 class="text-xs font-bold text-cyan-400 tracking-wider">🎯 ΣΤΟΧΟΙ Ε.Π.Ε. 2026-2027</h4>
+              <h4 class="text-sm sm:text-base font-black text-cyan-400 tracking-wide flex items-center gap-2">🎯 ΣΤΟΧΟΙ Ε.Π.Ε. 2026-2027</h4>
               <span class="text-[11px] text-slate-400">Εξατομικευμένη Στοχοθεσία</span>
             </div>
 
@@ -563,7 +563,7 @@
       <!-- Modal Footer -->
       <div class="p-4 sm:p-5 border-t border-brand-border bg-slate-900/90 flex items-center justify-between gap-3">
         <div>
-          <button type="button" id="dos-btn-export-docx" onclick="downloadCurrentDossierDocx()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-800/80 text-xs font-semibold flex items-center gap-1.5 transition-all">
+          <button type="button" id="dos-btn-export-docx" onclick="downloadCurrentDossierDocx()" class="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-800 text-sm sm:text-base font-bold flex items-center gap-2 transition-all shadow-sm">
             📄 Εξαγωγή Word (.docx)
           </button>
         </div>
@@ -571,7 +571,7 @@
           <button type="button" onclick="closeStudentDossier()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-all">
             Ακύρωση
           </button>
-          <button type="button" onclick="saveStudentDossier()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-black text-xs shadow-lg active:scale-95 transition-all">
+          <button type="button" onclick="saveStudentDossier()" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 text-slate-950 font-black text-sm sm:text-base shadow-xl active:scale-95 transition-all">
             💾 Αποθήκευση Καρτέλας
           </button>
         </div>
@@ -1672,75 +1672,82 @@
         const stObs = (appData.observations || []).filter(o => o.student_id === st.id);
         const covTotal = (st.coverage && st.coverage.total) || 0;
 
+        const anxietyBadgeLarge = anxiety === 'Χαμηλό'
+          ? '<span class="px-3.5 py-1.5 rounded-xl bg-emerald-950 text-emerald-300 border border-emerald-700 text-sm sm:text-base font-bold">🟢 Χαμηλό Μαθηματικό Άγχος</span>'
+          : anxiety === 'Υψηλό'
+          ? '<span class="px-3.5 py-1.5 rounded-xl bg-rose-950 text-rose-300 border border-rose-700 text-sm sm:text-base font-bold">🔴 Υψηλό Μαθηματικό Άγχος</span>'
+          : '<span class="px-3.5 py-1.5 rounded-xl bg-amber-950 text-amber-300 border border-amber-700 text-sm sm:text-base font-bold">🟡 Μέτριο Μαθηματικό Άγχος</span>';
+
         grid.innerHTML += `
-          <div class="bg-brand-card border border-brand-border hover:border-slate-700 rounded-2xl p-4 sm:p-5 space-y-4 transition-all shadow-sm flex flex-col justify-between">
+          <div class="bg-brand-card border-2 border-brand-border hover:border-cyan-500/80 rounded-2xl p-5 sm:p-7 space-y-5 transition-all shadow-md flex flex-col justify-between">
             
-            <!-- Top Row: Avatar & Basic Info -->
-            <div class="space-y-3">
-              <div class="flex items-start justify-between gap-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-12 h-12 rounded-2xl ${isBoy ? 'bg-cyan-950/80 border-cyan-800/80 text-cyan-300' : 'bg-purple-950/80 border-purple-800/80 text-purple-300'} border text-2xl flex items-center justify-center shadow-inner flex-shrink-0">
+            <!-- Top Header: Avatar & Main Identity -->
+            <div class="space-y-4">
+              <div class="flex items-start justify-between gap-4 pb-3 border-b border-brand-border">
+                <div class="flex items-center gap-4">
+                  <div class="w-16 h-16 rounded-2xl ${isBoy ? 'bg-cyan-950 border-2 border-cyan-600 text-cyan-300' : 'bg-purple-950 border-2 border-purple-600 text-purple-300'} text-3xl flex items-center justify-center shadow-inner flex-shrink-0">
                     ${isBoy ? '👦' : '👧'}
                   </div>
                   <div>
-                    <h3 class="text-base font-bold text-white leading-tight flex items-center gap-1.5 flex-wrap">
+                    <h3 class="text-2xl sm:text-3xl font-black text-white leading-tight flex items-center gap-2.5 flex-wrap">
                       <span>${full_name}</span>
-                      <span class="text-xs px-2 py-0.5 rounded bg-slate-900 text-cyan-300 border border-slate-700 font-normal">${st.grade || ''} ${st.class_section ? `(${st.class_section})` : ''}</span>
+                      <span class="text-sm sm:text-base px-3 py-1 rounded-xl bg-slate-900 text-cyan-300 border border-cyan-800 font-bold">${st.grade || ''} ${st.class_section ? `(${st.class_section})` : ''}</span>
                     </h3>
-                    <p class="text-[11px] text-slate-400 mt-0.5">
+                    <p class="text-sm sm:text-base text-slate-300 font-semibold mt-1">
                       ${st.gender || ''} ${ageStr ? `• ${ageStr}` : ''} ${st.registration_no ? `• Α.Μ: ${st.registration_no}` : ''}
                     </p>
                   </div>
                 </div>
 
-                <div class="bg-slate-900 border border-brand-border rounded-xl px-2.5 py-1.5 text-center flex-shrink-0">
-                  <span class="text-[10px] text-slate-400 block font-semibold">Πληρότητα</span>
-                  <span class="text-sm font-bold text-brand-cyan">${covTotal}%</span>
+                <div class="bg-slate-900 border-2 border-cyan-700/80 rounded-2xl px-4 py-2.5 text-center flex-shrink-0 shadow-sm">
+                  <span class="text-xs text-slate-300 block font-bold">Πληρότητα</span>
+                  <span class="text-xl sm:text-2xl font-black text-brand-cyan">${covTotal}%</span>
                 </div>
               </div>
 
-              <!-- Diagnosis Row -->
-              <div class="p-2.5 rounded-xl bg-slate-950/80 border border-brand-border text-xs space-y-1">
-                <div class="flex items-center justify-between text-[11px] text-slate-400 font-semibold">
-                  <span class="flex items-center gap-1">🏥 <span>${diag.authority || 'ΚΕΔΑΣΥ Ξάνθης'}</span> ${diag.protocol_no ? `<span class="text-slate-500 font-mono">(${diag.protocol_no})</span>` : ''}</span>
+              <!-- Diagnosis Box (Large & High Contrast) -->
+              <div class="p-4 rounded-xl bg-slate-950 border border-brand-border space-y-1.5 shadow-inner">
+                <div class="flex items-center justify-between text-xs sm:text-sm text-cyan-400 font-bold">
+                  <span class="flex items-center gap-1.5">🏥 <span>${diag.authority || 'ΚΕΔΑΣΥ Ξάνθης'}</span> ${diag.protocol_no ? `<span class="text-slate-400 font-mono">(${diag.protocol_no})</span>` : ''}</span>
                 </div>
-                <p class="text-slate-200 font-medium text-[11px] line-clamp-1">${diag.diagnosis_type || st.diagnosis || 'Ειδική Μαθησιακή Δυσκολία'}</p>
+                <p class="text-white font-bold text-sm sm:text-base leading-relaxed">${diag.diagnosis_type || st.diagnosis || 'Ειδική Μαθησιακή Δυσκολία'}</p>
               </div>
 
-              <!-- Parents Contact Grid -->
-              <div class="grid grid-cols-2 gap-2 text-[11px]">
-                <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/80">
-                  <span class="text-slate-400 block text-[10px] font-semibold">👨 Πατέρας:</span>
-                  <span class="text-white font-medium block truncate">${father.name || '-'}</span>
-                  ${father.phone ? `<a href="tel:${father.phone}" class="text-cyan-400 hover:underline font-mono text-[10px]">📞 ${father.phone}</a>` : '<span class="text-slate-500 text-[10px]">-</span>'}
+              <!-- Parents Contact (Large Grid) -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="p-3.5 sm:p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
+                  <span class="text-slate-400 block text-xs font-bold">👨 Στοιχεία Πατέρα:</span>
+                  <span class="text-white font-bold text-base sm:text-lg block truncate">${father.name || '-'}</span>
+                  ${father.phone ? `<a href="tel:${father.phone}" class="inline-flex items-center gap-1 text-cyan-300 hover:text-cyan-200 font-mono text-sm sm:text-base font-bold mt-1 bg-cyan-950/60 px-2.5 py-1 rounded-lg border border-cyan-800">📞 ${father.phone}</a>` : '<span class="text-slate-500 text-xs">-</span>'}
                 </div>
-                <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/80">
-                  <span class="text-slate-400 block text-[10px] font-semibold">👩 Μητέρα:</span>
-                  <span class="text-white font-medium block truncate">${mother.name || '-'}</span>
-                  ${mother.phone ? `<a href="tel:${mother.phone}" class="text-cyan-400 hover:underline font-mono text-[10px]">📞 ${mother.phone}</a>` : '<span class="text-slate-500 text-[10px]">-</span>'}
+
+                <div class="p-3.5 sm:p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
+                  <span class="text-slate-400 block text-xs font-bold">👩 Στοιχεία Μητέρας:</span>
+                  <span class="text-white font-bold text-base sm:text-lg block truncate">${mother.name || '-'}</span>
+                  ${mother.phone ? `<a href="tel:${mother.phone}" class="inline-flex items-center gap-1 text-cyan-300 hover:text-cyan-200 font-mono text-sm sm:text-base font-bold mt-1 bg-cyan-950/60 px-2.5 py-1 rounded-lg border border-cyan-800">📞 ${mother.phone}</a>` : '<span class="text-slate-500 text-xs">-</span>'}
                 </div>
               </div>
 
               <!-- Math Profile & Anxiety Badges -->
-              <div class="flex items-center justify-between gap-2 flex-wrap pt-1">
-                <div class="flex items-center gap-1.5 flex-wrap">
-                  ${anxietyBadge}
-                  <span class="px-2 py-0.5 rounded-md bg-purple-950/60 text-purple-300 border border-purple-800 text-[11px] font-semibold">🧠 ${mprof.learning_style || 'Οπτικό'}</span>
+              <div class="flex items-center justify-between gap-3 flex-wrap pt-2">
+                <div class="flex items-center gap-2 flex-wrap">
+                  ${anxietyBadgeLarge}
+                  <span class="px-3.5 py-1.5 rounded-xl bg-purple-950 text-purple-200 border border-purple-700 text-sm sm:text-base font-bold">🧠 ${mprof.learning_style || 'Οπτικό Στυλ'}</span>
                 </div>
-                <span class="text-[11px] text-slate-400 font-mono font-semibold">${stObs.length} καταγραφές</span>
+                <span class="text-sm font-mono font-bold text-slate-300 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">${stObs.length} καταγραφές</span>
               </div>
             </div>
 
-            <!-- Card Bottom Action Buttons -->
-            <div class="pt-3 border-t border-brand-border flex items-center justify-between gap-2">
-              <button onclick="openStudentDossier('${st.id}')" class="flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-xs border border-cyan-800/60 flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-sm">
-                ✏️ Πλήρης Καρτέλα
+            <!-- Card Bottom Action Buttons (Large Touch Targets) -->
+            <div class="pt-4 border-t border-brand-border flex items-center gap-3">
+              <button onclick="openStudentDossier('${st.id}')" class="flex-1 py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-slate-950 font-black text-sm sm:text-base flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md">
+                ✏️ Πλήρης Καρτέλα Μαθητή
               </button>
-              <button onclick="openCognitiveDrawer('${st.id}')" class="py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold text-xs border border-brand-border flex items-center gap-1 transition-all active:scale-95">
+              <button onclick="openCognitiveDrawer('${st.id}')" class="py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 font-bold text-sm sm:text-base border border-slate-700 flex items-center gap-1.5 transition-all active:scale-95 shadow-sm">
                 📊 Bloom
               </button>
-              <button onclick="downloadDocxForStudent('${st.id}')" class="py-2 px-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold text-xs border border-brand-border flex items-center gap-1 transition-all active:scale-95" title="Εξαγωγή Word">
-                📄
+              <button onclick="downloadDocxForStudent('${st.id}')" class="py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold text-sm sm:text-base border border-cyan-800 flex items-center gap-1.5 transition-all active:scale-95 shadow-sm" title="Εξαγωγή Word">
+                📄 Word
               </button>
             </div>
 
